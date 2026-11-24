@@ -1,0 +1,10 @@
+import { z } from 'zod';
+const id=z.string().min(1);
+export const entrySchema=z.object({id,voicingId:z.string().min(1)});
+export const sectionSchema=z.object({id,name:z.string().max(200),chords:z.array(entrySchema)});
+export const songSchema=z.object({id,name:z.string().max(200),sections:z.array(sectionSchema),updatedAt:z.iso.datetime()});
+export const librarySchema=z.object({version:z.literal(1),songs:z.array(songSchema)});
+export type ChordEntry=z.infer<typeof entrySchema>;
+export type Section=z.infer<typeof sectionSchema>;
+export type Song=z.infer<typeof songSchema>;
+export type Library=z.infer<typeof librarySchema>;
