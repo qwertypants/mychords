@@ -1,0 +1,50 @@
+{
+  "commit": "622c2f1c32c8cfce4158ddc3eb26e518ddef37e5",
+  "samples": [
+    {
+      "midi": 40,
+      "file": "guitar/E2.mp3",
+      "sha256": "917820984d1bb0b7712b4f2c42a9694efbb2479ccede45aa78af73811fc6818d"
+    },
+    {
+      "midi": 45,
+      "file": "guitar/A2.mp3",
+      "sha256": "43e339bcd75f5f26336be8e1e59b131a0bf06dbf66f588f1c59a8d9faf53613f"
+    },
+    {
+      "midi": 50,
+      "file": "guitar/D3.mp3",
+      "sha256": "861b74a32a9159eea675ebd6ba0e5d3fa331b2c744dddd9ca1151073a3974fc0"
+    },
+    {
+      "midi": 55,
+      "file": "guitar/G3.mp3",
+      "sha256": "8a8ddf06e2d4824f5086e6ad0cf32371da6afc594bf2efd9bb5ec9a2dfe9c040"
+    },
+    {
+      "midi": 59,
+      "file": "guitar/B3.mp3",
+      "sha256": "2ab73ca750ca539a76c7ddaf7a3be2aac1436cd59ffc65525bf4adbb47c56488"
+    },
+    {
+      "midi": 64,
+      "file": "guitar/E4.mp3",
+      "sha256": "3b02f5448695ac92f257ea9e36ba77be1b1b4a08f62a549b95c7ea9f5303ce14"
+    },
+    {
+      "midi": 69,
+      "file": "guitar/A4.mp3",
+      "sha256": "1f8263f10e24509d8d0bb82c7dd873bfe7da5354ba0333f23ebfc0f02076361a"
+    },
+    {
+      "midi": 72,
+      "file": "guitar/C5.mp3",
+      "sha256": "bed99fde143232c3a33847b82cf3e07c5d5e47b56d584d3d829d01deb9defbab"
+    },
+    {
+      "midi": 74,
+      "file": "guitar/D5.mp3",
+      "sha256": "c9d74d19e672780b7b6e9eb4468b31b5fee6642f20df724198b232f7c78af4f1"
+    }
+  ]
+}
