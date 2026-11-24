@@ -1,0 +1,346 @@
+/* Song notebook */
+.editor-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  padding-top: 22px;
+}
+.editor-breadcrumb button {
+  padding: 6px 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.editor-heading {
+  margin-top: 25px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.editor-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.editor-heading h1 {
+  margin-top: 9px;
+}
+.song-title {
+  font: 54px/1.2 var(--serif);
+  letter-spacing: -1px;
+  border: 0;
+  outline-offset: 1px;
+  background: transparent;
+  color: var(--ink);
+  width: 100%;
+  padding: 0;
+  text-overflow: ellipsis;
+}
+.song-title:hover {
+  box-shadow: 0 1px 0 #c1b9a8;
+}
+.save-button {
+  margin-top: 25px;
+}
+.song-meta {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-top: 12px;
+}
+.song-meta span {
+  margin: 0 8px;
+}
+.song-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+  margin-top: 13px;
+  flex-wrap: wrap;
+}
+.play-song {
+  border-color: #cec5b3;
+  background: #eee9de;
+}
+.playback-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  min-height: 36px;
+  line-height: 1.5;
+}
+.playback-status button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 0 8px;
+  background: #eee7dd;
+  border-radius: 4px;
+  color: var(--ink);
+  margin-left: 4px;
+}
+.playback-status.playing {
+  color: #6d753f;
+}
+.playback-status.error {
+  color: #9b3e2d;
+}
+.save-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.save-status.dirty i {
+  background: #ad8453;
+}
+.sections {
+  margin-top: 12px;
+}
+.song-section {
+  border-bottom: 1px solid var(--line);
+  padding: 19px 0 29px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 15px;
+  min-width: 0;
+}
+.section-number {
+  font: 10px var(--mono);
+  color: var(--muted);
+  background: #eae6da;
+  border-radius: 3px;
+  padding: 6px 7px;
+}
+.section-title {
+  min-width: 0;
+  flex: 1;
+}
+.section-title input {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 27px var(--serif);
+  padding: 4px 0;
+  width: 100%;
+}
+.section-title input:hover {
+  box-shadow: 0 1px 0 var(--line);
+}
+.section-count {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.section-controls {
+  display: flex;
+  gap: 0;
+}
+.muted {
+  color: #908779;
+}
+.section-chords {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 13px;
+  align-items: stretch;
+}
+.song-chord {
+  border: 1px solid #d8d0c1;
+  background: var(--white);
+  border-radius: 6px;
+  min-width: 0;
+  padding: 0 10px;
+  position: relative;
+}
+.song-chord.is-playing {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 2px #cfab8850;
+  background: #fff7e9;
+}
+.song-chord.is-dragging {
+  z-index: 3;
+  opacity: 0.85;
+  box-shadow: 0 7px 18px #34281925;
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 33px;
+  margin-right: -7px;
+}
+.chord-index {
+  font: 8px var(--mono);
+  color: #978e80;
+}
+.drag-handle {
+  cursor: grab;
+  color: #9a9081;
+  touch-action: none;
+  min-height: 44px;
+}
+.drag-handle:active {
+  cursor: grabbing;
+}
+.song-chord-name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 5px;
+}
+.song-chord-name h3 {
+  font: 27px var(--serif);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.song-chord-name > span {
+  font: 8px var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.chord-diagram {
+  width: 140px;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+  color: var(--ink);
+  stroke: #a19886;
+  fill: var(--ink);
+  overflow: visible;
+}
+.chord-diagram text {
+  stroke: none;
+}
+.chord-diagram circle {
+  stroke: none;
+  fill: var(--ink);
+}
+.chord-diagram .finger {
+  font:
+    8px "DM Sans",
+    sans-serif;
+  fill: #fffaf1;
+}
+.chord-diagram .fret-number {
+  font: 10px var(--mono);
+  fill: #81745f;
+}
+.chord-diagram .string-letter {
+  font: 8px var(--mono);
+  fill: #928775;
+}
+.chord-diagram .open-marker {
+  font:
+    15px "DM Sans",
+    sans-serif;
+  fill: var(--ink);
+}
+.chord-diagram .barre {
+  stroke: var(--ink);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+.hear-chord {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  width: 100%;
+  min-height: 39px;
+  border-top: 1px solid #eee8dc;
+  color: #78664c;
+}
+.hear-chord:hover {
+  color: var(--accent);
+  background: #f5efe3;
+}
+.card-bottom {
+  display: flex;
+  border-top: 1px solid #eee8dc;
+  justify-content: center;
+}
+.card-bottom .icon-button {
+  min-width: 40px;
+  min-height: 44px;
+}
+.card-bottom .remove-chord {
+  margin-left: auto;
+  color: #8a7c69;
+}
+.add-chord-tile {
+  border: 1px dashed #c8bfad;
+  border-radius: 6px;
+  padding: 24px 10px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: transparent;
+  min-width: 0;
+}
+.add-chord-tile:hover {
+  background: #eee9de;
+  border-color: #ac8b65;
+}
+.add-chord-tile.empty {
+  grid-column: 1/-1;
+  min-height: 170px;
+}
+.add-circle {
+  border: 1px solid #d7cdbb;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #8f7858;
+}
+.add-chord-tile strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.add-chord-tile > span:last-child {
+  font-size: 10px;
+  color: var(--muted);
+}
+.add-section-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  border: 1px dashed #d5cebf;
+  min-height: 52px;
+  border-radius: 5px;
+  margin-top: 25px;
+  font-size: 12px;
+  color: #736650;
+}
+.add-section-button:hover {
+  background: #ece7dc;
+}
+.editor-note {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.8;
+}

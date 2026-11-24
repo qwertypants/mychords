@@ -1,0 +1,442 @@
+@media (min-width: 1440px) {
+  .library-main,
+  .editor-main {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .welcome {
+    padding-top: 85px;
+    padding-bottom: 80px;
+  }
+  .welcome h1 {
+    font-size: 76px;
+  }
+  .hero-chords {
+    padding: 30px;
+  }
+}
+@media (max-width: 900px) {
+  .welcome {
+    gap: 30px;
+    padding-top: 50px;
+    padding-bottom: 45px;
+  }
+  .welcome h1 {
+    font-size: 53px;
+  }
+  .hero-chords {
+    padding: 16px;
+  }
+  .hero-caption {
+    font-size: 7px;
+    letter-spacing: 0.5px;
+  }
+  .hero-chord-row {
+    gap: 6px;
+  }
+  .hero-chord {
+    padding-top: 10px;
+  }
+  .hero-chord-label {
+    font-size: 24px;
+  }
+  .app-footer > span:nth-child(2) {
+    display: none;
+  }
+  .app-footer a {
+    margin-left: auto;
+  }
+  .saved-song-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .song-title {
+    font-size: 48px;
+  }
+}
+@media (max-width: 600px) {
+  .app-header {
+    height: 72px;
+    margin: 0 6%;
+    gap: 15px;
+  }
+  .brand {
+    font-size: 25px;
+    gap: 8px;
+  }
+  .brand-icon {
+    width: 31px;
+    height: 33px;
+  }
+  .brand-icon svg {
+    width: 18px;
+  }
+  .app-header nav {
+    gap: 12px;
+  }
+  .nav-link {
+    font-size: 11px;
+    gap: 5px;
+  }
+  .explore-nav {
+    display: none;
+  }
+  .header-new {
+    display: inline-flex !important;
+    min-width: 35px;
+    margin-left: -5px;
+  }
+  .library-main,
+  .editor-main {
+    padding: 0 6%;
+  }
+  .welcome {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding: 40px 0 38px;
+  }
+  .welcome h1 {
+    font-size: 61px;
+    line-height: 1;
+    letter-spacing: -1.3px;
+    margin-top: 18px;
+  }
+  .welcome-description {
+    font-size: 13px;
+    margin-top: 18px;
+  }
+  .welcome-actions {
+    margin-top: 24px;
+    gap: 23px;
+  }
+  .welcome-copy .eyebrow {
+    font-size: 9px;
+  }
+  .hero-chords {
+    margin: 3px 6px 5px 2px;
+    padding: 20px;
+    box-shadow: 5px 6px 0 #e8e4d9;
+    transform: rotate(1deg);
+  }
+  .hero-caption {
+    font-size: 7px;
+    padding-bottom: 17px;
+    letter-spacing: 0.7px;
+  }
+  .hero-chord-label {
+    font-size: 29px;
+  }
+  .hero-chord {
+    padding-top: 13px;
+  }
+  .hero-chords .chord-diagram {
+    max-width: 125px;
+  }
+  .hero-footnote {
+    font-size: 9px;
+    padding-top: 13px;
+    margin-top: 14px;
+  }
+  .hero-hear {
+    font-size: 10px;
+  }
+  .saved-songs {
+    margin-top: 29px;
+  }
+  .library-section-header h2 {
+    font-size: 31px;
+  }
+  .library-section-header .eyebrow {
+    font-size: 8px;
+  }
+  .library-section-header > .button {
+    font-size: 11px;
+    padding: 9px 12px;
+  }
+  .library-empty {
+    margin-top: 19px;
+    padding: 28px 14px 22px;
+  }
+  .library-empty h3 {
+    font-size: 25px;
+  }
+  .library-empty p {
+    font-size: 11px;
+  }
+  .catalog-banner {
+    padding: 17px 14px;
+    gap: 11px;
+    margin-top: 22px;
+  }
+  .catalog-icon {
+    width: 35px;
+    height: 35px;
+  }
+  .catalog-banner strong {
+    font-size: 12px;
+  }
+  .catalog-banner span > span:not(.catalog-icon) {
+    font-size: 9px;
+    margin-top: 4px;
+  }
+  .catalog-banner > svg {
+    width: 18px;
+  }
+  .app-footer {
+    font-size: 9px;
+    margin-top: 27px;
+    padding-top: 18px;
+  }
+  .saved-song-grid {
+    gap: 12px;
+  }
+  .saved-song {
+    padding: 16px;
+  }
+  .saved-song h3 {
+    font-size: 27px;
+  }
+  .saved-song p {
+    font-size: 10px;
+  }
+  .editor-breadcrumb {
+    padding-top: 14px;
+    font-size: 10px;
+  }
+  .editor-heading {
+    margin-top: 20px;
+    gap: 8px;
+  }
+  .editor-heading .eyebrow {
+    font-size: 8px;
+  }
+  .song-title {
+    font-size: 42px;
+    letter-spacing: -0.8px;
+  }
+  .save-button {
+    padding: 10px 13px;
+    min-height: 42px;
+    margin-top: 24px;
+    font-size: 12px;
+    gap: 7px;
+  }
+  .song-meta {
+    font-size: 9px;
+    margin-top: 9px;
+  }
+  .song-meta span {
+    margin: 0 5px;
+  }
+  .song-toolbar {
+    gap: 10px;
+    padding: 19px 0 17px;
+    margin-top: 4px;
+  }
+  .play-song {
+    font-size: 11px;
+    padding: 9px 12px;
+    min-height: 42px;
+  }
+  .playback-status {
+    font-size: 10px;
+    gap: 5px;
+  }
+  .save-status {
+    font-size: 9px;
+    flex-basis: 100%;
+    margin-left: 0;
+    margin-top: 2px;
+  }
+  .song-section {
+    padding-top: 14px;
+    padding-bottom: 23px;
+  }
+  .section-header {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .section-number {
+    font-size: 9px;
+    padding: 5px;
+  }
+  .section-title input {
+    font-size: 26px;
+  }
+  .section-count {
+    font-size: 9px;
+  }
+  .section-controls .icon-button {
+    min-width: 36px;
+    padding: 7px;
+  }
+  .section-chords {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .song-chord {
+    padding: 0 10px;
+  }
+  .song-chord .chord-diagram {
+    width: 140px;
+  }
+  .song-chord-name h3 {
+    font-size: 28px;
+  }
+  .add-chord-tile {
+    min-height: 270px;
+  }
+  .add-chord-tile.empty {
+    min-height: 160px;
+  }
+  .add-section-button {
+    font-size: 11px;
+    min-height: 48px;
+    margin-top: 23px;
+  }
+  .editor-note {
+    font-size: 9px;
+  }
+  .picker-dialog {
+    border: 0;
+    width: 100%;
+  }
+  .picker-header {
+    padding: 20px 20px 17px;
+  }
+  .picker-header h2 {
+    font-size: 31px;
+  }
+  .picker-header .eyebrow {
+    font-size: 8px;
+  }
+  .picker-filters {
+    padding: 15px 20px;
+  }
+  .root-tabs {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+    margin: 12px -2px;
+  }
+  .root-tabs button {
+    font-size: 11px;
+    min-height: 44px;
+  }
+  .root-tabs button:first-child {
+    grid-row: span 2;
+  }
+  .picker-results {
+    padding: 16px 20px 22px;
+  }
+  .picker-playback {
+    padding: 2px 20px;
+  }
+  .results-count {
+    font-size: 9px;
+  }
+  .results-count > span {
+    font-size: 8px;
+  }
+  .voicing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .voicing-card {
+    padding: 13px 10px 0;
+  }
+  .voicing-card .chord-diagram {
+    width: 137px;
+  }
+  .voicing-heading h3 {
+    font-size: 27px;
+  }
+  .voicing-heading > span {
+    font-size: 8px;
+  }
+  .voicing-actions button {
+    font-size: 11px;
+    min-height: 46px;
+  }
+  .filter-row {
+    gap: 12px;
+  }
+  .confirm-dialog {
+    padding: 25px;
+  }
+  .confirm-dialog h2 {
+    font-size: 32px;
+  }
+  .confirm-actions {
+    flex-direction: column;
+  }
+  .confirm-actions .button {
+    width: 100%;
+  }
+  .recovery {
+    padding-top: 45px;
+  }
+  .recovery h1 {
+    font-size: 42px;
+  }
+}
+@media (max-width: 360px) {
+  .welcome h1 {
+    font-size: 54px;
+  }
+  .hero-chords {
+    padding: 15px;
+  }
+  .hero-caption {
+    font-size: 6px;
+  }
+  .hero-chord-label {
+    font-size: 26px;
+  }
+  .catalog-banner {
+    gap: 8px;
+  }
+  .catalog-icon {
+    display: none;
+  }
+  .welcome-actions {
+    gap: 18px;
+  }
+  .song-title {
+    font-size: 36px;
+  }
+  .section-count {
+    display: none;
+  }
+  .section-chords {
+    gap: 9px;
+  }
+  .song-chord {
+    padding: 0 7px;
+  }
+  .picker-header,
+  .picker-filters,
+  .picker-results {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .results-count > span {
+    display: none;
+  }
+  .song-meta span {
+    margin: 0 3px;
+  }
+  .app-header nav {
+    gap: 6px;
+  }
+  .nav-link {
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
