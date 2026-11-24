@@ -1,0 +1,442 @@
+[
+  {
+    "id": "C:9:0,3,2,0,3,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:9:8,10,8,7,8,10",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:9#11:-1,3,4,3,5,3",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:9#11:-1,-1,10,11,11,12",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:m9/Bb:6,3,5,3,3,3",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:m9/Bb:6,3,5,5,3,3",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:m9/Bb:-1,13,10,12,11,10",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C:m9/Bb:6,3,5,3,3,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C#:sus2:9,6,6,8,9,-1",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "C#:sus4:9,-1,6,6,7,9",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "C#:aug:-1,4,4,4,2,2",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:aug:4,4,6,4,7,4",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:7b5:-1,-1,12,13,13,14",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:11:-1,4,3,0,0,4",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:11:-1,4,5,4,6,4",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:11:9,8,9,8,8,9",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:11:9,10,9,10,9,9",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:9#11:-1,3,2,0,0,3",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "C#:9#11:-1,4,5,4,6,4",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C#:9#11:9,10,9,10,9,9",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C#:maj13:-1,4,1,3,1,1",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "C#:m9/B:7,4,6,4,4,4",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C#:m9/B:7,4,6,6,4,4",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C#:m9/B:-1,14,11,13,12,11",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "C#:m9/B:7,4,6,4,4,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "D:7#9:0,0,0,10,7,8",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "D:9#11:-1,-1,0,1,1,2",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "D:9#11:-1,9,0,7,9,8",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "D:maj9:-1,5,4,6,4,-1",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "D:mmaj7:-1,5,3,2,2,0",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "D:mmaj11:5,5,5,7,7,5",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "D:m9/C:-1,3,0,2,1,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "D:m9/C:-1,3,0,2,3,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "D:m9/C:8,5,7,5,5,5",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "D:m9/C:8,5,7,7,5,5",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Eb:7b5:-1,6,7,6,8,6",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "Eb:9b5:11,10,11,10,10,11",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "Eb:11:0,6,6,6,8,6",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "Eb:9#11:-1,-1,1,2,2,3",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Eb:9#11:-1,6,7,6,8,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Eb:maj7b5:-1,6,7,7,8,6",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "Eb:m69:11,9,10,10,9,9",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "Eb:m9/C#:-1,4,1,3,2,1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Eb:m9/C#:9,6,8,6,6,6",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Eb:m9/C#:9,6,8,8,6,6",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Eb:m9/C#:9,6,8,6,6,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "E:9#11:0,1,0,1,0,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "E:9#11:0,5,0,3,5,4",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "E:madd9:-1,-1,3,1,1,3",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "E:madd9:-1,8,6,5,8,-1",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "E:madd9:-1,8,6,0,6,8",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "E:madd9:-1,8,10,0,9,8",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "E:m9/D:-1,5,2,4,3,2",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "E:m9/D:10,7,9,7,7,7",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "E:m9/D:10,7,9,9,7,7",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "E:m9/D:10,7,9,7,7,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F:major:-1,-1,3,2,1,1",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "F:9#11:-1,-1,3,4,4,5",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F:9#11:-1,8,9,8,10,8",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F:m9/Eb:-1,6,3,5,4,3",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F:m9/Eb:11,8,10,8,8,8",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F:m9/Eb:11,8,10,10,8,8",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F:m9/Eb:11,8,10,8,8,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F#:alt:-1,9,10,11,11,9",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "F#:9#11:-1,-1,4,5,5,6",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F#:9#11:-1,9,10,9,11,9",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F#:m9/E:-1,7,4,6,5,4",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "F#:m9/E:12,9,11,9,9,9",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "G:dim:-1,10,8,-1,8,9",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "G:9#11:-1,-1,5,6,6,7",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "G:9#11:-1,10,11,10,12,10",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "G:m11:-1,-1,5,5,7,7",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "G:add9:-1,-1,3,2,1,4",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "G:m9/F:-1,8,5,7,6,5",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "G:m9/F:13,10,12,10,10,10",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "G:m9/F:13,10,12,12,10,10",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "G:m9/F:13,10,12,10,10,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:9#11:4,-1,4,5,3,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:9#11:-1,-1,6,7,7,8",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:9#11:-1,11,12,11,13,11",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:maj7b5:0,0,6,7,8,8",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "Ab:m9/F#:-1,9,6,8,7,6",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:m9/F#:14,11,13,11,11,11",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:m9/F#:14,11,13,13,11,11",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Ab:m9/F#:14,11,13,11,11,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "A:dim:5,3,-1,4,3,-1",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "A:9#11:-1,0,1,0,2,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "A:9#11:-1,-1,7,8,8,9",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "A:maj7#5:9,12,11,10,9,9",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "A:m9/G:3,0,2,0,0,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "A:m9/G:3,0,2,0,0,3",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "A:m9/G:3,0,2,2,0,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "A:m9/G:3,0,2,4,0,0",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Bb:6:6,8,-1,7,8,6",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "Bb:6:-1,13,11,11,10,-1",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "Bb:9#11:-1,-1,8,9,9,10",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Bb:m7:5,-1,5,5,5,-1",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "Bb:m9/Ab:4,1,3,1,1,1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Bb:m9/Ab:4,1,3,3,1,1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Bb:m9/Ab:-1,11,8,10,9,8",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "Bb:m9/Ab:4,1,3,1,1,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:aug:-1,14,13,12,12,0",
+    "reason": "Contains a pitch outside the named chord"
+  },
+  {
+    "id": "B:aug7:-1,2,5,2,4,3",
+    "reason": "Incomplete or invalid finger assignments"
+  },
+  {
+    "id": "B:9#11:-1,2,3,2,4,2",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:9#11:7,-1,7,8,6,-1",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:9#11:-1,-1,9,10,10,11",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:m9/A:5,2,4,2,2,2",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:m9/A:5,2,4,4,2,2",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:m9/A:-1,12,9,11,10,9",
+    "reason": "Missing a defining chord tone"
+  },
+  {
+    "id": "B:m9/A:5,2,4,2,2,-1",
+    "reason": "Missing a defining chord tone"
+  }
+]
