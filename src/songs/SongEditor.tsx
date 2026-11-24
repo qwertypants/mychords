@@ -39,7 +39,7 @@ export function SongEditor({
 }) {
   const count = song.sections.reduce((n, s) => n + s.chords.length, 0);
   return (
-    <main className="editor-main" id="main-content">
+    <main className="editor-main" id="main-content" tabIndex={-1}>
       <div className="editor-breadcrumb">
         <button
           onClick={(e) => {

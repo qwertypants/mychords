@@ -34,11 +34,8 @@ test("compose, save and reopen a song with exact repeated voicings", () => {
   expect(screen.getByLabelText("Song name", { exact: true })).toHaveValue(
     "Idea",
   );
-  expect(
-    screen
-      .getAllByLabelText("Section name")
-      .map((el) => (el as HTMLInputElement).value),
-  ).toEqual(["Verse", "Chorus"]);
+  expect(screen.getAllByLabelText("Section name")[0]).toHaveValue("Verse");
+  expect(screen.getAllByLabelText("Section name")[1]).toHaveValue("Chorus");
   expect(document.querySelectorAll("[data-entry-id]")).toHaveLength(3);
 });
 test("unsaved navigation can be cancelled or discarded", () => {

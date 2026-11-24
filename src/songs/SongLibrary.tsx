@@ -38,7 +38,7 @@ export function SongLibrary({
   onStop: () => void;
 }) {
   return (
-    <main className="library-main" id="main-content">
+    <main className="library-main" id="main-content" tabIndex={-1}>
       <section className="welcome">
         <div className="welcome-copy">
           <p className="eyebrow">YOUR GUITAR. YOUR IDEAS.</p>

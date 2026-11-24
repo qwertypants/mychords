@@ -31,16 +31,13 @@ export function getVoicing(id: string): Voicing | undefined {
   return byId.get(id);
 }
 export function qualityLabel(suffix: string): string {
-  return (
-    (
-      {
-        major: "Major",
-        minor: "Minor",
-        alt: "Major ♭5",
-        sus: "Suspended 4th",
-      } satisfies Record<string, string>
-    )[suffix] ?? suffix
-  );
+  const names: Record<string, string> = {
+    major: "Major",
+    minor: "Minor",
+    alt: "Major ♭5",
+    sus: "Suspended 4th",
+  };
+  return names[suffix] ?? suffix;
 }
 export function findVoicings(query: {
   text?: string;

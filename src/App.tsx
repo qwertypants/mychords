@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Guitar,
   Plus,
@@ -54,6 +54,15 @@ export default function App() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const blocked = store.initial.kind === "error";
+  const screen = blocked ? "recovery" : (store.draft?.id ?? "library");
+  const previousScreen = useRef(screen);
+  useEffect(() => {
+    if (previousScreen.current !== screen) {
+      document.getElementById("main-content")?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0 });
+      previousScreen.current = screen;
+    }
+  }, [screen]);
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -99,7 +108,7 @@ export default function App() {
         </button>
       </header>
       {blocked ? (
-        <main className="recovery" id="main-content">
+        <main className="recovery" id="main-content" tabIndex={-1}>
           <p className="eyebrow">SAVED DATA NEEDS ATTENTION</p>
           <h1>Let’s keep your ideas safe.</h1>
           <p>{store.initial.kind === "error" && store.initial.message}</p>

@@ -24,6 +24,10 @@ export function ConfirmDialog({
       el?.close();
       queueMicrotask(() => {
         if (returnTo?.isConnected) returnTo.focus();
+        else
+          document
+            .getElementById("main-content")
+            ?.focus({ preventScroll: true });
       });
     };
   }, []);
