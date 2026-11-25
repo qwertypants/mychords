@@ -26,6 +26,8 @@ test("share an unsaved snapshot into a separate library", async ({ page, browser
   await other.goto(link!);
   await other.getByRole("button", { name: "Save", exact: true }).click();
   expect(await other.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs.length)).toBe(2);
+  const titleBounds = await other.getByLabel("Song name", { exact: true }).boundingBox();
+  expect(titleBounds!.width).toBeGreaterThan(200);
   await other.screenshot({ path: `artifacts/share-${test.info().project.name}.png`, fullPage: true });
   expect(await other.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await recipient.close();
