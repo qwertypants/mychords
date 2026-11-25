@@ -36,8 +36,19 @@ export function qualityLabel(suffix: string): string {
     minor: "Minor",
     alt: "Major ♭5",
     sus: "Suspended 4th",
+    sus2: "Suspended 2nd", sus4: "Suspended 4th",
+    dim: "Diminished", dim7: "Diminished seventh",
+    aug: "Augmented", aug7: "Augmented seventh", aug9: "Augmented ninth",
+    "5": "Power", "6": "Sixth", "7": "Dominant seventh",
+    "9": "Ninth", "11": "Eleventh", "13": "Thirteenth",
+    maj7: "Major seventh", maj9: "Major ninth", maj11: "Major eleventh", maj13: "Major thirteenth",
+    m7: "Minor seventh", m9: "Minor ninth", m11: "Minor eleventh",
+    add9: "Added ninth", add11: "Added eleventh", madd9: "Minor added ninth",
+
   };
-  return names[suffix] ?? suffix;
+  const [base, bass] = suffix.split("/");
+  const name = names[base === "m" ? "minor" : base || "major"] ?? base;
+  return bass ? `${name} over ${bass} slash` : name;
 }
 export function findVoicings(query: {
   text?: string;

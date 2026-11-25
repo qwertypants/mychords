@@ -19,9 +19,11 @@ test("compose, save and reopen a song with exact repeated voicings", () => {
     target: { value: "Chorus" },
   });
   fireEvent.click(screen.getAllByRole("button", { name: "Add chord" })[0]);
+  fireEvent.click(screen.getByRole("button", { name: "Major" }));
   const add = screen.getByRole("button", { name: "Add C, -1 3 2 0 1 0" });
   fireEvent.click(add);
   fireEvent.click(add);
+  fireEvent.click(screen.getByRole("button", { name: "Shapes for C" }));
   fireEvent.click(screen.getByRole("button", { name: "Add C, 8 10 10 9 8 8" }));
   fireEvent.click(screen.getByRole("button", { name: "Close chord library" }));
   fireEvent.click(screen.getByRole("button", { name: "Save" }));

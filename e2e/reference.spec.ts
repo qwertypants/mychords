@@ -1,31 +1,34 @@
+import { activate } from "./activate";
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 const OPEN_C = "C:major:-1,3,2,0,1,0",
   HIGH_C = "C:major:8,10,10,9,8,8";
 async function newSong(page: Page) {
   await page.goto("/");
-  await page
+  await activate(page
     .getByRole("button", { name: "New song", exact: true })
     .filter({ visible: true })
     .first()
-    .click();
+    );
   await page.getByLabel("Song name", { exact: true }).fill("Sunday idea");
 }
 async function addCs(page: Page) {
-  await page
+  await activate(page
     .getByRole("button", { name: "Add chord", exact: true })
     .first()
-    .click();
-  await page
-    .getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true })
-    .click();
-  await page
+    );
+  await activate(page.getByRole("button", { name: "Major", exact: true }));
+  await activate(page.getByRole("button", { name: "Shapes for C", exact: true }));
+  await activate(page
+    .getByRole("region", { name: "Fingerings for C", exact: true }).getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true })
+    );
+  await activate(page
     .getByRole("button", { name: "Add C, 8 10 10 9 8 8", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Close chord library" }).click();
+    );
+  await activate(page
+    .getByRole("region", { name: "Fingerings for C", exact: true }).getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true })
+    );
+  await activate(page.getByRole("button", { name: "Close chord library" }));
 }
 test("exact voicings, duplicate reorder, sections and saved-song isolation", async ({
   page,
@@ -34,25 +37,25 @@ test("exact voicings, duplicate reorder, sections and saved-song isolation", asy
   page.on("pageerror", (e) => errors.push(e.message));
   await newSong(page);
   await addCs(page);
-  await page
+  await activate(page
     .getByRole("button", { name: "Move C earlier, position 3", exact: true })
-    .click();
+    );
   await expect(page.locator("[data-entry-id]")).toHaveCount(3);
   expect(
     await page
       .locator("[data-entry-id]")
       .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("data-voicing"))),
   ).toEqual([OPEN_C, OPEN_C, HIGH_C]);
-  await page.getByRole("button", { name: "Add section", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Add section", exact: true }));
   await page.getByLabel("Section name").last().fill("Chorus");
-  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Save", exact: true }));
   await expect(
     page.getByText("Saved on this browser", { exact: true }),
   ).toBeVisible();
   await page.reload();
-  await page
+  await activate(page
     .getByRole("button", { name: "Open Sunday idea", exact: true })
-    .click();
+    );
   await expect(page.locator("#main-content")).toBeFocused();
   await expect(page.getByLabel("Section name").nth(0)).toHaveValue("Verse");
   await expect(page.getByLabel("Section name").nth(1)).toHaveValue("Chorus");
@@ -61,18 +64,18 @@ test("exact voicings, duplicate reorder, sections and saved-song isolation", asy
       .locator("[data-entry-id]")
       .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("data-voicing"))),
   ).toEqual([OPEN_C, OPEN_C, HIGH_C]);
-  await page.getByRole("button", { name: "All songs", exact: true }).click();
-  await page
+  await activate(page.getByRole("button", { name: "All songs", exact: true }));
+  await activate(page
     .getByRole("button", { name: "New song", exact: true })
     .filter({ visible: true })
     .first()
-    .click();
+    );
   await page.getByLabel("Song name", { exact: true }).fill("Second idea");
-  await page.getByRole("button", { name: "Save", exact: true }).click();
-  await page.getByRole("button", { name: "All songs", exact: true }).click();
-  await page
+  await activate(page.getByRole("button", { name: "Save", exact: true }));
+  await activate(page.getByRole("button", { name: "All songs", exact: true }));
+  await activate(page
     .getByRole("button", { name: "Open Sunday idea", exact: true })
-    .click();
+    );
   await expect(page.locator("[data-entry-id]")).toHaveCount(3);
   expect(errors).toEqual([]);
 });
@@ -80,8 +83,8 @@ test("unsaved navigation and failed saves preserve the draft", async ({
   page,
 }) => {
   await newSong(page);
-  await page.getByRole("button", { name: "All songs", exact: true }).click();
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await activate(page.getByRole("button", { name: "All songs", exact: true }));
+  await activate(page.getByRole("button", { name: "Cancel", exact: true }));
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue(
     "Sunday idea",
   );
@@ -90,15 +93,15 @@ test("unsaved navigation and failed saves preserve the draft", async ({
       throw new DOMException("Full", "QuotaExceededError");
     };
   });
-  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Save", exact: true }));
   await expect(page.getByRole("alert")).toContainText("Could not save");
   await expect(
     page.getByText("Unsaved changes", { exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "All songs", exact: true }).click();
-  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await activate(page.getByRole("button", { name: "All songs", exact: true }));
+  await activate(page.getByRole("button", { name: "Save changes", exact: true }));
   await expect(page.getByRole("dialog")).toBeVisible();
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Cancel", exact: true }));
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue(
     "Sunday idea",
   );
@@ -117,8 +120,8 @@ test("corrupt stored data is preserved until explicit reset", async ({
   expect(
     await page.evaluate(() => localStorage.getItem("mychords.library.v1")),
   ).toBe("{broken");
-  await page.getByRole("button", { name: "Start fresh", exact: true }).click();
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Start fresh", exact: true }));
+  await activate(page.getByRole("button", { name: "Cancel", exact: true }));
   expect(
     await page.evaluate(() => localStorage.getItem("mychords.library.v1")),
   ).toBe("{broken");
@@ -149,9 +152,9 @@ test("real acoustic samples load, preview stops and section playback highlights 
     observer.observe(card, { subtree: true, attributes: true, attributeFilter: ["style"] });
     return { strings, observer };
   });
-  await page
+  await activate(page
     .getByRole("button", { name: "Hear C, position 3", exact: true })
-    .click();
+    );
   await expect(
     page.getByText("Acoustic preview", { exact: true }),
   ).toBeVisible();
@@ -161,18 +164,18 @@ test("real acoustic samples load, preview stops and section playback highlights 
   await expect.poll(() => strum.evaluate(({ strings }) => [...strings])).toEqual(["1", "2", "3", "4", "5"]);
   await strum.evaluate(({ observer }) => observer.disconnect());
   await strum.dispose();
-  await page.getByRole("button", { name: "Stop playback" }).click();
+  await activate(page.getByRole("button", { name: "Stop playback" }));
   await expect(repeated).not.toHaveClass(/is-playing/);
   await expect(repeated.locator("[data-strum-string][style*='--strum-scale']")).toHaveCount(0);
   await expect(repeated.locator("[data-strum-string][style*='--strum-glow']")).toHaveCount(0);
   await expect(
     page.getByText("Acoustic preview", { exact: true }),
   ).not.toBeVisible();
-  await page
+  await activate(page
     .getByRole("button", { name: "Play section Verse", exact: true })
-    .click();
+    );
   await expect(page.locator(".song-chord.is-playing")).toHaveCount(1);
-  await page.getByRole("button", { name: "Stop playback" }).click();
+  await activate(page.getByRole("button", { name: "Stop playback" }));
   await expect(page.locator(".song-chord.is-playing")).toHaveCount(0);
 });
 test("audio failure is shown inside the picker and can be retried", async ({
@@ -182,23 +185,24 @@ test("audio failure is shown inside the picker and can be retried", async ({
     route.fulfill({ status: 503, body: "Unavailable" }),
   );
   await newSong(page);
-  await page.getByRole("button", { name: "Add chord", exact: true }).click();
-  await page
+  await activate(page.getByRole("button", { name: "Add chord", exact: true }));
+  await activate(page.getByRole("button", { name: "Major", exact: true }));
+  await activate(page
     .getByRole("button", { name: "Hear C, -1 3 2 0 1 0", exact: true })
-    .click();
+    );
   await expect(page.getByRole("dialog")).toContainText(
     "Could not load guitar sound. Try again.",
   );
   await expect(page.locator(".voicing-card.is-playing")).toHaveCount(0);
   await page.unroute("**/audio/*.json");
-  await page
+  await activate(page
     .getByRole("button", { name: "Hear C, -1 3 2 0 1 0", exact: true })
-    .click();
+    );
   await expect(page.getByRole("dialog")).toContainText("Acoustic preview");
-  await page
+  await activate(page
     .getByRole("dialog")
     .getByRole("button", { name: "Stop playback" })
-    .click();
+    );
 });
 test("mobile widths, picker focus and desktop pointer drag", async ({
   page,
@@ -214,10 +218,10 @@ test("mobile widths, picker focus and desktop pointer drag", async ({
   }
   await newSong(page);
   await addCs(page);
-  await page
+  await activate(page
     .getByRole("button", { name: "Add chord", exact: true })
     .first()
-    .click();
+    );
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -340,7 +344,7 @@ test("real Web Audio produces a measured signal and Stop silences it", async ({
     };
   });
   await page.goto("/");
-  await page.getByRole("button", { name: "Hear C", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Hear C", exact: true }));
   await expect(
     page.getByText("Acoustic preview", { exact: true }),
   ).toBeVisible();
@@ -376,7 +380,7 @@ test("real Web Audio produces a measured signal and Stop silences it", async ({
       body: JSON.stringify(signal),
       contentType: "application/json",
     });
-  await page.getByRole("button", { name: "Stop playback" }).click();
+  await activate(page.getByRole("button", { name: "Stop playback" }));
   await expect
     .poll(() =>
       page.evaluate(() => {

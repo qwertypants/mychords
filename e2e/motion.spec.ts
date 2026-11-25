@@ -1,15 +1,18 @@
+import { activate } from "./activate";
 import { test, expect } from "@playwright/test";
 
 test("playing and replaying voicings highlights only the triggering card", async ({ page }) => {
   await page.goto("/");
   const libraryCard = page.getByRole("button", { name: "Hear C", exact: true });
-  await libraryCard.click();
+  await activate(libraryCard);
   await expect(libraryCard).toHaveClass(/is-playing/);
-  await page.getByRole("button", { name: "Explore chords", exact: true }).click();
+  await activate(page.getByRole("button", { name: "Explore chords", exact: true }));
 
   const picker = page.getByRole("dialog");
   await expect(picker.locator(".is-playing")).toHaveCount(0);
-  const openCard = picker.locator('[data-voicing="C:major:-1,3,2,0,1,0"]');
+  await activate(picker.getByRole("button", { name: "Major", exact: true }));
+  await activate(picker.getByRole("button", { name: "Shapes for C", exact: true }));
+  const openCard = picker.locator(".shape-panel").locator('[data-voicing="C:major:-1,3,2,0,1,0"]');
   const hearOpen = openCard.getByRole("button", { name: /^Hear / });
   const hearHigh = picker.getByRole("button", { name: "Hear C, 8 10 10 9 8 8", exact: true });
   await hearHigh.press("Enter");
@@ -74,6 +77,7 @@ test("the picker stays interactive during motion and confirms each successful ed
   await page.clock.runFor(64);
   await expect(drawerEdge).toHaveCSS("opacity", "0");
 
+  await picker.getByRole("button", { name: "Major", exact: true }).press("Enter");
   const add = picker.getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true });
   const addEdge = picker.locator(".voicing-add-edge > span").first();
   await add.press("Enter");

@@ -1,67 +1,17 @@
 import { useRef, useState, useMemo, useEffect, useLayoutEffect } from "react";
 import gsap from "gsap";
-import { X, Volume2, Plus, Search, Check } from "lucide-react";
+import { X, Search } from "lucide-react";
 import {
   findVoicings,
   roots,
-  suffixes,
-  qualityLabel,
   catalog,
 } from "./catalog";
-import { positionOf } from "./pitch";
-import { ChordDiagram } from "./ChordDiagram";
+import { groupChords, inCategory, primaryCategories, extraCategories, type Category } from "./browse";
+import { ChordGroups } from "./ChordGroups";
 import type { Voicing } from "./types";
-import { previewEntryId } from "../audio/guitar";
-import { pulseIcon, useMotion } from "../motion";
+import { useMotion } from "../motion";
 
 type ChordAddition = { voicingId: string };
-
-function VoicingCard({ voicing, playing, added, onHear, onAdd }: {
-  voicing: Voicing;
-  playing: boolean;
-  added: ChordAddition | null;
-  onHear: () => void;
-  onAdd: () => void;
-}) {
-  const card = useRef<HTMLElement>(null);
-  useMotion(card, added, (element) => {
-    const edges = element.querySelectorAll(".voicing-add-edge > span");
-    const sweep = gsap.timeline({ defaults: { overwrite: "auto" } });
-    edges.forEach((edge, index) => {
-      const scale = index % 2 === 0 ? "scaleX" : "scaleY";
-      sweep.fromTo(edge, { [scale]: 0, opacity: 0.9 }, {
-        [scale]: 1, duration: 0.075, ease: "power2.out", immediateRender: false,
-      }, index * 0.035);
-    });
-    sweep.to(edges, { opacity: 0, duration: 0.125, clearProps: "transform,opacity" });
-    pulseIcon(element.querySelector(".add-voicing svg"));
-  });
-  const { id, label, frets } = voicing;
-  return (
-    <article ref={card} className={`voicing-card${playing ? " is-playing" : ""}`} data-voicing={id}>
-      {added && (
-        <span className="voicing-add-edge" aria-hidden="true">
-          <span /><span /><span /><span />
-        </span>
-      )}
-      <div className="voicing-heading">
-        <h3>{label}</h3>
-        <span>Fret {positionOf(frets)}</span>
-      </div>
-      <ChordDiagram voicing={voicing} playing={playing} />
-      <div className="voicing-actions">
-        <button onClick={onHear} aria-label={`Hear ${label}, ${frets.join(" ")}`}>
-          <Volume2 size={16} />
-          Hear
-        </button>
-        <button className="add-voicing" onClick={onAdd} aria-label={`Add ${label}, ${frets.join(" ")}`}>
-          {added ? <Check size={16} /> : <Plus size={16} />}{" "}
-          {added ? "Added" : "Add"}
-        </button>
-      </div>
-    </article>
-  );
-}
 
 export function ChordPicker({
   onHear,
@@ -86,7 +36,9 @@ export function ChordPicker({
       : null,
   );
   const [root, setRoot] = useState("C");
-  const [suffix, setSuffix] = useState("major");
+  const [category, setCategory] = useState<Category>("All");
+  const [more, setMore] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [region, setRegion] = useState("all");
   const [limit, setLimit] = useState(24);
@@ -121,21 +73,23 @@ export function ChordPicker({
     const timer = setTimeout(() => setAdded(null), 1300);
     return () => clearTimeout(timer);
   }, [added]);
-  const results = useMemo(
+  const available = useMemo(
     () =>
       findVoicings({
         root,
-        suffix,
         text,
         minFret: region === "all" ? 0 : Number(region),
         maxFret:
           region === "0" ? 4 : region === "5" ? 9 : region === "10" ? 14 : 22,
       }),
-    [root, suffix, text, region],
+    [root, text, region],
   );
+  const results = useMemo(() => available.filter(v => inCategory(v.suffix, category)), [available, category]);
+  const groups = useMemo(() => groupChords(results).sort((a, b) => roots.indexOf(a.root) - roots.indexOf(b.root)), [results]);
   const filter = (fn: () => void) => {
     fn();
     setLimit(24);
+    setExpanded(null);
   };
   return (
     <dialog
@@ -177,7 +131,8 @@ export function ChordPicker({
                 setText(e.target.value);
                 if (e.target.value) {
                   setRoot("");
-                  setSuffix("");
+                  setCategory("All");
+                  setRegion("all");
                 }
               })
             }
@@ -200,21 +155,18 @@ export function ChordPicker({
             </button>
           ))}
         </div>
+        <div className="category-tabs" role="group" aria-label="Chord categories">
+          {primaryCategories.map(c => <button key={c} aria-pressed={category === c}
+            disabled={c !== "All" && !available.some(v => inCategory(v.suffix, c))}
+            onClick={() => filter(() => setCategory(c))}>{c}</button>)}
+          <button aria-expanded={more || extraCategories.some(c => c === category)} aria-controls="extra-categories" onClick={() => { if (extraCategories.some(c => c === category)) filter(() => setCategory("All")); setMore(!more); }}>More</button>
+        </div>
+        {(more || extraCategories.some(c => c === category)) && <div id="extra-categories" className="category-tabs extra-categories" role="group" aria-label="More chord categories">
+          {extraCategories.map(c => <button key={c} aria-pressed={category === c}
+            disabled={!available.some(v => inCategory(v.suffix, c))}
+            onClick={() => filter(() => setCategory(c))}>{c}</button>)}
+        </div>}
         <div className="filter-row">
-          <label>
-            Chord type
-            <select
-              value={suffix}
-              onChange={(e) => filter(() => setSuffix(e.target.value))}
-            >
-              <option value="">All types</option>
-              {suffixes.map((s) => (
-                <option key={s} value={s}>
-                  {qualityLabel(s)}
-                </option>
-              ))}
-            </select>
-          </label>
           <label>
             Neck position
             <select
@@ -233,33 +185,32 @@ export function ChordPicker({
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">
-          {results.length} voicings <span>Standard tuning · E A D G B e</span>
+          {groups.length} chords · {results.length} fingerings <span>Standard tuning · E A D G B e</span>
         </div>
-        <div className="voicing-grid">
-          {results.slice(0, limit).map((v) => (
-            <VoicingCard
-              key={v.id}
-              voicing={v}
-              playing={activeEntryId === previewEntryId("picker", v.id)}
-              added={added?.voicingId === v.id ? added : null}
-              onHear={() => onHear(v)}
-              onAdd={() => {
-                if (onAdd(v)) setAdded({ voicingId: v.id });
-              }}
-            />
-          ))}
-        </div>
+        {roots.map(r => {
+          const visible = groups.filter(g => g.root === r);
+          const shown = groups.slice(0, limit).filter(g => g.root === r);
+          return shown.length > 0 && <section key={r} className="chord-root-section" aria-label={r + " chords"}>
+            <h3>{r} chords <span>{visible.length}</span></h3>
+            <ChordGroups groups={shown} expanded={expanded} onExpand={setExpanded}
+              activeEntryId={activeEntryId} added={added} onHear={onHear}
+              onAdd={v => { if (onAdd(v)) setAdded({ voicingId: v.id }); }} />
+          </section>;
+        })}
         {!results.length && (
           <p className="empty-results">
-            No matching voicings. Try a different chord type or neck position.
+            No matching chords.
+            <button className="button" onClick={() => filter(() => {
+              setRoot(""); setCategory("All"); setText(""); setRegion("all");
+            })}>Reset filters</button>
           </p>
         )}
-        {results.length > limit && (
+        {groups.length > limit && (
           <button
             className="button show-more"
             onClick={() => setLimit((n) => n + 24)}
           >
-            Show more voicings
+            Show more chords
           </button>
         )}
         <p className="catalog-note">
