@@ -1,0 +1,16 @@
+.pwa-controls {
+  margin: 24px 6% 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 20px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.pwa-controls:has(p:empty):not(:has(button)):not(:has([role="alert"])) {
+  display: none;
+}
+.pwa-controls .text-button {
+  margin-left: auto;
+}

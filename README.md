@@ -43,7 +43,17 @@ Songs use `localStorage` under `mychords.library.v1`. There is no account, serve
 
 A damaged or unsupported saved library is preserved, with options to download its raw contents, retry, or explicitly replace it. Failed writes keep the draft in memory and mark it unsaved. Unsaved navigation offers Save, Discard and Cancel.
 
-This version uses standard six-string tuning, no capo or alternate tunings. It does not include song deletion, chord editing, song import/export or offline-install support.
+This version uses standard six-string tuning, no capo or alternate tunings. It does not include song deletion, chord editing or song import/export.
+
+## Install and use offline
+
+Open the production site online and wait for **Ready offline**. MyChords downloads the complete app, catalog, fonts, credits and all guitar samples, including sounds you have not played yet. After that, you can reopen the app, browse chords, preview sound and save songs without a connection. The browser must retain its site storage.
+
+Choose **Install MyChords** when offered by your browser. On iPhone or iPad, the button explains how to use Safari’s **Share → Add to Home Screen**. Installation is optional; offline use also works in a browser tab. Browser and installed-app song storage may be separate on some platforms.
+
+Updates download in the background. When **Update ready** appears, save your work, close every MyChords window or tab, then reopen. Updates never force a reload. If a download fails, the previous installed release stays available.
+
+Service workers require HTTPS or localhost. They are disabled in the development server. For local PWA checks, run `npm run build` and `npm run preview`; a plain HTTP LAN URL cannot verify phone installation or offline caching. Regenerate the checked-in icons with `npm run pwa:icons` after changing the favicon.
 
 ## Verification and production build
 
@@ -53,11 +63,14 @@ npm run lint
 npm run catalog:audit
 npx playwright install chromium webkit
 npm run test:e2e
+npm run test:pwa
 npm run build
 npm run preview
 ```
 
-The build uses relative asset paths and can be hosted under `/mychords/`. Vite reports a chunk-size advisory for the bundled catalog and app. Samples load only when sound is requested.
+The build uses relative asset paths and can be hosted under `/mychords/`. Vite reports a chunk-size advisory for the bundled catalog and app. Samples are downloaded into the offline cache on the first production visit and decoded only when sound is requested.
+
+`test:pwa` builds production files and serves them at both `/` and `/mychords/`. It verifies complete offline use, first-use audio output, manifest installation requirements, safe updates, failed downloads, and preservation of saved songs and unrelated caches. The local test server exposes release controls solely for testing; it is not shipped in `dist/`. CI runs the Chromium desktop PWA suite before publishing the artifact.
 
 To publish, set the source to **GitHub Actions** under the repository's **Settings → Pages**. The Pages workflow runs on pushes to `main` and can also be run manually from `main` in the Actions tab. After the first successful deployment, the site will be available at [qwertypants.github.io/mychords/](https://qwertypants.github.io/mychords/).
 

@@ -1,5 +1,26 @@
 # Verification record
 
+## Offline PWA — 2026-11-25
+
+Verified locally with Node 26.7.0 and npm 11.19.0. This change has not been pushed or deployed.
+
+- `npm test`: 29 passing tests, including install availability, dismissal/re-offer, standalone mode, installation errors and iPhone instructions with focus return.
+- `npm run test:e2e`: 31 passing checks, two intentional skips for Chromium-only touch protocol coverage.
+- `npm run test:pwa`: 23 passing checks, one intentional skip for the Chromium-only installability protocol. Production files run at both `/` and `/mychords/`, in desktop/mobile Chromium and iPhone-emulated WebKit.
+- Lint, catalog audit, TypeScript/build and diff whitespace checks pass. The existing app/catalog chunk-size advisory remains.
+
+The PWA suite waits for a complete installation, disconnects, and opens a fresh page before playing any sound. It verifies a nonzero Web Audio analyser signal from the cached samples, browses/adds a chord, saves and reopens a song, and opens credits and a font license offline. It checks manifest icons, scope and mobile overflow. Screenshots from all three browser projects are under ignored `artifacts/pwa-*.png`; the mobile editor and maskable icon were visually inspected.
+
+Lifecycle tests serve changed production release manifests and resources through a local fixture server. They prove that an update waits while another window remains open, an unsaved draft stays present, saved songs survive activation and an offline reload, and another app's precache stays intact. Failed update downloads leave the active release and guitar playback usable offline. An incomplete first installation never announces readiness. The fixture server reports activation so tests can reopen only after the browser has activated the waiting worker; it does not force activation. These test controls are not part of the shipped build.
+
+The generated precache reports approximately 2.8 MiB and includes all nine samples, fonts, chord data, credits and licenses. Cache entries are revised at build time. Activation prunes obsolete entries only in the current scoped MyChords cache; broad legacy-cache cleanup is disabled to protect neighboring PWAs. Service workers are disabled in development.
+
+`npm audit` reports four moderate advisories through the new build-only Workbox/glob/minimatch dependency chain. The suggested automatic fix downgrades the PWA plugin; no forced downgrade or incompatible transitive override was applied. These dependencies run during builds and are not shipped as application runtime code.
+
+Physical iPhone/Android installation, OS launch/splash behavior and human listening remain unverified. For those checks, use HTTPS, install via the browser or Safari Share menu, wait for **Ready offline**, then close and reopen in airplane mode. Test saving and sound. Save work before closing every app window to activate an available update. Browser storage eviction or clearing site data removes offline resources and may remove songs; installed and browser storage may be separate.
+
+## Original app verification
+
 Verified locally on 2026-11-24. No push or deployment was performed.
 
 ## Automated checks

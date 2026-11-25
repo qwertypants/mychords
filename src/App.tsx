@@ -17,6 +17,7 @@ import { usePlayback } from "./audio/usePlayback";
 import { previewEntryId } from "./audio/guitar";
 import { PlaybackControls } from "./audio/PlaybackControls";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { PwaControls } from "./pwa/PwaControls";
 import "./styles.css";
 export default function App() {
   const store = useSongLibrary();
@@ -184,6 +185,7 @@ export default function App() {
           {store.storageError}
         </div>
       )}
+      <PwaControls />
       <footer className="app-footer">
         <span>
           <LockKeyhole size={13} />

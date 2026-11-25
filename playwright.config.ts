@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
+  testIgnore: "pwa/**",
   fullyParallel: true,
   workers: 3,
   timeout: 30000,
