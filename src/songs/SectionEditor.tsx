@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -30,6 +30,8 @@ import type { Voicing } from "../chords/types";
 import { getVoicing } from "../chords/catalog";
 import { ChordDiagram } from "../chords/ChordDiagram";
 import { positionOf } from "../chords/pitch";
+import { previewEntryId } from "../audio/guitar";
+import { useViewEntrance } from "../motion";
 type Props = {
   section: Section;
   index: number;
@@ -37,7 +39,7 @@ type Props = {
   onRename: (name: string) => void;
   onRemove: () => void;
   onAdd: () => void;
-  onHear: (v: Voicing) => void;
+  onHear: (v: Voicing, entryId: string) => void;
   onPlay: () => void;
   onMove: (id: string, index: number) => void;
   onRemoveChord: (id: string) => void;
@@ -57,7 +59,7 @@ function ChordCard({
   active: boolean;
   onMove: (index: number) => void;
   onRemove: () => void;
-  onHear: (v: Voicing) => void;
+  onHear: Props["onHear"];
 }) {
   const {
     attributes,
@@ -77,6 +79,7 @@ function ChordCard({
       data-entry-id={entry.id}
       data-voicing={voicing.id}
     >
+      <span className="motion-card-edge" aria-hidden="true" />
       <div className="card-top">
         <span className="chord-index">
           {String(index + 1).padStart(2, "0")}
@@ -94,10 +97,10 @@ function ChordCard({
         <h3>{voicing.label}</h3>
         <span>Fret {positionOf(voicing.frets)}</span>
       </div>
-      <ChordDiagram voicing={voicing} />
+      <ChordDiagram voicing={voicing} playing={active} />
       <button
         className="hear-chord"
-        onClick={() => onHear(voicing)}
+        onClick={() => onHear(voicing, previewEntryId("song", entry.id))}
         aria-label={`Hear ${voicing.label}, position ${index + 1}`}
       >
         <Volume2 size={15} /> Hear chord
@@ -142,6 +145,8 @@ export function SectionEditor({
   onMove,
   onRemoveChord,
 }: Props) {
+  const sectionElement = useRef<HTMLElement>(null);
+  useViewEntrance(sectionElement);
   const [announcement, setAnnouncement] = useState("");
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -163,11 +168,12 @@ export function SectionEditor({
   }
   return (
     <section
+      ref={sectionElement}
       className="song-section"
       aria-label={`Section ${section.name || index + 1}`}
     >
-      <header className="section-header">
-        <span className="section-number">
+      <header className="section-header" data-motion-entrance>
+        <span className="section-number" data-motion-heading>
           {String(index + 1).padStart(2, "0")}
         </span>
         <label className="section-title">
@@ -213,14 +219,14 @@ export function SectionEditor({
           items={section.chords.map((c) => c.id)}
           strategy={rectSortingStrategy}
         >
-          <div className="section-chords">
+          <div className="section-chords" data-motion-entrance>
             {section.chords.map((entry, i) => (
               <ChordCard
                 key={entry.id}
                 entry={entry}
                 index={i}
                 total={section.chords.length}
-                active={activeEntryId === entry.id}
+                active={activeEntryId === previewEntryId("song", entry.id)}
                 onMove={(target) => move(entry.id, target)}
                 onRemove={() => onRemoveChord(entry.id)}
                 onHear={onHear}

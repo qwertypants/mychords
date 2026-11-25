@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Plus, Play, Save, ArrowLeft } from "lucide-react";
 import type { Song } from "./types";
 import type { Voicing } from "../chords/types";
@@ -12,6 +13,7 @@ import {
   renameSection,
 } from "./commands";
 import { PlaybackControls } from "../audio/PlaybackControls";
+import { pulseIcon, useMotion, useViewEntrance } from "../motion";
 export function SongEditor({
   song,
   onChange,
@@ -31,12 +33,17 @@ export function SongEditor({
   dirty: boolean;
   onBack: () => void;
   onAdd: (sectionId: string) => void;
-  onHear: (v: Voicing) => void;
+  onHear: (v: Voicing, entryId: string) => void;
   onPlay: (items: PreviewItem[]) => void;
   onStop: () => void;
   onRemoveSection: (id: string) => void;
   playback: PlaybackState;
 }) {
+  const heading = useRef<HTMLDivElement>(null);
+  const saveButton = useRef<HTMLButtonElement>(null);
+  const [saveCount, setSaveCount] = useState(0);
+  useViewEntrance(heading);
+  useMotion(saveButton, saveCount, (button) => pulseIcon(button.querySelector("svg")));
   const count = song.sections.reduce((n, s) => n + s.chords.length, 0);
   return (
     <main className="editor-main" id="main-content" tabIndex={-1}>
@@ -53,9 +60,9 @@ export function SongEditor({
         <span>/</span>
         <span>Song notebook</span>
       </div>
-      <div className="editor-heading">
+      <div ref={heading} className="editor-heading">
         <div>
-          <p className="eyebrow">A WORK IN PROGRESS</p>
+          <p className="eyebrow" data-motion-heading>A WORK IN PROGRESS</p>
           <h1>
             <label>
               <span className="sr-only">Song name</span>
@@ -75,7 +82,14 @@ export function SongEditor({
             {count} chords <span>·</span> Standard tuning
           </p>
         </div>
-        <button className="button primary save-button" onClick={onSave}>
+        <button
+          ref={saveButton}
+          className="button primary save-button"
+          onClick={() => {
+            const saved = onSave();
+            setSaveCount((count) => saved ? count + 1 : 0);
+          }}
+        >
           <Save size={16} />
           Save
         </button>

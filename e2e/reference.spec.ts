@@ -132,14 +132,39 @@ test("real acoustic samples load, preview stops and section playback highlights 
   });
   await newSong(page);
   await addCs(page);
+  const first = page.locator("[data-entry-id]").first();
+  const repeated = page.locator("[data-entry-id]").nth(2);
+  const strum = await repeated.evaluateHandle((card) => {
+    const strings = new Set<string>();
+    const observer = new MutationObserver((records) => {
+      for (const { target } of records) {
+        if (!(target instanceof SVGElement)) continue;
+        const string = target.getAttribute("data-strum-string");
+        const ring = target.querySelector(".strum-ring");
+        if (string !== null && ring && Number(getComputedStyle(ring).opacity) > 0) {
+          strings.add(string);
+        }
+      }
+    });
+    observer.observe(card, { subtree: true, attributes: true, attributeFilter: ["style"] });
+    return { strings, observer };
+  });
   await page
-    .getByRole("button", { name: "Hear C, position 1", exact: true })
+    .getByRole("button", { name: "Hear C, position 3", exact: true })
     .click();
   await expect(
     page.getByText("Acoustic preview", { exact: true }),
   ).toBeVisible();
   expect(sampleResponses.filter((u) => u.endsWith(".mp3"))).toHaveLength(9);
+  await expect(repeated).toHaveClass(/is-playing/);
+  await expect(first).not.toHaveClass(/is-playing/);
+  await expect.poll(() => strum.evaluate(({ strings }) => [...strings])).toEqual(["1", "2", "3", "4", "5"]);
+  await strum.evaluate(({ observer }) => observer.disconnect());
+  await strum.dispose();
   await page.getByRole("button", { name: "Stop playback" }).click();
+  await expect(repeated).not.toHaveClass(/is-playing/);
+  await expect(repeated.locator("[data-strum-string][style*='--strum-scale']")).toHaveCount(0);
+  await expect(repeated.locator("[data-strum-string][style*='--strum-glow']")).toHaveCount(0);
   await expect(
     page.getByText("Acoustic preview", { exact: true }),
   ).not.toBeVisible();
@@ -164,6 +189,7 @@ test("audio failure is shown inside the picker and can be retried", async ({
   await expect(page.getByRole("dialog")).toContainText(
     "Could not load guitar sound. Try again.",
   );
+  await expect(page.locator(".voicing-card.is-playing")).toHaveCount(0);
   await page.unroute("**/audio/*.json");
   await page
     .getByRole("button", { name: "Hear C, -1 3 2 0 1 0", exact: true })

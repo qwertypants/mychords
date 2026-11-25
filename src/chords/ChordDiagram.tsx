@@ -1,11 +1,37 @@
+import { useRef } from "react";
+import gsap from "gsap";
 import type { Voicing } from "./types";
 import { positionOf } from "./pitch";
-export function ChordDiagram({ voicing }: { voicing: Voicing }) {
+import { STRUM_STRING_INTERVAL } from "../audio/guitar";
+import { useMotion } from "../motion";
+
+export function ChordDiagram({ voicing, playing }: { voicing: Voicing; playing: boolean }) {
+  const diagram = useRef<SVGSVGElement>(null);
+  useMotion(diagram, playing && voicing.id, (svg) => {
+    const markers = Array.from(svg.querySelectorAll("[data-strum-string]")).sort(
+      (a, b) => Number(a.getAttribute("data-strum-string")) - Number(b.getAttribute("data-strum-string")),
+    );
+    gsap.fromTo(
+      markers,
+      { "--strum-scale": 1.32, "--strum-glow": 1 },
+      {
+        "--strum-scale": 1,
+        "--strum-glow": 0,
+        duration: 0.29,
+        stagger: STRUM_STRING_INTERVAL,
+        ease: "power1.out",
+        overwrite: "auto",
+        immediateRender: false,
+        clearProps: "--strum-scale,--strum-glow",
+      },
+    );
+  });
   const start = Math.max(1, positionOf(voicing.frets));
   const rows = Math.max(4, Math.max(...voicing.frets) - start + 1);
   const description = `${voicing.label}. Low E to high E: ${voicing.frets.map((f) => (f < 0 ? "muted" : f === 0 ? "open" : `fret ${f}`)).join(", ")}.`;
   return (
     <svg
+      ref={diagram}
       className="chord-diagram"
       viewBox={`0 0 150 ${68 + rows * 22}`}
       role="img"
@@ -34,14 +60,14 @@ export function ChordDiagram({ voicing }: { voicing: Voicing }) {
             strokeWidth={1 + (5 - i) * 0.13}
           />
           {f <= 0 ? (
-            <text
-              x={29 + i * 20}
-              y="28"
-              textAnchor="middle"
-              className="open-marker"
-            >
-              {f < 0 ? "×" : "○"}
-            </text>
+            <g data-strum-string={f === 0 ? i : undefined}>
+              {f === 0 && (
+                <circle className="strum-ring" cx={29 + i * 20} cy="23" r="9" aria-hidden="true" />
+              )}
+              <text x={29 + i * 20} y="28" textAnchor="middle" className="open-marker">
+                {f < 0 ? "×" : "○"}
+              </text>
+            </g>
           ) : null}
           <text
             x={29 + i * 20}
@@ -71,7 +97,14 @@ export function ChordDiagram({ voicing }: { voicing: Voicing }) {
       })}
       {voicing.frets.map((f, i) =>
         f > 0 ? (
-          <g key={i}>
+          <g key={i} data-strum-string={i}>
+            <circle
+              className="strum-ring"
+              cx={29 + i * 20}
+              cy={53 + (f - start) * 22}
+              r="10.5"
+              aria-hidden="true"
+            />
             <circle cx={29 + i * 20} cy={53 + (f - start) * 22} r="7.5" />
             <text
               className="finger"

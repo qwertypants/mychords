@@ -14,6 +14,7 @@ import { ChordPicker } from "./chords/ChordPicker";
 import type { Voicing } from "./chords/types";
 import type { Song } from "./songs/types";
 import { usePlayback } from "./audio/usePlayback";
+import { previewEntryId } from "./audio/guitar";
 import { PlaybackControls } from "./audio/PlaybackControls";
 import { ConfirmDialog } from "./ConfirmDialog";
 import "./styles.css";
@@ -33,15 +34,22 @@ export default function App() {
     audio.stop();
     store.updateDraft(song);
   };
-  const hear = (v: Voicing) =>
-    audio.play([{ entryId: `hear:${v.id}`, voicing: v }]);
+  const hear = (voicing: Voicing, entryId: string) =>
+    audio.play([{ entryId, voicing }]);
   function add(v: Voicing) {
-    let song = store.draft;
+    const song = store.draft;
+    if (!pickerFor) return false;
     if (pickerFor === "new" || !song) {
-      song = addSection(song ?? newSong("Untitled song"), "Verse");
-      change(addChord(song, song.sections[0].id, v.id));
-      setPickerFor(song.sections[0].id);
-    } else if (pickerFor) change(addChord(song, pickerFor, v.id));
+      const next = addSection(song ?? newSong("Untitled song"), "Verse");
+      const sectionId = next.sections[0].id;
+      change(addChord(next, sectionId, v.id));
+      setPickerFor(sectionId);
+      return true;
+    }
+    const next = addChord(song, pickerFor, v.id);
+    if (next === song) return false;
+    change(next);
+    return true;
   }
   function downloadRaw(raw: string) {
     const url = URL.createObjectURL(
@@ -92,7 +100,10 @@ export default function App() {
           <button
             className="nav-link explore-nav"
             disabled={blocked}
-            onClick={() => setPickerFor(store.draft?.sections[0]?.id ?? "new")}
+            onClick={(e) => {
+              e.currentTarget.focus();
+              setPickerFor(store.draft?.sections[0]?.id ?? "new");
+            }}
           >
             Chord library
             <ArrowUpRight size={14} />
@@ -140,6 +151,7 @@ export default function App() {
         </main>
       ) : store.draft ? (
         <SongEditor
+          key={store.draft.id}
           song={store.draft}
           onChange={change}
           onSave={store.saveDraft}
@@ -162,7 +174,7 @@ export default function App() {
           onNew={() => transition(store.newDraft)}
           onOpen={(s) => transition(() => store.openSong(s))}
           onExplore={() => setPickerFor("new")}
-          onHear={hear}
+          onHear={(v) => hear(v, previewEntryId("library", v.id))}
           playback={audio.state}
           onStop={audio.stop}
         />
@@ -186,7 +198,8 @@ export default function App() {
             store.draft?.sections.find((s) => s.id === pickerFor)?.name ??
             "a new song"
           }
-          onHear={hear}
+          onHear={(v) => hear(v, previewEntryId("picker", v.id))}
+          activeEntryId={audio.state.activeEntryId}
           onAdd={add}
           onClose={() => {
             audio.stop();

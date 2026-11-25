@@ -10,13 +10,14 @@ HTMLDialogElement.prototype.close = function () {
 };
 test("Hear and Add are independent and diagrams describe exact strings", () => {
   const hear = vi.fn(),
-    add = vi.fn();
+    add = vi.fn(() => true);
   render(
     <ChordPicker
       onHear={hear}
       onAdd={add}
       onClose={() => {}}
       sectionName="Verse"
+      activeEntryId={null}
     />,
   );
   fireEvent.click(screen.getAllByRole("button", { name: /^Hear / })[0]);

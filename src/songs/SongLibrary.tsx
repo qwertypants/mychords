@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   ArrowUpRight,
   Plus,
@@ -12,6 +13,8 @@ import { getVoicing, catalog } from "../chords/catalog";
 import { ChordDiagram } from "../chords/ChordDiagram";
 import { PlaybackControls } from "../audio/PlaybackControls";
 import type { PlaybackState } from "../audio/guitar";
+import { previewEntryId } from "../audio/guitar";
+import { useViewEntrance } from "../motion";
 const examples = [
   "C:major:-1,3,2,0,1,0",
   "A:minor:-1,0,2,2,1,0",
@@ -37,12 +40,14 @@ export function SongLibrary({
   playback: PlaybackState;
   onStop: () => void;
 }) {
+  const main = useRef<HTMLElement>(null);
+  useViewEntrance(main);
   return (
-    <main className="library-main" id="main-content" tabIndex={-1}>
+    <main ref={main} className="library-main" id="main-content" tabIndex={-1}>
       <section className="welcome">
-        <div className="welcome-copy">
+        <div className="welcome-copy" data-motion-entrance>
           <p className="eyebrow">YOUR GUITAR. YOUR IDEAS.</p>
-          <h1>
+          <h1 data-motion-heading>
             Good songs start
             <br />
             with a <em>chord.</em>
@@ -77,22 +82,26 @@ export function SongLibrary({
             <span>THREE CHORDS. ENDLESS POSSIBILITIES.</span>
             <span>01 — 03</span>
           </div>
-          <div className="hero-chord-row">
-            {examples.map((v) => (
-              <button
-                className="hero-chord"
-                key={v.id}
-                onClick={() => onHear(v)}
-                aria-label={`Hear ${v.label}`}
-              >
-                <span className="hero-chord-label">{v.label}</span>
-                <ChordDiagram voicing={v} />
-                <span className="hero-hear">
-                  <Volume2 size={14} />
-                  Hear
-                </span>
-              </button>
-            ))}
+          <div className="hero-chord-row" data-motion-entrance>
+            {examples.map((v) => {
+              const playing = playback.activeEntryId === previewEntryId("library", v.id);
+              return (
+                <button
+                  className={`hero-chord${playing ? " is-playing" : ""}`}
+                  key={v.id}
+                  onClick={() => onHear(v)}
+                  aria-label={`Hear ${v.label}`}
+                >
+                  <span className="motion-card-edge" aria-hidden="true" />
+                  <span className="hero-chord-label">{v.label}</span>
+                  <ChordDiagram voicing={v} playing={playing} />
+                  <span className="hero-hear">
+                    <Volume2 size={14} />
+                    Hear
+                  </span>
+                </button>
+              );
+            })}
           </div>
           <div className="hero-footnote">
             <span className="sound-dot" />
@@ -102,10 +111,10 @@ export function SongLibrary({
         </div>
       </section>
       <section className="saved-songs">
-        <header className="library-section-header">
+        <header className="library-section-header" data-motion-entrance>
           <div>
             <p className="eyebrow">THE NOTEBOOK</p>
-            <h2>
+            <h2 data-motion-heading>
               Your songs <span>{songs.length.toString().padStart(2, "0")}</span>
             </h2>
           </div>
@@ -115,7 +124,7 @@ export function SongLibrary({
           </button>
         </header>
         {songs.length ? (
-          <div className="saved-song-grid">
+          <div className="saved-song-grid" data-motion-entrance>
             {songs.map((s, i) => (
               <button
                 className="saved-song"
@@ -123,6 +132,7 @@ export function SongLibrary({
                 onClick={() => onOpen(s)}
                 aria-label={`Open ${s.name || "Untitled song"}`}
               >
+                <span className="motion-card-edge" aria-hidden="true" />
                 <span className="saved-song-number">
                   {String(i + 1).padStart(2, "0")}
                   <Music2 size={18} />
@@ -144,7 +154,8 @@ export function SongLibrary({
             ))}
           </div>
         ) : (
-          <div className="library-empty">
+          <div className="library-empty" data-motion-entrance>
+            <span className="motion-card-edge" aria-hidden="true" />
             <div className="notebook-mark">
               <FolderOpen size={29} strokeWidth={1} />
             </div>

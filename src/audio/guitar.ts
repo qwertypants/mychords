@@ -15,12 +15,18 @@ export interface GuitarPlayer {
   stop(): void;
   dispose(): void;
 }
+export const STRUM_STRING_INTERVAL = 0.025;
+
+export function previewEntryId(source: "library" | "picker" | "song", id: string) {
+  return `${source}:${id}`;
+}
+
 export function planStrums(items: readonly PreviewItem[]) {
   return items.flatMap((item, index) =>
     midiForFrets(item.voicing.frets).map((midi, stringIndex) => ({
       entryId: item.entryId,
       midi,
-      at: index * 1.8 + stringIndex * 0.025,
+      at: index * 1.8 + stringIndex * STRUM_STRING_INTERVAL,
     })),
   );
 }

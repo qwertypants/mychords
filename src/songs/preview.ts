@@ -1,5 +1,6 @@
 import type { Song } from "./types";
 import type { PreviewItem } from "../audio/guitar";
+import { previewEntryId } from "../audio/guitar";
 import { getVoicing } from "../chords/catalog";
 export function songPreview(song: Song, sectionId?: string): PreviewItem[] {
   return song.sections
@@ -7,7 +8,7 @@ export function songPreview(song: Song, sectionId?: string): PreviewItem[] {
     .flatMap((s) =>
       s.chords.flatMap((c) => {
         const voicing = getVoicing(c.voicingId);
-        return voicing ? [{ entryId: c.id, voicing }] : [];
+        return voicing ? [{ entryId: previewEntryId("song", c.id), voicing }] : [];
       }),
     );
 }
