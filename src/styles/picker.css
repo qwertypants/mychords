@@ -11,9 +11,9 @@
   background: var(--paper);
   color: var(--ink);
   border: 0;
-  border-left: 1px solid #b9ae98;
+  border-left: 1px solid var(--dialog-border);
   overflow: hidden;
-  box-shadow: -12px 0 50px #332a1e20;
+  box-shadow: -12px 0 50px var(--drawer-shadow);
 }
 .picker-dialog[open] {
   display: flex;
@@ -21,7 +21,7 @@
 }
 .picker-dialog::backdrop,
 .confirm-dialog::backdrop {
-  background: #29251e66;
+  background: var(--backdrop);
   backdrop-filter: blur(3px);
 }
 .picker-header {
@@ -58,8 +58,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid #d4ccbd;
-  background: var(--white);
+  border: 1px solid var(--control-border);
+  background: var(--surface);
   padding: 0 13px;
   border-radius: 5px;
   color: var(--muted);
@@ -88,10 +88,10 @@
 }
 .root-tabs button[aria-pressed="true"] {
   background: var(--ink);
-  color: #fffaf0;
+  color: var(--on-ink);
 }
 .root-tabs button:hover:not([aria-pressed="true"]) {
-  background: #eae4d7;
+  background: var(--tab-hover);
 }
 .filter-row {
   display: grid;
@@ -110,8 +110,8 @@
   font:
     12px "DM Sans",
     sans-serif;
-  background: var(--white);
-  border: 1px solid #d4ccbd;
+  background: var(--surface);
+  border: 1px solid var(--control-border);
   color: var(--ink);
   border-radius: 4px;
   min-height: 44px;
@@ -146,9 +146,9 @@
   gap: 12px;
 }
 .voicing-card {
-  border: 1px solid #dbd3c4;
+  border: 1px solid var(--voicing-border);
   border-radius: 5px;
-  background: var(--white);
+  background: var(--surface);
   padding: 12px 10px 0;
   min-width: 0;
 }
@@ -174,7 +174,7 @@
 }
 .voicing-actions {
   display: flex;
-  border-top: 1px solid #eee8dc;
+  border-top: 1px solid var(--card-divider);
   margin-top: 4px;
 }
 .voicing-actions button {
@@ -192,7 +192,7 @@
 }
 .voicing-actions .add-voicing {
   color: var(--accent);
-  border-left: 1px solid #eee8dc;
+  border-left: 1px solid var(--card-divider);
 }
 .catalog-note {
   font-size: 10px;
@@ -216,9 +216,9 @@
   padding: 30px;
   background: var(--paper);
   color: var(--ink);
-  border: 1px solid #c4b9a4;
+  border: 1px solid var(--confirm-border);
   border-radius: 8px;
-  box-shadow: 0 12px 60px #2a201b33;
+  box-shadow: 0 12px 60px var(--dialog-shadow);
 }
 .confirm-dialog h2 {
   font: 36px var(--serif);
@@ -238,9 +238,9 @@
 }
 .storage-error {
   margin: 20px 6% 0;
-  background: #f6e4d8;
-  border: 1px solid #c99678;
-  color: #7b3823;
+  background: var(--error-surface);
+  border: 1px solid var(--error-border);
+  color: var(--error-ink);
   border-radius: 5px;
   padding: 15px;
   font-size: 13px;

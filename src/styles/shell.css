@@ -1,16 +1,9 @@
 :root {
   font-family: "DM Sans", sans-serif;
-  color: #342f27;
-  background: #f6f4ee;
+  color: var(--ink);
+  background: var(--paper);
   font-synthesis: none;
   font-weight: 400;
-  --paper: #f6f4ee;
-  --ink: #342f27;
-  --muted: #706b61;
-  --line: #dfddd3;
-  --accent: #8c4a2e;
-  --accent-light: #f1e4d8;
-  --white: #fdfcf8;
   --mono: "DM Mono", monospace;
   --serif: "Instrument Serif", Georgia, serif;
 }
@@ -76,7 +69,7 @@ button {
   touch-action: manipulation;
 }
 ::selection {
-  background: #e7c8ad;
+  background: var(--selection);
 }
 .sr-only {
   position: absolute;
@@ -94,7 +87,7 @@ button {
   top: -100px;
   left: 10px;
   background: var(--ink);
-  color: white;
+  color: var(--on-ink);
   padding: 14px;
   z-index: 100;
 }
@@ -128,7 +121,7 @@ button {
   place-items: center;
   width: 36px;
   height: 38px;
-  border: 1px solid #b8b0a1;
+  border: 1px solid var(--brand-border);
   border-radius: 50% 50% 40% 40%;
   transform: rotate(-12deg);
 }
@@ -172,7 +165,7 @@ button {
   padding: 9px;
 }
 .icon-button:hover:not(:disabled) {
-  background: #eae7df;
+  background: var(--hover);
 }
 .button {
   display: inline-flex;
@@ -189,17 +182,17 @@ button {
 }
 .primary {
   background: var(--ink);
-  color: #fffaf0;
+  color: var(--on-ink);
 }
 .primary:hover {
-  background: #514638;
+  background: var(--primary-hover);
 }
 .secondary {
   border-color: var(--line);
-  background: var(--white);
+  background: var(--surface);
 }
 .secondary:hover {
-  border-color: #b9ac96;
+  border-color: var(--border-hover);
 }
 .danger {
   background: #873c2b;
@@ -259,12 +252,12 @@ button {
   margin-top: 27px;
 }
 .hero-chords {
-  border: 1px solid #d8d1c3;
+  border: 1px solid var(--hero-border);
   border-radius: 7px;
   padding: 24px;
-  background: #eeebe2;
+  background: var(--hero-surface);
   transform: rotate(1.2deg);
-  box-shadow: 7px 9px 0 #e8e4d9;
+  box-shadow: 7px 9px 0 var(--hero-shadow);
   min-width: 0;
 }
 .hero-caption {
@@ -282,8 +275,8 @@ button {
   gap: 9px;
 }
 .hero-chord {
-  background: var(--white);
-  border: 1px solid #ded7c8;
+  background: var(--surface);
+  border: 1px solid var(--hero-card-border);
   border-radius: 4px;
   min-width: 0;
   padding: 14px 4px 9px;
@@ -293,7 +286,7 @@ button {
 }
 .hero-chord:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 10px #372b2112;
+  box-shadow: 0 4px 10px var(--hover-shadow);
 }
 .hero-chord-label {
   font: 29px var(--serif);
@@ -313,7 +306,7 @@ button {
   min-height: 29px;
 }
 .hero-footnote {
-  border-top: 1px solid #d5cebf;
+  border-top: 1px solid var(--divider);
   margin-top: 19px;
   padding-top: 16px;
   display: flex;
@@ -330,7 +323,7 @@ button {
   height: 5px;
   width: 5px;
   border-radius: 50%;
-  background: #7a8b62;
+  background: var(--success-dot);
   display: inline-block;
   flex-shrink: 0;
 }
@@ -363,7 +356,7 @@ button {
 }
 .library-empty {
   margin-top: 25px;
-  border: 1px dashed #d3cec1;
+  border: 1px dashed var(--empty-border);
   border-radius: 7px;
   text-align: center;
   padding: 36px 20px 29px;
@@ -371,12 +364,12 @@ button {
 .notebook-mark {
   width: 57px;
   height: 57px;
-  background: #ebe6da;
+  background: var(--notebook-surface);
   border-radius: 50%;
   display: grid;
   place-items: center;
   margin: 0 auto 15px;
-  color: #766a52;
+  color: var(--notebook-ink);
 }
 .library-empty h3 {
   font: 25px var(--serif);
@@ -402,10 +395,10 @@ button {
   width: 100%;
   text-align: left;
   border-radius: 6px;
-  background: #efede5;
+  background: var(--banner-surface);
 }
 .catalog-banner:hover {
-  border-color: #b5a28a;
+  border-color: var(--banner-hover);
 }
 .catalog-icon {
   height: 43px;
@@ -413,8 +406,8 @@ button {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #e6dfd0;
-  color: #776449;
+  background: var(--catalog-surface);
+  color: var(--catalog-ink);
   flex-shrink: 0;
 }
 .catalog-banner strong {
@@ -465,7 +458,7 @@ button {
   margin-top: 24px;
 }
 .saved-song {
-  background: var(--white);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 5px;
   padding: 22px;
@@ -473,8 +466,8 @@ button {
   min-width: 0;
 }
 .saved-song:hover {
-  border-color: #ac8a66;
-  box-shadow: 2px 3px 0 #e8e1d6;
+  border-color: var(--saved-hover);
+  box-shadow: 2px 3px 0 var(--saved-shadow);
 }
 .saved-song-number {
   font: 10px var(--mono);

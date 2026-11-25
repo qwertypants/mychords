@@ -40,7 +40,7 @@
   text-overflow: ellipsis;
 }
 .song-title:hover {
-  box-shadow: 0 1px 0 #c1b9a8;
+  box-shadow: 0 1px 0 var(--title-border);
 }
 .save-button {
   margin-top: 25px;
@@ -64,8 +64,8 @@
   flex-wrap: wrap;
 }
 .play-song {
-  border-color: #cec5b3;
-  background: #eee9de;
+  border-color: var(--play-border);
+  background: var(--play-surface);
 }
 .playback-status {
   display: flex;
@@ -82,16 +82,16 @@
   gap: 5px;
   min-height: 44px;
   padding: 0 8px;
-  background: #eee7dd;
+  background: var(--retry-surface);
   border-radius: 4px;
   color: var(--ink);
   margin-left: 4px;
 }
 .playback-status.playing {
-  color: #6d753f;
+  color: var(--success);
 }
 .playback-status.error {
-  color: #9b3e2d;
+  color: var(--error);
 }
 .save-status {
   margin-left: auto;
@@ -102,7 +102,7 @@
   font-size: 10px;
 }
 .save-status.dirty i {
-  background: #ad8453;
+  background: var(--unsaved);
 }
 .sections {
   margin-top: 12px;
@@ -121,7 +121,7 @@
 .section-number {
   font: 10px var(--mono);
   color: var(--muted);
-  background: #eae6da;
+  background: var(--badge-surface);
   border-radius: 3px;
   padding: 6px 7px;
 }
@@ -150,7 +150,7 @@
   gap: 0;
 }
 .muted {
-  color: #908779;
+  color: var(--subtle);
 }
 .section-chords {
   display: grid;
@@ -159,8 +159,8 @@
   align-items: stretch;
 }
 .song-chord {
-  border: 1px solid #d8d0c1;
-  background: var(--white);
+  border: 1px solid var(--card-border);
+  background: var(--surface);
   border-radius: 6px;
   min-width: 0;
   padding: 0 10px;
@@ -168,13 +168,13 @@
 }
 .song-chord.is-playing {
   border: 1px solid var(--accent);
-  box-shadow: 0 0 0 2px #cfab8850;
-  background: #fff7e9;
+  box-shadow: 0 0 0 2px var(--playing-ring);
+  background: var(--playing-surface);
 }
 .song-chord.is-dragging {
   z-index: 3;
   opacity: 0.85;
-  box-shadow: 0 7px 18px #34281925;
+  box-shadow: 0 7px 18px var(--drag-shadow);
 }
 .card-top {
   display: flex;
@@ -185,11 +185,11 @@
 }
 .chord-index {
   font: 8px var(--mono);
-  color: #978e80;
+  color: var(--chord-index);
 }
 .drag-handle {
   cursor: grab;
-  color: #9a9081;
+  color: var(--drag-handle);
   touch-action: none;
   min-height: 44px;
 }
@@ -219,7 +219,7 @@
   display: block;
   margin: 0 auto;
   color: var(--ink);
-  stroke: #a19886;
+  stroke: var(--fret-line);
   fill: var(--ink);
   overflow: visible;
 }
@@ -234,15 +234,15 @@
   font:
     8px "DM Sans",
     sans-serif;
-  fill: #fffaf1;
+  fill: var(--finger-text);
 }
 .chord-diagram .fret-number {
   font: 10px var(--mono);
-  fill: #81745f;
+  fill: var(--fret-label);
 }
 .chord-diagram .string-letter {
   font: 8px var(--mono);
-  fill: #928775;
+  fill: var(--string-label);
 }
 .chord-diagram .open-marker {
   font:
@@ -263,16 +263,16 @@
   font-size: 10px;
   width: 100%;
   min-height: 39px;
-  border-top: 1px solid #eee8dc;
-  color: #78664c;
+  border-top: 1px solid var(--card-divider);
+  color: var(--hear-ink);
 }
 .hear-chord:hover {
   color: var(--accent);
-  background: #f5efe3;
+  background: var(--hear-hover);
 }
 .card-bottom {
   display: flex;
-  border-top: 1px solid #eee8dc;
+  border-top: 1px solid var(--card-divider);
   justify-content: center;
 }
 .card-bottom .icon-button {
@@ -281,10 +281,10 @@
 }
 .card-bottom .remove-chord {
   margin-left: auto;
-  color: #8a7c69;
+  color: var(--remove-ink);
 }
 .add-chord-tile {
-  border: 1px dashed #c8bfad;
+  border: 1px dashed var(--add-border);
   border-radius: 6px;
   padding: 24px 10px;
   min-height: 260px;
@@ -297,21 +297,21 @@
   min-width: 0;
 }
 .add-chord-tile:hover {
-  background: #eee9de;
-  border-color: #ac8b65;
+  background: var(--play-surface);
+  border-color: var(--add-hover);
 }
 .add-chord-tile.empty {
   grid-column: 1/-1;
   min-height: 170px;
 }
 .add-circle {
-  border: 1px solid #d7cdbb;
+  border: 1px solid var(--add-circle-border);
   border-radius: 50%;
   width: 42px;
   height: 42px;
   display: grid;
   place-items: center;
-  color: #8f7858;
+  color: var(--add-ink);
 }
 .add-chord-tile strong {
   font-size: 12px;
@@ -327,15 +327,15 @@
   justify-content: center;
   gap: 9px;
   width: 100%;
-  border: 1px dashed #d5cebf;
+  border: 1px dashed var(--divider);
   min-height: 52px;
   border-radius: 5px;
   margin-top: 25px;
   font-size: 12px;
-  color: #736650;
+  color: var(--section-ink);
 }
 .add-section-button:hover {
-  background: #ece7dc;
+  background: var(--section-hover);
 }
 .editor-note {
   font-size: 10px;
