@@ -57,6 +57,8 @@ npm run build
 npm run preview
 ```
 
-The build uses relative asset paths and can be hosted in a directory such as `/mychords/`. Serve the contents of `dist/` at that directory; deployment is not configured. Vite currently reports a chunk-size advisory for the bundled catalog and app, about 195 KB gzipped for JavaScript. Samples load only when sound is requested.
+The build uses relative asset paths and can be hosted under `/mychords/`. Vite reports a chunk-size advisory for the bundled catalog and app. Samples load only when sound is requested.
+
+To publish, set the source to **GitHub Actions** under the repository's **Settings → Pages**. The Pages workflow runs on pushes to `main` and can also be run manually from `main` in the Actions tab. After the first successful deployment, the site will be available at [qwertypants.github.io/mychords/](https://qwertypants.github.io/mychords/).
 
 See [verification notes](docs/verification.md) for actual checks and remaining physical-device/listening checks. The application exposes credits at `/credits.html`; complete notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
