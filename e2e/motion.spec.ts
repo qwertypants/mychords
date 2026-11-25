@@ -103,7 +103,7 @@ test("the picker stays interactive during motion and confirms each successful ed
   await save.press("Enter");
   await page.clock.runFor(64);
   await expect(icon).not.toHaveCSS("transform", "none");
-  await expect(page.getByText("Saved on this browser")).toBeVisible();
+  await expect(page.locator(".song-toolbar")).toHaveCount(0);
 
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {

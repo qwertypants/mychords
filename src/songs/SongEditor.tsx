@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Plus, Play, Save, ArrowLeft } from "lucide-react";
+import { Plus, Save, ArrowLeft } from "lucide-react";
 import type { Song } from "./types";
 import type { Voicing } from "../chords/types";
 import type { PlaybackState, PreviewItem } from "../audio/guitar";
@@ -12,30 +12,25 @@ import {
   renameSong,
   renameSection,
 } from "./commands";
-import { PlaybackControls } from "../audio/PlaybackControls";
 import { pulseIcon, useMotion, useViewEntrance } from "../motion";
 export function SongEditor({
   song,
   onChange,
   onSave,
-  dirty,
   onBack,
   onAdd,
   onHear,
   onPlay,
-  onStop,
   onRemoveSection,
   playback,
 }: {
   song: Song;
   onChange: (s: Song) => void;
   onSave: () => boolean;
-  dirty: boolean;
   onBack: () => void;
   onAdd: (sectionId: string) => void;
-  onHear: (v: Voicing, entryId: string) => void;
+  onHear: (v: Voicing, entryId: string, stringIndex?: number) => void;
   onPlay: (items: PreviewItem[]) => void;
-  onStop: () => void;
   onRemoveSection: (id: string) => void;
   playback: PlaybackState;
 }) {
@@ -94,21 +89,7 @@ export function SongEditor({
           Save
         </button>
       </div>
-      <div className="song-toolbar">
-        <button
-          className="button play-song"
-          disabled={!count}
-          onClick={() => onPlay(songPreview(song))}
-        >
-          <Play size={16} fill="currentColor" />
-          Play song
-        </button>
-        <PlaybackControls state={playback} onStop={onStop} />
-        <span className={`save-status ${dirty ? "dirty" : ""}`} role="status">
-          <i />
-          {dirty ? "Unsaved changes" : "Saved on this browser"}
-        </span>
-      </div>
+      {playback.status === "error" && <p role="alert">{playback.message}</p>}
       <div className="sections">
         {song.sections.map((section, i) => (
           <SectionEditor

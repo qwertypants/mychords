@@ -19,7 +19,6 @@ import {
   GripVertical,
   ArrowLeft,
   ArrowRight,
-  Volume2,
   Plus,
   Play,
   Trash2,
@@ -39,7 +38,7 @@ type Props = {
   onRename: (name: string) => void;
   onRemove: () => void;
   onAdd: () => void;
-  onHear: (v: Voicing, entryId: string) => void;
+  onHear: (v: Voicing, entryId: string, stringIndex?: number) => void;
   onPlay: () => void;
   onMove: (id: string, index: number) => void;
   onRemoveChord: (id: string) => void;
@@ -97,13 +96,17 @@ function ChordCard({
         <h3>{voicing.label}</h3>
         <span>Fret {positionOf(voicing.frets)}</span>
       </div>
-      <ChordDiagram voicing={voicing} playing={active} />
+      <ChordDiagram
+        voicing={voicing}
+        playing={active}
+        onNote={(stringIndex) => onHear(voicing, `song-note:${entry.id}:${stringIndex}`, stringIndex)}
+      />
       <button
         className="hear-chord"
         onClick={() => onHear(voicing, previewEntryId("song", entry.id))}
         aria-label={`Hear ${voicing.label}, position ${index + 1}`}
       >
-        <Volume2 size={15} /> Hear chord
+        <Play size={18} fill="currentColor" aria-hidden="true" />
       </button>
       <div className="card-bottom">
         <button

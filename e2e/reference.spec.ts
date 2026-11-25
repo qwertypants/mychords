@@ -49,9 +49,7 @@ test("exact voicings, duplicate reorder, sections and saved-song isolation", asy
   await activate(page.getByRole("button", { name: "Add section", exact: true }));
   await page.getByLabel("Section name").last().fill("Chorus");
   await activate(page.getByRole("button", { name: "Save", exact: true }));
-  await expect(
-    page.getByText("Saved on this browser", { exact: true }),
-  ).toBeVisible();
+  await expect(page.locator(".song-toolbar")).toHaveCount(0);
   await page.reload();
   await activate(page
     .getByRole("button", { name: "Open Sunday idea", exact: true })
@@ -95,9 +93,7 @@ test("unsaved navigation and failed saves preserve the draft", async ({
   });
   await activate(page.getByRole("button", { name: "Save", exact: true }));
   await expect(page.getByRole("alert")).toContainText("Could not save");
-  await expect(
-    page.getByText("Unsaved changes", { exact: true }),
-  ).toBeVisible();
+
   await activate(page.getByRole("button", { name: "All songs", exact: true }));
   await activate(page.getByRole("button", { name: "Save changes", exact: true }));
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -155,16 +151,14 @@ test("real acoustic samples load, preview stops and section playback highlights 
   await activate(page
     .getByRole("button", { name: "Hear C, position 3", exact: true })
     );
-  await expect(
-    page.getByText("Acoustic preview", { exact: true }),
-  ).toBeVisible();
+  await expect(repeated).toHaveClass(/is-playing/);
   expect(sampleResponses.filter((u) => u.endsWith(".mp3"))).toHaveLength(9);
   await expect(repeated).toHaveClass(/is-playing/);
   await expect(first).not.toHaveClass(/is-playing/);
   await expect.poll(() => strum.evaluate(({ strings }) => [...strings])).toEqual(["1", "2", "3", "4", "5"]);
   await strum.evaluate(({ observer }) => observer.disconnect());
   await strum.dispose();
-  await activate(page.getByRole("button", { name: "Stop playback" }));
+  await expect(page.getByRole("button", { name: "Stop playback" })).toHaveCount(0);
   await expect(repeated).not.toHaveClass(/is-playing/);
   await expect(repeated.locator("[data-strum-string][style*='--strum-scale']")).toHaveCount(0);
   await expect(repeated.locator("[data-strum-string][style*='--strum-glow']")).toHaveCount(0);
@@ -175,8 +169,8 @@ test("real acoustic samples load, preview stops and section playback highlights 
     .getByRole("button", { name: "Play section Verse", exact: true })
     );
   await expect(page.locator(".song-chord.is-playing")).toHaveCount(1);
-  await activate(page.getByRole("button", { name: "Stop playback" }));
-  await expect(page.locator(".song-chord.is-playing")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Stop playback" })).toHaveCount(0);
+  await expect(page.locator(".song-chord.is-playing")).toHaveCount(0, { timeout: 10000 });
 });
 test("audio failure is shown inside the picker and can be retried", async ({
   page,

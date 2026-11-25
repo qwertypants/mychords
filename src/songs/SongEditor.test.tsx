@@ -27,9 +27,7 @@ test("compose, save and reopen a song with exact repeated voicings", () => {
   fireEvent.click(screen.getByRole("button", { name: "Add C, 8 10 10 9 8 8" }));
   fireEvent.click(screen.getByRole("button", { name: "Close chord library" }));
   fireEvent.click(screen.getByRole("button", { name: "Save" }));
-  expect(
-    screen.getByText("Saved on this browser", { exact: true }),
-  ).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Play song" })).not.toBeInTheDocument();
   view.unmount();
   render(<App />);
   fireEvent.click(screen.getByRole("button", { name: "Open Idea" }));

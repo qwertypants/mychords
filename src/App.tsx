@@ -35,8 +35,8 @@ export default function App() {
     audio.stop();
     store.updateDraft(song);
   };
-  const hear = (voicing: Voicing, entryId: string) =>
-    audio.play([{ entryId, voicing }]);
+  const hear = (voicing: Voicing, entryId: string, stringIndex?: number) =>
+    audio.play([{ entryId, voicing, stringIndex }]);
   function add(v: Voicing) {
     const song = store.draft;
     if (!pickerFor) return false;
@@ -156,12 +156,10 @@ export default function App() {
           song={store.draft}
           onChange={change}
           onSave={store.saveDraft}
-          dirty={store.dirty}
           onBack={() => transition(store.closeDraft)}
           onAdd={setPickerFor}
           onHear={hear}
           onPlay={audio.play}
-          onStop={audio.stop}
           playback={audio.state}
           onRemoveSection={(id) => {
             const section = store.draft?.sections.find((s) => s.id === id);
