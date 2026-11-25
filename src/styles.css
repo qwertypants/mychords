@@ -9,3 +9,13 @@
 @import './styles/picker.css';
 @import './styles/responsive.css';
 @import './styles/motion.css';
+
+.editor-heading > .song-actions { display: flex; gap: 10px; flex-wrap: wrap; flex: 0 0 auto; margin-top: 25px; align-items: center; }
+.song-actions .save-button { margin-top: 0; }
+.share-status { font-size: 14px; }
+.share-status:empty { display: none; }
+.share-link { width: 100%; min-height: 100px; resize: vertical; }
+@media (max-width: 600px) {
+  .editor-heading { flex-wrap: wrap; }
+  .editor-heading > .song-actions { width: 100%; margin-top: 12px; }
+}

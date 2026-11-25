@@ -199,3 +199,16 @@ test("incomplete first installation never announces offline readiness", async ({
   })).toBe(true);
   await expect(page.getByText(/Ready offline/)).toHaveCount(0);
 });
+
+test("shared query link opens offline under the deployed subpath", async ({ page, context }) => {
+  await ready(page, "/mychords/");
+  await page.reload();
+  await context.setOffline(true);
+  const encoded = btoa(JSON.stringify({ version: 1, name: "Offline shared song", sections: [] })).replace(/=+$/, "");
+  await page.goto("/mychords/?song=" + encoded);
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Offline shared song");
+  expect(await page.evaluate(() => localStorage.getItem("mychords.library.v1"))).toBeNull();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Open Offline shared song" })).toBeVisible();
+});

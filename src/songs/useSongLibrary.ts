@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Library, Song } from "./types";
 import { readLibrary, writeLibrary, browserStorage } from "./storage";
 import { newSong, addSection } from "./commands";
+import { readSharedSong } from "./share";
 export function useSongLibrary() {
   const [initial, setInitial] = useState(() => readLibrary(browserStorage));
   const [library, setLibrary] = useState<Library>(() =>
@@ -10,6 +11,29 @@ export function useSongLibrary() {
   const [draft, setDraft] = useState<Song | null>(null);
   const [dirty, setDirty] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
+  const [sharedId, setSharedId] = useState<string | null>(null);
+  const [shareError, setShareError] = useState<string | null>(null);
+  const handledShare = useRef(false);
+  useEffect(() => {
+    if (initial.kind === "error" || handledShare.current) return;
+    handledShare.current = true;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("song")) return;
+    try {
+      const song = readSharedSong(url.href);
+      if (song) {
+        // Consume the external URL once, after storage recovery permits opening it.
+        // eslint-disable-next-line react/set-state-in-effect
+        setDraft(song);
+        setDirty(true);
+        setSharedId(song.id);
+      }
+    } catch (error) {
+      setShareError((error as Error).message);
+    }
+    url.searchParams.delete("song");
+    window.history.replaceState(window.history.state, "", url);
+  }, [initial.kind]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (dirty) {
@@ -34,6 +58,7 @@ export function useSongLibrary() {
       return false;
     }
     setLibrary(next);
+    setSharedId(null);
     setDirty(false);
     setStorageError(null);
     return true;
@@ -56,6 +81,8 @@ export function useSongLibrary() {
   }
   return {
     library,
+    shareError,
+    isShared: draft !== null && draft.id === sharedId,
     draft,
     dirty,
     storageError,

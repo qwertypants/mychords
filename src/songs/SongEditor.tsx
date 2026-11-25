@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Plus, Save, ArrowLeft } from "lucide-react";
+import { Plus, Save, ArrowLeft, Share2 } from "lucide-react";
 import type { Song } from "./types";
 import type { Voicing } from "../chords/types";
 import type { PlaybackState, PreviewItem } from "../audio/guitar";
@@ -13,8 +13,11 @@ import {
   renameSection,
 } from "./commands";
 import { pulseIcon, useMotion, useViewEntrance } from "../motion";
+import { createShareUrl } from "./share";
+import { ConfirmDialog } from "../ConfirmDialog";
 export function SongEditor({
   song,
+  isShared = false,
   onChange,
   onSave,
   onBack,
@@ -25,6 +28,7 @@ export function SongEditor({
   playback,
 }: {
   song: Song;
+  isShared?: boolean;
   onChange: (s: Song) => void;
   onSave: () => boolean;
   onBack: () => void;
@@ -34,6 +38,24 @@ export function SongEditor({
   onRemoveSection: (id: string) => void;
   playback: PlaybackState;
 }) {
+  const [shareMessage, setShareMessage] = useState("");
+  const [fallbackLink, setFallbackLink] = useState<string | null>(null);
+  async function share() {
+    setShareMessage("");
+    let link: string;
+    try {
+      link = createShareUrl(song, window.location.href);
+    } catch (error) {
+      setShareMessage((error as Error).message);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(link);
+      setShareMessage("Link copied.");
+    } catch {
+      setFallbackLink(link);
+    }
+  }
   const heading = useRef<HTMLDivElement>(null);
   const saveButton = useRef<HTMLButtonElement>(null);
   const [saveCount, setSaveCount] = useState(0);
@@ -77,18 +99,32 @@ export function SongEditor({
             {count} chords <span>·</span> Standard tuning
           </p>
         </div>
-        <button
-          ref={saveButton}
-          className="button primary save-button"
-          onClick={() => {
-            const saved = onSave();
-            setSaveCount((count) => saved ? count + 1 : 0);
-          }}
-        >
-          <Save size={16} />
-          Save
-        </button>
+        <div className="song-actions">
+          <button className="button secondary" onClick={share}>
+            <Share2 size={16} /> Share
+          </button>
+          <button
+            ref={saveButton}
+            className="button primary save-button"
+            onClick={() => {
+              const saved = onSave();
+              setSaveCount((count) => saved ? count + 1 : 0);
+            }}
+          >
+            <Save size={16} />
+            Save
+          </button>
+        </div>
       </div>
+      {isShared && <p className="editor-note">Shared song — save to keep a copy.</p>}
+      <p className="share-status" role="status">{shareMessage}</p>
+      {fallbackLink && (
+        <ConfirmDialog title="Copy song link" onCancel={() => setFallbackLink(null)} actions={null}>
+          <p>Copy this link to share a snapshot of your song.</p>
+          <textarea className="share-link" aria-label="Song share link" readOnly value={fallbackLink}
+            onFocus={(event) => event.currentTarget.select()} />
+        </ConfirmDialog>
+      )}
       {playback.status === "error" && <p role="alert">{playback.message}</p>}
       <div className="sections">
         {song.sections.map((section, i) => (

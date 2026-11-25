@@ -154,6 +154,7 @@ export default function App() {
         <SongEditor
           key={store.draft.id}
           song={store.draft}
+          isShared={store.isShared}
           onChange={change}
           onSave={store.saveDraft}
           onBack={() => transition(store.closeDraft)}
@@ -178,6 +179,7 @@ export default function App() {
           onStop={audio.stop}
         />
       )}
+      {store.shareError && <div className="storage-error" role="alert">{store.shareError}</div>}
       {store.storageError && (
         <div className="storage-error" role="alert">
           {store.storageError}
