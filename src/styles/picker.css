@@ -68,6 +68,37 @@
 .picker-filter-toggle svg:last-child { margin-left: auto; transition: transform 150ms ease; }
 .picker-filter-toggle svg.is-expanded { transform: rotate(180deg); }
 .picker-filter-toggle[aria-expanded="false"] { margin-bottom: 0; }
+.search-combobox { position: relative; }
+.chord-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  max-height: min(260px, 40dvh);
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px var(--dialog-shadow);
+}
+.chord-suggestions [role="option"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.chord-suggestions [role="option"] small { color: var(--muted); }
+.chord-suggestions [role="option"]:hover,
+.chord-suggestions [role="option"][aria-selected="true"] { background: var(--accent-light); }
 .search-field {
   display: flex;
   align-items: center;

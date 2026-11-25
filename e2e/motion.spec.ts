@@ -49,7 +49,7 @@ test("the picker stays interactive during motion and confirms each successful ed
   const open = page.getByRole("button", { name: "Add chord", exact: true });
   await open.press("Enter");
   const picker = page.getByRole("dialog");
-  const search = picker.getByRole("textbox", { name: "Search chords" });
+  const search = picker.getByRole("combobox", { name: "Search chords" });
   await expect(search).toBeFocused();
   await page.clock.runFor(64);
   const drawerEdge = picker.locator(".picker-motion-edge");
@@ -57,6 +57,7 @@ test("the picker stays interactive during motion and confirms each successful ed
   await page.keyboard.type("Cm");
   await expect(search).toHaveValue("Cm");
   await page.keyboard.press("Tab");
+  await page.clock.runFor(1);
   await expect(search).not.toBeFocused();
   await expect(picker.locator(":focus")).toHaveCount(1);
   if (testInfo.project.use.hasTouch) {

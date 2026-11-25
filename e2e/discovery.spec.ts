@@ -36,10 +36,10 @@ test("browse categories, compare inline shapes, and search the whole catalog", a
     }
   }
   await dialog.getByLabel("Neck position").selectOption("15");
-  await dialog.getByRole("textbox", { name: "Search chords" }).fill("D♭");
+  await dialog.getByRole("combobox", { name: "Search chords" }).fill("D♭");
   await expect(dialog.getByLabel("Neck position")).toHaveValue("all");
   await expect(dialog.getByRole("button", { name: "Shapes for C#/C", exact: true })).toBeVisible();
-  await dialog.getByRole("textbox", { name: "Search chords" }).fill("no-such-chord");
+  await dialog.getByRole("combobox", { name: "Search chords" }).fill("no-such-chord");
   await activate(dialog.getByRole("button", { name: "Reset filters" }));
   await expect(dialog.locator(".chord-group")).toHaveCount(24);
   await activate(dialog.getByRole("button", { name: "Show more chords" }));
@@ -57,4 +57,19 @@ test("diagram note markers start individual guitar playback", async ({ page }) =
   await request;
   await expect(picker.locator(".picker-playback")).toHaveCount(0);
   await expect(picker.getByRole("button", { name: /Play C\/A low E string/ })).toHaveCount(0);
+});
+
+test("search suggests chord names and selection narrows to one chord", async ({ page }) => {
+  await page.goto("/");
+  await activate(page.getByRole("button", { name: "Explore chords", exact: true }));
+  const picker = page.getByRole("dialog");
+  const search = picker.getByRole("combobox", { name: "Search chords" });
+  await search.fill("C/A");
+  const suggestions = picker.getByRole("listbox", { name: "Chord suggestions" });
+  await expect(suggestions.getByText("C/A", { exact: true })).toBeVisible();
+  await activate(suggestions.getByText("C/A", { exact: true }));
+  await expect(search).toHaveValue("C/A");
+  await expect(search).toHaveAttribute("aria-expanded", "false");
+  await expect(picker.getByRole("button", { name: "Shapes for C/A" })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "Shapes for C/Ab" })).toHaveCount(0);
 });

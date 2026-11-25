@@ -52,12 +52,12 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   expect(trigger).toHaveFocus();
   expect(screen.getByRole("button", { name: "Major" })).toHaveAttribute("aria-pressed", "true");
   fireEvent.change(screen.getByLabelText("Neck position"), { target: { value: "15" } });
-  fireEvent.change(screen.getByRole("textbox", { name: "Search chords" }), { target: { value: "D♭" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "D♭" } });
   expect(screen.getByLabelText("Neck position")).toHaveValue("all");
   expect(screen.getByRole("button", { name: "Shapes for C#/C" })).toBeInTheDocument();
-  fireEvent.change(screen.getByRole("textbox", { name: "Search chords" }), { target: { value: "no-such-chord" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "no-such-chord" } });
   fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
-  expect(screen.getByRole("textbox", { name: "Search chords" })).toHaveValue("");
+  expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("");
 });
 
 
@@ -80,4 +80,19 @@ test("clicking a labeled diagram note requests that string alone", () => {
   fireEvent.click(screen.getAllByRole("button", { name: "Play C/A D string fret 2" })[0]);
   expect(hear).toHaveBeenCalledWith(expect.objectContaining({ label: "C/A" }), 2);
   expect(screen.queryByRole("button", { name: /Play C\/A E string muted/ })).not.toBeInTheDocument();
+});
+
+test("type-ahead offers chords and selecting one shows its exact shapes", () => {
+  render(<ChordPicker onHear={() => {}} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
+  const search = screen.getByRole("combobox", { name: "Search chords" });
+  fireEvent.change(search, { target: { value: "C/A" } });
+  expect(search).toHaveAttribute("aria-expanded", "true");
+  const option = screen.getByText("C/A", { selector: ".chord-suggestions span" });
+  fireEvent.click(option);
+  expect(search).toHaveValue("C/A");
+  expect(search).toHaveAttribute("aria-expanded", "false");
+  expect(screen.getByRole("button", { name: "Shapes for C/A" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Shapes for C/Ab" })).not.toBeInTheDocument();
+  fireEvent.change(search, { target: { value: "C/Ab" } });
+  expect(screen.getByRole("button", { name: "Shapes for C/Ab" })).toBeInTheDocument();
 });

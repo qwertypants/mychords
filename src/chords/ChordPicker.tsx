@@ -41,6 +41,9 @@ export function ChordPicker({
   const [filtersExpanded, setFiltersExpanded] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [text, setText] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(0);
   const [region, setRegion] = useState("all");
   const [limit, setLimit] = useState(24);
   const [added, setAdded] = useState<ChordAddition | null>(null);
@@ -85,12 +88,34 @@ export function ChordPicker({
       }),
     [root, text, region],
   );
-  const results = useMemo(() => available.filter(v => inCategory(v.suffix, category)), [available, category]);
+  const suggestions = useMemo(() => {
+    if (!text.trim()) return [];
+    const query = text.trim().toLowerCase();
+    return groupChords(findVoicings({ text }))
+      .sort((a, b) => Number(b.label.toLowerCase().startsWith(query)) - Number(a.label.toLowerCase().startsWith(query)) || a.label.localeCompare(b.label))
+      .slice(0, 8);
+  }, [text]);
+  const results = useMemo(() => available.filter(v =>
+    inCategory(v.suffix, category) && (!selectedGroupId || `${v.root}:${v.suffix}` === selectedGroupId)
+  ), [available, category, selectedGroupId]);
   const groups = useMemo(() => groupChords(results).sort((a, b) => roots.indexOf(a.root) - roots.indexOf(b.root)), [results]);
   const filter = (fn: () => void) => {
+    if (selectedGroupId) setText("");
+    setSelectedGroupId(null);
     fn();
     setLimit(24);
     setExpanded(null);
+  };
+  const selectSuggestion = (id: string, label: string) => {
+    filter(() => {
+      setText(label);
+      setRoot("");
+      setCategory("All");
+      setRegion("all");
+    });
+    setSelectedGroupId(id);
+    setSuggestionsOpen(false);
+    search.current?.focus();
   };
   return (
     <dialog
@@ -132,16 +157,46 @@ export function ChordPicker({
           <ChevronDown size={16} className={filtersExpanded ? "is-expanded" : ""} aria-hidden="true" />
         </button>
         <div id="picker-filter-controls" hidden={!filtersExpanded}>
+        <div className="search-combobox">
         <label className="search-field">
           <Search size={18} />
           <span className="sr-only">Search chords</span>
           <input
             ref={search}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={suggestionsOpen && suggestions.length > 0}
+            aria-controls="chord-suggestions"
+            aria-activedescendant={suggestionsOpen && suggestions.length > 0 ? `chord-suggestion-${activeSuggestion}` : undefined}
             placeholder="Search a chord or quality…"
             value={text}
+            onFocus={() => setSuggestionsOpen(true)}
+            onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 0)}
+            onKeyDown={(e) => {
+              if (e.key === "Tab") {
+                e.preventDefault();
+                setSuggestionsOpen(false);
+                const next = e.shiftKey ? ".picker-filter-toggle" : ".root-tabs button";
+                dialog.current?.querySelector<HTMLButtonElement>(next)?.focus();
+                return;
+              }
+              if (e.key === "Escape") setSuggestionsOpen(false);
+              if (!suggestionsOpen || !suggestions.length) return;
+              if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault();
+                setActiveSuggestion(index => (index + (e.key === "ArrowDown" ? 1 : -1) + suggestions.length) % suggestions.length);
+              }
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const choice = suggestions[activeSuggestion];
+                if (choice) selectSuggestion(choice.id, choice.label);
+              }
+            }}
             onChange={(e) =>
               filter(() => {
                 setText(e.target.value);
+                setSuggestionsOpen(true);
+                setActiveSuggestion(0);
                 if (e.target.value) {
                   setRoot("");
                   setCategory("All");
@@ -151,6 +206,19 @@ export function ChordPicker({
             }
           />
         </label>
+        {suggestionsOpen && suggestions.length > 0 && (
+          <ul id="chord-suggestions" className="chord-suggestions" role="listbox" aria-label="Chord suggestions">
+            {suggestions.map((group, index) => (
+              <li key={group.id} id={`chord-suggestion-${index}`} role="option"
+                aria-selected={index === activeSuggestion}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => selectSuggestion(group.id, group.label)}>
+                <span>{group.label}</span><small>{group.voicings.length} shapes</small>
+              </li>
+            ))}
+          </ul>
+        )}
+        </div>
         <div className="root-tabs" aria-label="Chord roots">
           <button
             aria-pressed={!root}
