@@ -45,3 +45,16 @@ test("browse categories, compare inline shapes, and search the whole catalog", a
   await activate(dialog.getByRole("button", { name: "Show more chords" }));
   await expect(dialog.locator(".chord-group")).toHaveCount(48);
 });
+
+test("diagram note markers start individual guitar playback", async ({ page }) => {
+  await page.goto("/");
+  await activate(page.getByRole("button", { name: "Explore chords", exact: true }));
+  const picker = page.getByRole("dialog");
+  const note = picker.getByRole("button", { name: "Play C/A D string fret 2", exact: true }).first();
+  await expect(note).toBeVisible();
+  const request = page.waitForRequest("**/audio/manifest.json");
+  await activate(note);
+  await request;
+  await expect(picker.locator(".picker-playback")).toHaveCount(0);
+  await expect(picker.getByRole("button", { name: /Play C\/A low E string/ })).toHaveCount(0);
+});

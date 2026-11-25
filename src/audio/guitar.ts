@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { midiForFrets } from "../chords/pitch";
+import { midiForFrets, midiForString } from "../chords/pitch";
 import type { Voicing } from "../chords/types";
-export type PreviewItem = { entryId: string; voicing: Voicing };
+export type PreviewItem = { entryId: string; voicing: Voicing; stringIndex?: number };
 export type PlaybackState = {
   status: "idle" | "loading" | "playing" | "error";
   activeEntryId: string | null;
@@ -22,13 +22,17 @@ export function previewEntryId(source: "library" | "picker" | "song", id: string
 }
 
 export function planStrums(items: readonly PreviewItem[]) {
-  return items.flatMap((item, index) =>
-    midiForFrets(item.voicing.frets).map((midi, stringIndex) => ({
+  return items.flatMap((item, index) => {
+    if (item.stringIndex !== undefined) {
+      const midi = midiForString(item.voicing.frets, item.stringIndex);
+      return midi === null ? [] : [{ entryId: item.entryId, midi, at: index * 1.8 }];
+    }
+    return midiForFrets(item.voicing.frets).map((midi, stringIndex) => ({
       entryId: item.entryId,
       midi,
       at: index * 1.8 + stringIndex * STRUM_STRING_INTERVAL,
-    })),
-  );
+    }));
+  });
 }
 export function nearestSample(
   midi: number,

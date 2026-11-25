@@ -22,7 +22,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@fontsource/dm-mono": "^5.3.0",
     "@fontsource/dm-sans": "^5.3.0",
-    "@fontsource/instrument-serif": "^5.3.0",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.15.1",
     "lucide-react": "^1.79.0",

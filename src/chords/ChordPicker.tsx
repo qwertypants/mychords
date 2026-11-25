@@ -1,6 +1,6 @@
 import { useRef, useState, useMemo, useEffect, useLayoutEffect } from "react";
 import gsap from "gsap";
-import { X, Search } from "lucide-react";
+import { X, Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import {
   findVoicings,
   roots,
@@ -21,7 +21,7 @@ export function ChordPicker({
   playback,
   activeEntryId,
 }: {
-  onHear: (v: Voicing) => void;
+  onHear: (v: Voicing, stringIndex?: number) => void;
   onAdd: (v: Voicing) => boolean;
   onClose: () => void;
   sectionName: string;
@@ -38,6 +38,7 @@ export function ChordPicker({
   const [root, setRoot] = useState("C");
   const [category, setCategory] = useState<Category>("All");
   const [more, setMore] = useState(false);
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [region, setRegion] = useState("all");
@@ -119,6 +120,18 @@ export function ChordPicker({
         </button>
       </header>
       <div className="picker-filters">
+        <button
+          className="picker-filter-toggle"
+          type="button"
+          aria-expanded={filtersExpanded}
+          aria-controls="picker-filter-controls"
+          onClick={() => setFiltersExpanded(value => !value)}
+        >
+          <SlidersHorizontal size={16} aria-hidden="true" />
+          Filters
+          <ChevronDown size={16} className={filtersExpanded ? "is-expanded" : ""} aria-hidden="true" />
+        </button>
+        <div id="picker-filter-controls" hidden={!filtersExpanded}>
         <label className="search-field">
           <Search size={18} />
           <span className="sr-only">Search chords</span>
@@ -180,6 +193,7 @@ export function ChordPicker({
               <option value="15">Frets 15–22</option>
             </select>
           </label>
+        </div>
         </div>
       </div>
       {playback && <div className="picker-playback">{playback}</div>}

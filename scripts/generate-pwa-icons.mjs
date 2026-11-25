@@ -9,6 +9,6 @@ for (const size of [192, 512, 180]) {
     new URL(size === 180 ? 'apple-touch-icon.png' : `icon-${size}.png`, directory).pathname,
   );
 }
-await sharp({ create: { width: 512, height: 512, channels: 4, background: '#342f27' } })
+await sharp({ create: { width: 512, height: 512, channels: 4, background: '#17243B' } })
   .composite([{ input: await sharp(original, { density: 600 }).resize(308, 308).png().toBuffer(), gravity: 'centre' }])
   .png().toFile(new URL('maskable-512.png', directory).pathname);

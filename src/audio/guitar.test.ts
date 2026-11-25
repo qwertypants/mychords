@@ -22,3 +22,9 @@ test("nearest sample is selected without rounding away semitones", () => {
   expect(nearestSample(48, [40, 45, 50, 55])).toBe(50);
   expect(nearestSample(42, [40, 44])).toBe(40);
 });
+
+test("a clicked string plays only its exact pitch, while muted strings stay silent", () => {
+  expect(planStrums([{ entryId: "note", voicing: c, stringIndex: 1 }])).toEqual([{ entryId: "note", midi: 48, at: 0 }]);
+  expect(planStrums([{ entryId: "open", voicing: c, stringIndex: 5 }])).toEqual([{ entryId: "open", midi: 64, at: 0 }]);
+  expect(planStrums([{ entryId: "muted", voicing: c, stringIndex: 0 }])).toEqual([]);
+});

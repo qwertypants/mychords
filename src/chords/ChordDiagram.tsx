@@ -5,7 +5,7 @@ import { positionOf } from "./pitch";
 import { STRUM_STRING_INTERVAL } from "../audio/guitar";
 import { useMotion } from "../motion";
 
-export function ChordDiagram({ voicing, playing }: { voicing: Voicing; playing: boolean }) {
+export function ChordDiagram({ voicing, playing, onNote }: { voicing: Voicing; playing: boolean; onNote?: (stringIndex: number) => void }) {
   const diagram = useRef<SVGSVGElement>(null);
   useMotion(diagram, playing && voicing.id, (svg) => {
     const markers = Array.from(svg.querySelectorAll("[data-strum-string]")).sort(
@@ -28,13 +28,26 @@ export function ChordDiagram({ voicing, playing }: { voicing: Voicing; playing: 
   });
   const start = Math.max(1, positionOf(voicing.frets));
   const rows = Math.max(4, Math.max(...voicing.frets) - start + 1);
+  const stringNames = ["low E", "A", "D", "G", "B", "high E"];
+  const noteProps = (stringIndex: number, fret: number) => onNote ? {
+    role: "button" as const,
+    tabIndex: 0,
+    "aria-label": `Play ${voicing.label} ${stringNames[stringIndex]} string ${fret === 0 ? "open" : `fret ${fret}`}`,
+    onClick: () => onNote(stringIndex),
+    onKeyDown: (event: React.KeyboardEvent<SVGGElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onNote(stringIndex);
+      }
+    },
+  } : {};
   const description = `${voicing.label}. Low E to high E: ${voicing.frets.map((f) => (f < 0 ? "muted" : f === 0 ? "open" : `fret ${f}`)).join(", ")}.`;
   return (
     <svg
       ref={diagram}
       className="chord-diagram"
       viewBox={`0 0 150 ${68 + rows * 22}`}
-      role="img"
+      role={onNote ? "group" : "img"}
       aria-label={description}
     >
       <text x="6" y="58" className="fret-number">
@@ -60,7 +73,7 @@ export function ChordDiagram({ voicing, playing }: { voicing: Voicing; playing: 
             strokeWidth={1 + (5 - i) * 0.13}
           />
           {f <= 0 ? (
-            <g data-strum-string={f === 0 ? i : undefined}>
+            <g data-strum-string={f === 0 ? i : undefined} {...(f === 0 ? noteProps(i, f) : {})}>
               {f === 0 && (
                 <circle className="strum-ring" cx={29 + i * 20} cy="23" r="9" aria-hidden="true" />
               )}
@@ -97,7 +110,7 @@ export function ChordDiagram({ voicing, playing }: { voicing: Voicing; playing: 
       })}
       {voicing.frets.map((f, i) =>
         f > 0 ? (
-          <g key={i} data-strum-string={i}>
+          <g key={i} data-strum-string={i} {...noteProps(i, f)}>
             <circle
               className="strum-ring"
               cx={29 + i * 20}

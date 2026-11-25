@@ -301,21 +301,22 @@
     width: 100%;
   }
   .picker-header {
-    padding: 20px 20px 17px;
+    padding: 12px 16px 10px;
   }
   .picker-header h2 {
-    font-size: 31px;
+    font-size: 21px;
+    margin-top: 4px;
   }
   .picker-header .eyebrow {
     font-size: 8px;
   }
   .picker-filters {
-    padding: 15px 20px;
+    padding: 9px 16px 8px;
   }
   .root-tabs {
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 2px;
-    margin: 12px -2px;
+    margin: 5px -2px;
   }
   .root-tabs button {
     font-size: 11px;
@@ -325,7 +326,7 @@
     grid-row: span 2;
   }
   .picker-results {
-    padding: 16px 20px 22px;
+    padding: 12px 16px 18px;
   }
   .picker-playback {
     padding: 2px 20px;
@@ -439,4 +440,19 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+@media (max-width: 600px) {
+  .picker-header p { margin-top: 3px; }
+  .picker-filter-toggle { margin-bottom: 5px; }
+  .picker-filters .category-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-bottom: 7px;
+    scrollbar-width: thin;
+  }
+  .picker-filters .category-tabs button { flex: 0 0 auto; }
+  .picker-filters .extra-categories { padding-top: 5px; }
+  .picker-filters .filter-row label { gap: 3px; }
+  .picker-filters .filter-row select { min-height: 40px; }
 }

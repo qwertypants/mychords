@@ -10,7 +10,7 @@ export function ChordGroups({ groups, expanded, onExpand, activeEntryId, added, 
   onExpand: (id: string | null) => void;
   activeEntryId: string | null;
   added: { voicingId: string } | null;
-  onHear: (v: Voicing) => void;
+  onHear: (v: Voicing, stringIndex?: number) => void;
   onAdd: (v: Voicing) => void;
 }) {
   const [columns, setColumns] = useState(() => typeof matchMedia === "function" && matchMedia("(max-width: 600px)").matches ? 2 : 3);
@@ -28,13 +28,13 @@ export function ChordGroups({ groups, expanded, onExpand, activeEntryId, added, 
   const rowEnd = selectedIndex < 0 ? -1 : Math.min(groups.length - 1, Math.floor(selectedIndex / columns) * columns + columns - 1);
   const card = (v: Voicing, preview = false) => <VoicingCard key={v.id} voicing={v}
     playing={preview === previewPlaying && activeEntryId === previewEntryId("picker", v.id)}
-    added={added?.voicingId === v.id ? added : null} onHear={() => { setPreviewPlaying(preview); onHear(v); }} onAdd={() => onAdd(v)} />;
+    added={added?.voicingId === v.id ? added : null} onHear={() => { setPreviewPlaying(preview); onHear(v); }} onNote={(stringIndex) => { setPreviewPlaying(preview); onHear(v, stringIndex); }} onAdd={() => onAdd(v)} />;
   const toggle = (group: ChordGroup) => {
     const trigger = triggers.current.get(group.id);
     const before = trigger?.getBoundingClientRect().top;
     onExpand(expanded === group.id ? null : group.id);
     requestAnimationFrame(() => {
-      const scroller = trigger?.closest(".picker-dialog");
+      const scroller = trigger?.closest(".picker-results");
       if (scroller && before !== undefined && trigger) scroller.scrollTop += trigger.getBoundingClientRect().top - before;
     });
   };

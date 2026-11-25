@@ -1,16 +1,17 @@
 import { useRef } from "react";
 import gsap from "gsap";
-import { Volume2, Plus, Check } from "lucide-react";
+import { Play, Plus, Check } from "lucide-react";
 import { positionOf } from "./pitch";
 import { ChordDiagram } from "./ChordDiagram";
 import type { Voicing } from "./types";
 import { pulseIcon, useMotion } from "../motion";
 type ChordAddition = { voicingId: string };
-export function VoicingCard({ voicing, playing, added, onHear, onAdd }: {
+export function VoicingCard({ voicing, playing, added, onHear, onNote, onAdd }: {
   voicing: Voicing;
   playing: boolean;
   added: ChordAddition | null;
   onHear: () => void;
+  onNote: (stringIndex: number) => void;
   onAdd: () => void;
 }) {
   const card = useRef<HTMLElement>(null);
@@ -38,15 +39,13 @@ export function VoicingCard({ voicing, playing, added, onHear, onAdd }: {
         <h3>{label}</h3>
         <span>Fret {positionOf(frets)}</span>
       </div>
-      <ChordDiagram voicing={voicing} playing={playing} />
+      <ChordDiagram voicing={voicing} playing={playing} onNote={onNote} />
       <div className="voicing-actions">
         <button onClick={onHear} aria-label={`Hear ${label}, ${frets.join(" ")}`}>
-          <Volume2 size={16} />
-          Hear
+          <Play size={18} fill="currentColor" aria-hidden="true" />
         </button>
         <button className="add-voicing" onClick={onAdd} aria-label={`Add ${label}, ${frets.join(" ")}`}>
-          {added ? <Check size={16} /> : <Plus size={16} />}{" "}
-          {added ? "Added" : "Add"}
+          {added ? <Check size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />}
         </button>
       </div>
     </article>

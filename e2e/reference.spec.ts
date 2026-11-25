@@ -198,11 +198,8 @@ test("audio failure is shown inside the picker and can be retried", async ({
   await activate(page
     .getByRole("button", { name: "Hear C, -1 3 2 0 1 0", exact: true })
     );
-  await expect(page.getByRole("dialog")).toContainText("Acoustic preview");
-  await activate(page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Stop playback" })
-    );
+  await expect(page.getByRole("dialog").locator(".picker-playback")).toHaveCount(0);
+  await activate(page.getByRole("button", { name: "Close chord library" }));
 });
 test("mobile widths, picker focus and desktop pointer drag", async ({
   page,

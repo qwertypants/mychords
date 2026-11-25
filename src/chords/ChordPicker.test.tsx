@@ -26,11 +26,11 @@ test("Hear and Add are independent and diagrams describe exact strings", () => {
   expect(add).not.toHaveBeenCalled();
   fireEvent.click(screen.getAllByRole("button", { name: /^Add C,/ })[0]);
   expect(add).toHaveBeenCalledOnce();
-  expect(screen.getAllByRole("img")[0]).toHaveAccessibleName(/Low E to high E/);
+  expect(screen.getAllByRole("group", { name: /Low E to high E/ })[0]).toHaveAccessibleName(/Low E to high E/);
   fireEvent.change(screen.getByLabelText("Neck position"), {
     target: { value: "15" },
   });
-  expect(screen.getAllByRole("img")[0]).toHaveAccessibleName(
+  expect(screen.getAllByRole("group", { name: /Low E to high E/ })[0]).toHaveAccessibleName(
     /fret 1[5-9]|fret 2[0-2]/,
   );
   expect(catalog.length).toBeGreaterThan(1000);
@@ -58,4 +58,26 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   fireEvent.change(screen.getByRole("textbox", { name: "Search chords" }), { target: { value: "no-such-chord" } });
   fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
   expect(screen.getByRole("textbox", { name: "Search chords" })).toHaveValue("");
+});
+
+
+test("filter toggle hides controls without losing the selected filters", () => {
+  render(<ChordPicker onHear={() => {}} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
+  const toggle = screen.getByRole("button", { name: "Filters" });
+  fireEvent.click(screen.getByRole("button", { name: "Major" }));
+  fireEvent.click(toggle);
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(screen.queryByRole("button", { name: "Major" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Shapes for C" })).toBeInTheDocument();
+  fireEvent.click(toggle);
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByRole("button", { name: "Major" })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("clicking a labeled diagram note requests that string alone", () => {
+  const hear = vi.fn();
+  render(<ChordPicker onHear={hear} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
+  fireEvent.click(screen.getAllByRole("button", { name: "Play C/A D string fret 2" })[0]);
+  expect(hear).toHaveBeenCalledWith(expect.objectContaining({ label: "C/A" }), 2);
+  expect(screen.queryByRole("button", { name: /Play C\/A E string muted/ })).not.toBeInTheDocument();
 });

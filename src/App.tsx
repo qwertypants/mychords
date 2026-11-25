@@ -200,16 +200,16 @@ export default function App() {
             store.draft?.sections.find((s) => s.id === pickerFor)?.name ??
             "a new song"
           }
-          onHear={(v) => hear(v, previewEntryId("picker", v.id))}
+          onHear={(v, stringIndex) => audio.play([{ entryId: stringIndex === undefined ? previewEntryId("picker", v.id) : `picker-note:${v.id}:${stringIndex}`, voicing: v, stringIndex }])}
           activeEntryId={audio.state.activeEntryId}
           onAdd={add}
           onClose={() => {
             audio.stop();
             setPickerFor(null);
           }}
-          playback={
+          playback={audio.state.status !== "error" ? null : (
             <PlaybackControls state={audio.state} onStop={audio.stop} />
-          }
+          )}
         />
       )}
       {pending && (
