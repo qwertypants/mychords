@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useEffect, useLayoutEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useLayoutEffect, useCallback } from "react";
 import gsap from "gsap";
 import { X, Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import {
@@ -36,6 +36,11 @@ export function ChordPicker({
   strumSpeedControl?: React.ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const [dialogElement, setDialogElement] = useState<HTMLDialogElement | null>(null);
+  const setDialogRef = useCallback((node: HTMLDialogElement | null) => {
+    dialog.current = node;
+    setDialogElement(node);
+  }, []);
   const search = useRef<HTMLInputElement>(null);
   const resultsScroll = useRef<HTMLDivElement>(null);
   const lastScrollTop = useRef(0);
@@ -185,16 +190,22 @@ export function ChordPicker({
   };
   return (
     <dialog
-      ref={dialog}
+      ref={setDialogRef}
       className="picker-dialog"
       onCancel={(e) => {
         e.preventDefault();
+        if (expanded) {
+          const trigger = dialog.current?.querySelector<HTMLButtonElement>('[aria-expanded="true"].shape-toggle');
+          setExpanded(null);
+          requestAnimationFrame(() => trigger?.focus({ preventScroll: true }));
+          return;
+        }
         onClose();
       }}
       aria-label={`Chord library for ${sectionName}`}
     >
       <span className="picker-motion-edge" aria-hidden="true" />
-      <header className="picker-header">
+      <header className="picker-header" inert={expanded !== null}>
         <div>
           <span className="eyebrow">THE CHORD LIBRARY</span>
         </div>
@@ -206,7 +217,7 @@ export function ChordPicker({
           <X size={21} />
         </button>
       </header>
-      <div className={`picker-menu-stack${menusHidden ? " is-hidden" : ""}`} inert={menusHidden}>
+      <div className={`picker-menu-stack${menusHidden ? " is-hidden" : ""}`} inert={menusHidden || expanded !== null}>
       <div className="picker-menu-content">
       <div className="picker-search-toolbar">
         <button
@@ -346,7 +357,7 @@ export function ChordPicker({
       </div>
       </div>
       </div>
-      <div className="picker-scroll" ref={resultsScroll} onScroll={handleResultsScroll}>
+      <div className="picker-scroll" ref={resultsScroll} onScroll={handleResultsScroll} inert={expanded !== null} aria-hidden={expanded !== null}>
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">
@@ -358,7 +369,7 @@ export function ChordPicker({
           const shown = groups.slice(0, limit).filter(g => g.root === r);
           return shown.length > 0 && <section key={r} className="chord-root-section" aria-label={r + " chords"}>
             <h3>{r} chords <span>{visible.length}</span></h3>
-            <ChordGroups groups={shown} expanded={expanded} onExpand={id => {
+            <ChordGroups groups={shown} expanded={expanded} dialog={dialogElement} onExpand={id => {
               setExpanded(id);
               if (id) {
                 setSuggestionsOpen(false);

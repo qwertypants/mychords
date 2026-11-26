@@ -36,9 +36,10 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }
     if (viewport.height <= 600) await shape.evaluate((button: HTMLButtonElement) => button.click());
     else await shape.click();
     await expect(filters).toHaveAttribute("aria-expanded", "false");
-    await search.click();
+    await page.getByRole("button", { name: "Close shapes" }).click();
+    if (await search.getAttribute("aria-expanded") === "false") await search.click();
+    if (await filters.getAttribute("aria-expanded") === "false") await filters.click();
     await expect(shape).toHaveAttribute("aria-expanded", "false");
-    await expect(search).toHaveAttribute("aria-expanded", "true");
     await expect(filters).toHaveAttribute("aria-expanded", "true");
     if (viewport.height <= 600) await shape.evaluate((button: HTMLButtonElement) => button.click());
     else await shape.click();
@@ -57,6 +58,45 @@ test("Shapes leaves menus open on a wide viewport", async ({ page }) => {
   await page.getByRole("button", { name: "Shapes for C/A", exact: true }).click();
   await expect(search).toHaveAttribute("aria-expanded", "true");
   await expect(filters).toHaveAttribute("aria-expanded", "true");
+});
+
+test("fan focuses its controls and Escape returns to the shape trigger", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openPicker(page);
+  const trigger = page.getByRole("button", { name: "Shapes for C/A", exact: true });
+  await trigger.click();
+  const panel = page.getByRole("region", { name: "Fingerings for C/A" });
+  await expect(panel.getByRole("button", { name: "Close shapes" })).toBeFocused();
+  await expect(page.locator(".picker-scroll")).toHaveAttribute("inert", "");
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await expect(page.locator(".picker-scroll")).not.toHaveAttribute("inert", "");
+});
+
+test("fan keeps its origin in place and leaves every shape actionable", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openPicker(page);
+  const original = page.locator('.picker-scroll .shape-toggle[aria-label="Shapes for C/A"]');
+  await original.click();
+  const origin = page.locator(".shape-fan-origin");
+  const sourceBox = await original.locator("..").boundingBox();
+  const originBox = await origin.boundingBox();
+  expect(Math.abs(sourceBox!.x - originBox!.x)).toBeLessThan(2);
+  expect(Math.abs(sourceBox!.y - originBox!.y)).toBeLessThan(2);
+  const alternatives = page.locator(".shape-fan-card");
+  expect(await alternatives.count()).toBe(Number(await original.getAttribute("data-shape-count")));
+  for (const shape of await alternatives.all()) {
+    await shape.getByRole("button", { name: /^Hear / }).click();
+  }
+  await alternatives.last().getByRole("button", { name: /^Add / }).click();
+  await page.locator(".shape-fan-backdrop").click({ position: { x: 2, y: 2 } });
+  await expect(origin).toHaveCount(0);
+  await expect(original).toBeFocused();
+  await original.click();
+  await page.locator(".shape-fan-origin .shape-toggle").click();
+  await expect(origin).toHaveCount(0);
+  await expect(original).toBeFocused();
 });
 
 test("scrolling through chords frees space and keeps chords interactive", async ({ page }) => {

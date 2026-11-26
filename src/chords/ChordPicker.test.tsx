@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { ChordPicker } from "./ChordPicker";
 import { catalog } from "./catalog";
@@ -35,7 +35,7 @@ test("Hear and Add are independent and diagrams describe exact strings", () => {
   expect(catalog.length).toBeGreaterThan(1000);
 });
 
-test("categories, full search, inline comparison and reset keep shapes reachable", () => {
+test("categories, full search, focused comparison and reset keep shapes reachable", async () => {
   const hear = vi.fn(), add = vi.fn(() => true);
   render(<ChordPicker onHear={hear} onAdd={add} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
   fireEvent.click(screen.getByRole("button", { name: "Major" }));
@@ -48,7 +48,7 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   fireEvent.click(screen.getByRole("button", { name: "Add C, 8 10 10 9 8 8" }));
   expect(add).toHaveBeenLastCalledWith(high);
   fireEvent.click(screen.getByRole("button", { name: "Close shapes" }));
-  expect(trigger).toHaveFocus();
+  await waitFor(() => expect(trigger).toHaveFocus());
   expect(screen.getByRole("button", { name: "Major" })).toHaveAttribute("aria-pressed", "true");
   fireEvent.click(screen.getByRole("radio", { name: "Frets 15–22" }));
   fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "D♭" } });
@@ -62,18 +62,18 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("");
 });
 
-test("expanded shapes exclude the fingering already shown on the group card", () => {
+test("fan includes the selected fingering and all alternatives", () => {
   render(<ChordPicker onHear={() => {}} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
   const trigger = screen.getByRole("button", { name: "Shapes for C/A" });
   const group = trigger.closest(".chord-group")!;
   const preview = group.querySelector(".voicing-card")!.getAttribute("data-voicing");
   fireEvent.click(trigger);
-  const panel = document.querySelector(".shape-panel")!;
-  expect(panel.querySelector(`[data-voicing="${preview}"]`)).toBeNull();
+  const panel = document.querySelector(".shape-fan-canvas")!;
+  expect(panel.querySelector(`[data-voicing="${preview}"]`)).not.toBeNull();
   const alternatives = panel.querySelectorAll(".voicing-card");
-  expect(alternatives.length).toBeGreaterThan(0);
-  expect(trigger).toHaveTextContent(`${alternatives.length} other`);
-  expect(panel.querySelector("h4")).toHaveTextContent(`${alternatives.length} other`);
+  expect(alternatives.length).toBeGreaterThan(1);
+  expect(trigger).toHaveTextContent(`${alternatives.length - 1} other`);
+  expect(panel.querySelector("h4")).toHaveTextContent(`${alternatives.length - 1} other`);
 });
 
 
