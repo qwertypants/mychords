@@ -405,9 +405,6 @@
     padding-left: 16px;
     padding-right: 16px;
   }
-  .results-count > span {
-    display: none;
-  }
   .song-meta span {
     margin: 0 3px;
   }

@@ -247,7 +247,8 @@ export function ChordPicker({
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">
-          {groups.length} chords · {results.length} fingerings <span>Standard tuning · E A D G B e</span>
+          <span><span>{groups.length} chords</span><span className="summary-separator"> · </span><span>{results.length} fingerings</span></span>
+          <span className="tuning-summary"><span>Standard tuning</span><span className="summary-separator"> · </span><span>E A D G B e</span></span>
         </div>
         {roots.map(r => {
           const visible = groups.filter(g => g.root === r);

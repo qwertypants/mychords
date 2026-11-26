@@ -130,6 +130,7 @@
   overscroll-behavior: contain;
 }
 .results-count {
+  container-type: inline-size;
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -139,6 +140,20 @@
 }
 .results-count > span {
   font-size: 13px;
+}
+.results-count > span > span {
+  white-space: nowrap;
+}
+.tuning-summary {
+  text-align: right;
+}
+@container (max-width: 420px) {
+  .results-count > span > span {
+    display: block;
+  }
+  .results-count .summary-separator {
+    display: none;
+  }
 }
 .voicing-grid {
   display: grid;
