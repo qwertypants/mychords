@@ -71,7 +71,8 @@ button {
 ::selection {
   background: var(--selection);
 }
-.sr-only {
+.sr-only,
+.hero-footnote .strum-speed legend {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -328,7 +329,7 @@ button {
   font-size: 13px;
 }
 .hero-footnote .strum-speed {
-  margin-left: auto;
+  width: 100%;
 }
 .sound-dot,
 .save-status i {

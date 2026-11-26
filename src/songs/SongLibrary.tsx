@@ -80,10 +80,6 @@ export function SongLibrary({
           className="hero-chords"
           aria-label="Try a few acoustic guitar chords"
         >
-          <div className="hero-caption">
-            <span>THREE CHORDS. ENDLESS POSSIBILITIES.</span>
-            <span>01 — 03</span>
-          </div>
           <div className="hero-chord-row" data-motion-entrance>
             {examples.map((v) => {
               const playing = playback.activeEntryId === previewEntryId("library", v.id);
@@ -106,8 +102,6 @@ export function SongLibrary({
             })}
           </div>
           <div className="hero-footnote">
-            <span className="sound-dot" />
-            <span>Sampled acoustic guitar</span>
             {strumSpeedControl}
           </div>
         </div>

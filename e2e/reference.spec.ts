@@ -182,6 +182,11 @@ test("real acoustic samples load, preview stops and section playback highlights 
     .getByRole("button", { name: "Play section Verse", exact: true })
     );
   await expect(page.locator(".song-chord.is-playing")).toHaveCount(1);
+  await activate(page.getByRole("button", { name: "Stop section Verse", exact: true }));
+  await expect(page.locator(".song-chord.is-playing")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Play section Verse", exact: true })).toBeVisible();
+  await activate(page.getByRole("button", { name: "Play section Verse", exact: true }));
+  await expect(page.locator(".song-chord.is-playing")).toHaveCount(1);
   await expect(page.getByRole("button", { name: "Stop playback" })).toHaveCount(0);
   await expect(page.locator(".song-chord.is-playing")).toHaveCount(0, { timeout: 10000 });
 });

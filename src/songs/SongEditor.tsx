@@ -23,6 +23,7 @@ export function SongEditor({
   onAdd,
   onHear,
   onPlay,
+  onStop,
   onRemoveSection,
   playback,
   strumSpeedControl,
@@ -33,10 +34,12 @@ export function SongEditor({
   onAdd: (sectionId: string) => void;
   onHear: (v: Voicing, entryId: string, stringIndex?: number) => void;
   onPlay: (items: PreviewItem[]) => void;
+  onStop: () => void;
   onRemoveSection: (id: string) => void;
   playback: PlaybackState;
   strumSpeedControl?: React.ReactNode;
 }) {
+  const [playingSectionId, setPlayingSectionId] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState("");
   const [fallbackLink, setFallbackLink] = useState<string | null>(null);
   async function share() {
@@ -89,8 +92,8 @@ export function SongEditor({
           </h1>
         </div>
         <div className="song-actions">
-          <button className="button secondary" onClick={share}>
-            <Share2 size={16} /> Share
+          <button className="icon-button" onClick={share} aria-label="Share">
+            <Share2 size={20} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -114,9 +117,11 @@ export function SongEditor({
             strumInterval={playback.strumInterval}
             onRename={(name) => onChange(renameSection(song, section.id, name))}
             onRemove={() => onRemoveSection(section.id)}
-            onAdd={() => onAdd(section.id)}
-            onHear={onHear}
-            onPlay={() => onPlay(songPreview(song, section.id))}
+            onAdd={() => { setPlayingSectionId(null); onAdd(section.id); }}
+            onHear={(...args) => { setPlayingSectionId(null); onHear(...args); }}
+            playing={playingSectionId === section.id && (playback.status === "loading" || playback.status === "playing")}
+            onStop={() => { setPlayingSectionId(null); onStop(); }}
+            onPlay={() => { setPlayingSectionId(section.id); onPlay(songPreview(song, section.id)); }}
             onMove={(id, index) =>
               onChange(moveChord(song, section.id, id, index))
             }

@@ -163,6 +163,7 @@ export default function App() {
           onAdd={setPickerFor}
           onHear={hear}
           onPlay={audio.play}
+          onStop={audio.stop}
           playback={audio.state}
           strumSpeedControl={strumSpeedControl}
           onRemoveSection={(id) => {

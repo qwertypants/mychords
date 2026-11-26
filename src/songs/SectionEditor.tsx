@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  Square,
   GripVertical,
   ArrowLeft,
   ArrowRight,
@@ -41,6 +42,8 @@ type Props = {
   onAdd: () => void;
   onHear: (v: Voicing, entryId: string, stringIndex?: number) => void;
   onPlay: () => void;
+  playing: boolean;
+  onStop: () => void;
   onMove: (id: string, index: number) => void;
   onChangeVoicing: (id: string, voicingId: string) => void;
   onRemoveChord: (id: string) => void;
@@ -88,7 +91,8 @@ function ChordCard({
       data-voicing={voicing.id}
     >
       <span className="motion-card-edge" aria-hidden="true" />
-      <div className="card-top">
+      <div className="song-chord-name">
+        <h3>{voicing.label}</h3>
         <button
           className="drag-handle icon-button"
           {...attributes}
@@ -97,9 +101,6 @@ function ChordCard({
         >
           <GripVertical size={18} />
         </button>
-      </div>
-      <div className="song-chord-name">
-        <h3>{voicing.label}</h3>
       </div>
       <ChordDiagram
         voicing={voicing}
@@ -152,6 +153,8 @@ export function SectionEditor({
   onAdd,
   onHear,
   onPlay,
+  playing,
+  onStop,
   onMove,
   onChangeVoicing,
   onRemoveChord,
@@ -184,9 +187,6 @@ export function SectionEditor({
       aria-label={`Section ${section.name || index + 1}`}
     >
       <header className="section-header" data-motion-entrance>
-        <span className="section-number" data-motion-heading>
-          {String(index + 1).padStart(2, "0")}
-        </span>
         <label className="section-title">
           <span className="sr-only">Section name</span>
           <input
@@ -200,11 +200,11 @@ export function SectionEditor({
         <div className="section-controls">
           <button
             className="icon-button"
-            onClick={onPlay}
+            onClick={playing ? onStop : onPlay}
             disabled={!section.chords.length}
-            aria-label={`Play section ${section.name}`}
+            aria-label={`${playing ? "Stop" : "Play"} section ${section.name}`}
           >
-            <Play size={17} />
+            {playing ? <Square size={17} aria-hidden="true" /> : <Play size={17} aria-hidden="true" />}
           </button>
           <button
             className="icon-button muted"

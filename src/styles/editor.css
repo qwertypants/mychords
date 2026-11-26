@@ -163,7 +163,7 @@
   background: var(--surface);
   border-radius: 8px;
   min-width: 0;
-  padding: 0 10px;
+  padding: 12px 10px 0;
   position: relative;
 }
 .song-chord.is-playing {
@@ -176,13 +176,6 @@
   opacity: 0.85;
   box-shadow: 0 7px 18px var(--drag-shadow);
 }
-.card-top {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 33px;
-  margin-right: -7px;
-}
 .drag-handle {
   cursor: grab;
   color: var(--drag-handle);
@@ -193,21 +186,21 @@
   cursor: grabbing;
 }
 .song-chord-name {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px;
-  margin-top: 5px;
+  position: relative;
+  padding-right: 30px;
+}
+.song-chord-name .drag-handle {
+  position: absolute;
+  top: -12px;
+  right: -7px;
 }
 .song-chord-name h3 {
-  font: 700 27px var(--display);
+  font: 700 26px var(--display);
   overflow-wrap: anywhere;
   min-width: 0;
 }
-.song-chord-name > span {
-  font: 500 13px var(--display);
-  color: var(--muted);
-  white-space: nowrap;
+.song-chord .chord-diagram {
+  width: 127px;
 }
 .chord-diagram {
   width: 140px;
