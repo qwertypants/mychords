@@ -1,6 +1,5 @@
-import { Plus } from "lucide-react";
+import { ArrowUpRight, Plus } from "lucide-react";
 import type { Song } from "./types";
-import { SongCards } from "./SongLibrary";
 
 const PAGE_SIZE = 12;
 
@@ -23,7 +22,21 @@ export function SongsPage({ songs, page, onPage, onNew, onOpen }: {
           <button className="button secondary" onClick={onNew}><Plus size={16} /> New song</button>
         </header>
         {songs.length ? (
-          <SongCards songs={songs.slice(start, start + PAGE_SIZE)} start={start} onOpen={onOpen} />
+          <ul className="song-list">
+            {songs.slice(start, start + PAGE_SIZE).map((song, index) => (
+              <li key={song.id}>
+                <button className="song-list-row" onClick={() => onOpen(song)} aria-label={`Open ${song.name || "Untitled song"}`}>
+                  <span className="song-list-number">{String(start + index + 1).padStart(2, "0")}</span>
+                  <span className="song-list-name">{song.name || "Untitled song"}</span>
+                  <span className="song-list-details">
+                    {song.sections.length} sections · {song.sections.reduce((count, section) => count + section.chords.length, 0)} chords
+                  </span>
+                  <span className="song-list-date">{new Date(song.updatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+                  <ArrowUpRight size={18} aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
         ) : (
           <div className="library-empty">
             <h2>Every idea deserves a page.</h2>

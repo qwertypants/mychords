@@ -42,14 +42,14 @@ test("saved songs paginate across direct visits and browser history", async ({ p
   await page.reload();
   await expect(page.locator(".saved-song")).toHaveCount(3);
   await page.getByRole("button", { name: "View all songs" }).click();
-  await expect(page.locator(".saved-song")).toHaveCount(12);
+  await expect(page.locator(".song-list-row")).toHaveCount(12);
   await page.getByRole("button", { name: "Next" }).click();
   await expect(page.getByText("Page 2 of 3")).toBeVisible();
   await expect(page.getByRole("button", { name: "Open Open Road" })).toBeVisible();
   await page.reload();
   await expect(page.getByText("Page 2 of 3")).toBeVisible();
   await page.getByRole("button", { name: "Next" }).click();
-  await expect(page.locator(".saved-song")).toHaveCount(1);
+  await expect(page.locator(".song-list-row")).toHaveCount(1);
   await expect(page.getByRole("button", { name: "Next" })).toBeDisabled();
   await page.goBack();
   await expect(page.getByText("Page 2 of 3")).toBeVisible();

@@ -54,6 +54,29 @@
   }
 }
 @media (max-width: 600px) {
+  .song-list-row {
+    grid-template-columns: 30px minmax(0, 1fr) 18px;
+    gap: 12px;
+    padding: 16px 4px;
+  }
+  .song-list-name {
+    font-size: 19px;
+  }
+  .song-list-details,
+  .song-list-date {
+    grid-column: 2;
+    font-size: 12px;
+  }
+  .song-list-details {
+    grid-row: 2;
+  }
+  .song-list-date {
+    grid-row: 3;
+  }
+  .song-list-row > svg {
+    grid-column: 3;
+    grid-row: 1;
+  }
   .app-header {
     height: 72px;
     margin: 0 6%;
