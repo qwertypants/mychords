@@ -328,7 +328,8 @@
   .picker-results {
     padding: 12px 16px 18px;
   }
-  .picker-playback {
+  .picker-playback,
+  .picker-strum-speed {
     padding: 2px 20px;
   }
   .results-count {

@@ -16,12 +16,16 @@ import type { Song } from "./songs/types";
 import { usePlayback } from "./audio/usePlayback";
 import { previewEntryId } from "./audio/guitar";
 import { PlaybackControls } from "./audio/PlaybackControls";
+import { StrumSpeedSelect } from "./audio/StrumSpeedSelect";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { PwaControls } from "./pwa/PwaControls";
 import "./styles.css";
 export default function App() {
   const store = useSongLibrary();
   const audio = usePlayback();
+  const strumSpeedControl = (
+    <StrumSpeedSelect speed={audio.strumSpeed} onChange={audio.changeStrumSpeed} />
+  );
   const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [pending, setPending] = useState<(() => void) | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
@@ -162,6 +166,7 @@ export default function App() {
           onHear={hear}
           onPlay={audio.play}
           playback={audio.state}
+          strumSpeedControl={strumSpeedControl}
           onRemoveSection={(id) => {
             const section = store.draft?.sections.find((s) => s.id === id);
             if (section?.chords.length) setRemoveId(id);
@@ -176,6 +181,7 @@ export default function App() {
           onExplore={() => setPickerFor("new")}
           onHear={(v) => hear(v, previewEntryId("library", v.id))}
           playback={audio.state}
+          strumSpeedControl={strumSpeedControl}
           onStop={audio.stop}
         />
       )}
@@ -202,6 +208,8 @@ export default function App() {
           }
           onHear={(v, stringIndex) => audio.play([{ entryId: stringIndex === undefined ? previewEntryId("picker", v.id) : `picker-note:${v.id}:${stringIndex}`, voicing: v, stringIndex }])}
           activeEntryId={audio.state.activeEntryId}
+          strumInterval={audio.state.strumInterval}
+          strumSpeedControl={strumSpeedControl}
           onAdd={add}
           onClose={() => {
             audio.stop();

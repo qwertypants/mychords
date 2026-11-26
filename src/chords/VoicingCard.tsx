@@ -6,9 +6,10 @@ import { ChordDiagram } from "./ChordDiagram";
 import type { Voicing } from "./types";
 import { pulseIcon, useMotion } from "../motion";
 type ChordAddition = { voicingId: string };
-export function VoicingCard({ voicing, playing, added, onHear, onNote, onAdd }: {
+export function VoicingCard({ voicing, playing, strumInterval, added, onHear, onNote, onAdd }: {
   voicing: Voicing;
   playing: boolean;
+  strumInterval?: number;
   added: ChordAddition | null;
   onHear: () => void;
   onNote: (stringIndex: number) => void;
@@ -39,7 +40,7 @@ export function VoicingCard({ voicing, playing, added, onHear, onNote, onAdd }: 
         <h3>{label}</h3>
         <span>Fret {positionOf(frets)}</span>
       </div>
-      <ChordDiagram voicing={voicing} playing={playing} onNote={onNote} />
+      <ChordDiagram voicing={voicing} playing={playing} strumInterval={strumInterval} onNote={onNote} />
       <div className="voicing-actions">
         <button onClick={onHear} aria-label={`Hear ${label}, ${frets.join(" ")}`}>
           <Play size={18} fill="currentColor" aria-hidden="true" />

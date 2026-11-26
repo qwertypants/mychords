@@ -35,6 +35,7 @@ type Props = {
   section: Section;
   index: number;
   activeEntryId: string | null;
+  strumInterval?: number;
   onRename: (name: string) => void;
   onRemove: () => void;
   onAdd: () => void;
@@ -48,6 +49,7 @@ function ChordCard({
   index,
   total,
   active,
+  strumInterval,
   onMove,
   onRemove,
   onHear,
@@ -56,6 +58,7 @@ function ChordCard({
   index: number;
   total: number;
   active: boolean;
+  strumInterval?: number;
   onMove: (index: number) => void;
   onRemove: () => void;
   onHear: Props["onHear"];
@@ -99,6 +102,7 @@ function ChordCard({
       <ChordDiagram
         voicing={voicing}
         playing={active}
+        strumInterval={strumInterval}
         onNote={(stringIndex) => onHear(voicing, `song-note:${entry.id}:${stringIndex}`, stringIndex)}
       />
       <button
@@ -140,6 +144,7 @@ export function SectionEditor({
   section,
   index,
   activeEntryId,
+  strumInterval,
   onRename,
   onRemove,
   onAdd,
@@ -230,6 +235,7 @@ export function SectionEditor({
                 index={i}
                 total={section.chords.length}
                 active={activeEntryId === previewEntryId("song", entry.id)}
+                strumInterval={strumInterval}
                 onMove={(target) => move(entry.id, target)}
                 onRemove={() => onRemoveChord(entry.id)}
                 onHear={onHear}

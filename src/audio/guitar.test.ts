@@ -23,6 +23,24 @@ test("nearest sample is selected without rounding away semitones", () => {
   expect(nearestSample(42, [40, 44])).toBe(40);
 });
 
+test.each([
+  ["slow", [0, 100, 200, 300, 400]],
+  ["normal", [0, 25, 50, 75, 100]],
+  ["together", [0, 0, 0, 0, 0]],
+] as const)("%s keeps the same pitches and chord starts", (speed, offsets) => {
+  const events = planStrums([
+    { entryId: "first", voicing: c },
+    { entryId: "second", voicing: c },
+  ], speed);
+  expect(events.slice(0, 5).map(({ midi }) => midi)).toEqual([48, 52, 55, 60, 64]);
+  expect(events.map(({ at }) => Math.round(at * 1000))).toEqual([
+    ...offsets,
+    ...offsets.map((offset) => 1800 + offset),
+  ]);
+  expect(planStrums([{ entryId: "note", voicing: c, stringIndex: 5 }], speed))
+    .toEqual([{ entryId: "note", midi: 64, at: 0 }]);
+});
+
 test("a clicked string plays only its exact pitch, while muted strings stay silent", () => {
   expect(planStrums([{ entryId: "note", voicing: c, stringIndex: 1 }])).toEqual([{ entryId: "note", midi: 48, at: 0 }]);
   expect(planStrums([{ entryId: "open", voicing: c, stringIndex: 5 }])).toEqual([{ entryId: "open", midi: 64, at: 0 }]);

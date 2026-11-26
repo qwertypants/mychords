@@ -6,31 +6,42 @@ export type PlaybackState = {
   status: "idle" | "loading" | "playing" | "error";
   activeEntryId: string | null;
   message: string | null;
+  strumInterval?: number;
 };
 export interface GuitarPlayer {
   play(
     items: readonly PreviewItem[],
     onState: (s: PlaybackState) => void,
+    speed?: StrumSpeed,
   ): Promise<void>;
   stop(): void;
   dispose(): void;
 }
-export const STRUM_STRING_INTERVAL = 0.025;
+export const STRUM_INTERVALS = { slow: 0.1, normal: 0.025, together: 0 } as const;
+export type StrumSpeed = keyof typeof STRUM_INTERVALS;
+const CHORD_INTERVAL = 1.8;
+const NOTE_DURATION = 1.65;
+const START_DELAY = 0.05;
 
 export function previewEntryId(source: "library" | "picker" | "song", id: string) {
   return `${source}:${id}`;
 }
 
-export function planStrums(items: readonly PreviewItem[]) {
+export function planStrums(
+  items: readonly PreviewItem[],
+  speed: StrumSpeed = "normal",
+) {
+  const interval = STRUM_INTERVALS[speed];
   return items.flatMap((item, index) => {
+    const chordStart = index * CHORD_INTERVAL;
     if (item.stringIndex !== undefined) {
       const midi = midiForString(item.voicing.frets, item.stringIndex);
-      return midi === null ? [] : [{ entryId: item.entryId, midi, at: index * 1.8 }];
+      return midi === null ? [] : [{ entryId: item.entryId, midi, at: chordStart }];
     }
     return midiForFrets(item.voicing.frets).map((midi, stringIndex) => ({
       entryId: item.entryId,
       midi,
-      at: index * 1.8 + stringIndex * STRUM_STRING_INTERVAL,
+      at: chordStart + stringIndex * interval,
     }));
   });
 }
@@ -119,7 +130,7 @@ export function createGuitarPlayer(): GuitarPlayer {
     timers.add(timer);
   };
   return {
-    async play(items, onState) {
+    async play(items, onState, speed = "normal") {
       stop();
       notify = onState;
       const token = run;
@@ -139,9 +150,10 @@ export function createGuitarPlayer(): GuitarPlayer {
         await resumed;
         const loaded = await load(context);
         if (token !== run || disposed) return;
-        const start = context.currentTime + 0.05;
+        const start = context.currentTime + START_DELAY;
         const keys = [...loaded.keys()];
-        for (const event of planStrums(items)) {
+        const events = planStrums(items, speed);
+        for (const event of events) {
           const sample = nearestSample(event.midi, keys),
             buffer = loaded.get(sample);
           if (!buffer) throw new Error("Missing decoded sample");
@@ -165,7 +177,7 @@ export function createGuitarPlayer(): GuitarPlayer {
             gains.delete(gain);
           };
           source.start(at);
-          source.stop(at + 1.65);
+          source.stop(at + NOTE_DURATION);
         }
         items.forEach((item, index) =>
           later(
@@ -175,16 +187,19 @@ export function createGuitarPlayer(): GuitarPlayer {
                   status: "playing",
                   activeEntryId: item.entryId,
                   message: null,
+                  strumInterval: STRUM_INTERVALS[speed],
                 });
             },
-            50 + index * 1800,
+            (START_DELAY + index * CHORD_INTERVAL) * 1000,
           ),
         );
+        const lastNoteEnd = (events.at(-1)?.at ?? 0) + NOTE_DURATION;
+        const previewEnd = Math.max(items.length * CHORD_INTERVAL, lastNoteEnd);
         later(
           () => {
             if (token === run) stop();
           },
-          50 + (items.length - 1) * 1800 + 1800,
+          Math.ceil((START_DELAY + previewEnd) * 1000),
         );
       } catch {
         if (token !== run || disposed) return;

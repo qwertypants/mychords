@@ -2,10 +2,20 @@ import { useRef } from "react";
 import gsap from "gsap";
 import type { Voicing } from "./types";
 import { positionOf } from "./pitch";
-import { STRUM_STRING_INTERVAL } from "../audio/guitar";
+import { STRUM_INTERVALS } from "../audio/guitar";
 import { useMotion } from "../motion";
 
-export function ChordDiagram({ voicing, playing, onNote }: { voicing: Voicing; playing: boolean; onNote?: (stringIndex: number) => void }) {
+export function ChordDiagram({
+  voicing,
+  playing,
+  strumInterval = STRUM_INTERVALS.normal,
+  onNote,
+}: {
+  voicing: Voicing;
+  playing: boolean;
+  strumInterval?: number;
+  onNote?: (stringIndex: number) => void;
+}) {
   const diagram = useRef<SVGSVGElement>(null);
   useMotion(diagram, playing && voicing.id, (svg) => {
     const markers = Array.from(svg.querySelectorAll("[data-strum-string]")).sort(
@@ -18,7 +28,7 @@ export function ChordDiagram({ voicing, playing, onNote }: { voicing: Voicing; p
         "--strum-scale": 1,
         "--strum-glow": 0,
         duration: 0.29,
-        stagger: STRUM_STRING_INTERVAL,
+        stagger: strumInterval,
         ease: "power1.out",
         overwrite: "auto",
         immediateRender: false,

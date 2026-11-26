@@ -1,8 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { createGuitarPlayer } from "./guitar";
-import type { PreviewItem, GuitarPlayer, PlaybackState } from "./guitar";
+import { createGuitarPlayer, STRUM_INTERVALS } from "./guitar";
+import type { PreviewItem, GuitarPlayer, PlaybackState, StrumSpeed } from "./guitar";
+
+const STRUM_SPEED_KEY = "mychords.strumSpeed";
+
+function readStrumSpeed(): StrumSpeed {
+  try {
+    const saved = localStorage.getItem(STRUM_SPEED_KEY);
+    if (saved && Object.hasOwn(STRUM_INTERVALS, saved)) return saved as StrumSpeed;
+  } catch {
+    // Browser storage may be unavailable.
+  }
+  return "normal";
+}
 export function usePlayback() {
   const player = useRef<GuitarPlayer | null>(null);
+  const [strumSpeed, setStrumSpeed] = useState(readStrumSpeed);
   const [state, setState] = useState<PlaybackState>({
     status: "idle",
     activeEntryId: null,
@@ -21,9 +34,18 @@ export function usePlayback() {
   }, []);
   return {
     state,
+    strumSpeed,
+    changeStrumSpeed: (speed: StrumSpeed) => {
+      setStrumSpeed(speed);
+      try {
+        localStorage.setItem(STRUM_SPEED_KEY, speed);
+      } catch {
+        // Keep the selection for the current session.
+      }
+    },
     play: (items: readonly PreviewItem[]) => {
       player.current ??= createGuitarPlayer();
-      void player.current.play(items, setState);
+      void player.current.play(items, setState, strumSpeed);
     },
     stop: () => player.current?.stop(),
   };

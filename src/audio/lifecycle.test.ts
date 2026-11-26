@@ -110,3 +110,20 @@ test("failed load can be retried; empty playback is idle", async () => {
   expect(states.at(-1)?.status).toBe("idle");
   player.dispose();
 });
+
+test("slow playback lets the final note ring after the normal preview end", async () => {
+  const player = createGuitarPlayer();
+  const states: PlaybackState[] = [];
+  const voicing = catalog.find((v) => v.frets.every((fret) => fret >= 0));
+  if (!voicing) throw new Error("Six-string fixture unavailable");
+  await player.play([{ entryId: "slow", voicing }], (s) => states.push(s), "slow");
+  const last = nodes.at(-1)!;
+  expect(last.start).toHaveBeenCalledWith(0.55);
+  expect(last.stop.mock.calls[0][0]).toBeCloseTo(2.2);
+  await vi.advanceTimersByTimeAsync(1851);
+  expect(states.at(-1)).toMatchObject({ status: "playing", strumInterval: 0.1 });
+  expect(last.stop).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(350);
+  expect(states.at(-1)?.status).toBe("idle");
+  player.dispose();
+});

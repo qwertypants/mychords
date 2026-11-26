@@ -313,11 +313,12 @@ button {
   padding-top: 16px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   color: var(--muted);
   font-size: 10px;
 }
-.hero-footnote > svg {
+.hero-footnote .strum-speed {
   margin-left: auto;
 }
 .sound-dot,

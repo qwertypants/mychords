@@ -4,11 +4,12 @@ import type { Voicing } from "./types";
 import { VoicingCard } from "./VoicingCard";
 import { previewEntryId } from "../audio/guitar";
 
-export function ChordGroups({ groups, expanded, onExpand, activeEntryId, added, onHear, onAdd }: {
+export function ChordGroups({ groups, expanded, onExpand, activeEntryId, strumInterval, added, onHear, onAdd }: {
   groups: ChordGroup[];
   expanded: string | null;
   onExpand: (id: string | null) => void;
   activeEntryId: string | null;
+  strumInterval?: number;
   added: { voicingId: string } | null;
   onHear: (v: Voicing, stringIndex?: number) => void;
   onAdd: (v: Voicing) => void;
@@ -28,6 +29,7 @@ export function ChordGroups({ groups, expanded, onExpand, activeEntryId, added, 
   const rowEnd = selectedIndex < 0 ? -1 : Math.min(groups.length - 1, Math.floor(selectedIndex / columns) * columns + columns - 1);
   const card = (v: Voicing, preview = false) => <VoicingCard key={v.id} voicing={v}
     playing={preview === previewPlaying && activeEntryId === previewEntryId("picker", v.id)}
+    strumInterval={strumInterval}
     added={added?.voicingId === v.id ? added : null} onHear={() => { setPreviewPlaying(preview); onHear(v); }} onNote={(stringIndex) => { setPreviewPlaying(preview); onHear(v, stringIndex); }} onAdd={() => onAdd(v)} />;
   const toggle = (group: ChordGroup) => {
     const trigger = triggers.current.get(group.id);

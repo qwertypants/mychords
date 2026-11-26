@@ -163,7 +163,8 @@
   padding: 0 8px;
   width: 100%;
 }
-.picker-playback {
+.picker-playback,
+.picker-strum-speed {
   padding: 3px 28px;
   border-bottom: 1px solid var(--line);
   min-height: 43px;

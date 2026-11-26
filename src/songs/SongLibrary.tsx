@@ -30,6 +30,7 @@ export function SongLibrary({
   onExplore,
   onHear,
   playback,
+  strumSpeedControl,
   onStop,
 }: {
   songs: Song[];
@@ -38,6 +39,7 @@ export function SongLibrary({
   onExplore: () => void;
   onHear: (v: Voicing) => void;
   playback: PlaybackState;
+  strumSpeedControl?: React.ReactNode;
   onStop: () => void;
 }) {
   const main = useRef<HTMLElement>(null);
@@ -94,7 +96,7 @@ export function SongLibrary({
                 >
                   <span className="motion-card-edge" aria-hidden="true" />
                   <span className="hero-chord-label">{v.label}</span>
-                  <ChordDiagram voicing={v} playing={playing} />
+                  <ChordDiagram voicing={v} playing={playing} strumInterval={playback.strumInterval} />
                   <span className="hero-hear">
                     <Volume2 size={14} />
                     Hear
@@ -105,8 +107,8 @@ export function SongLibrary({
           </div>
           <div className="hero-footnote">
             <span className="sound-dot" />
-            Sampled acoustic guitar
-            <Music2 size={17} />
+            <span>Sampled acoustic guitar</span>
+            {strumSpeedControl}
           </div>
         </div>
       </section>

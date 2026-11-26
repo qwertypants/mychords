@@ -26,6 +26,7 @@ export function SongEditor({
   onPlay,
   onRemoveSection,
   playback,
+  strumSpeedControl,
 }: {
   song: Song;
   isShared?: boolean;
@@ -37,6 +38,7 @@ export function SongEditor({
   onPlay: (items: PreviewItem[]) => void;
   onRemoveSection: (id: string) => void;
   playback: PlaybackState;
+  strumSpeedControl?: React.ReactNode;
 }) {
   const [shareMessage, setShareMessage] = useState("");
   const [fallbackLink, setFallbackLink] = useState<string | null>(null);
@@ -126,6 +128,7 @@ export function SongEditor({
         </ConfirmDialog>
       )}
       {playback.status === "error" && <p role="alert">{playback.message}</p>}
+      {strumSpeedControl}
       <div className="sections">
         {song.sections.map((section, i) => (
           <SectionEditor
@@ -133,6 +136,7 @@ export function SongEditor({
             section={section}
             index={i}
             activeEntryId={playback.activeEntryId}
+            strumInterval={playback.strumInterval}
             onRename={(name) => onChange(renameSection(song, section.id, name))}
             onRemove={() => onRemoveSection(section.id)}
             onAdd={() => onAdd(section.id)}

@@ -20,6 +20,8 @@ export function ChordPicker({
   sectionName,
   playback,
   activeEntryId,
+  strumInterval,
+  strumSpeedControl,
 }: {
   onHear: (v: Voicing, stringIndex?: number) => void;
   onAdd: (v: Voicing) => boolean;
@@ -27,6 +29,8 @@ export function ChordPicker({
   sectionName: string;
   playback?: React.ReactNode;
   activeEntryId: string | null;
+  strumInterval?: number;
+  strumSpeedControl?: React.ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLInputElement>(null);
@@ -264,6 +268,7 @@ export function ChordPicker({
         </div>
         </div>
       </div>
+      {strumSpeedControl && <div className="picker-strum-speed">{strumSpeedControl}</div>}
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">
@@ -275,7 +280,7 @@ export function ChordPicker({
           return shown.length > 0 && <section key={r} className="chord-root-section" aria-label={r + " chords"}>
             <h3>{r} chords <span>{visible.length}</span></h3>
             <ChordGroups groups={shown} expanded={expanded} onExpand={setExpanded}
-              activeEntryId={activeEntryId} added={added} onHear={onHear}
+              activeEntryId={activeEntryId} strumInterval={strumInterval} added={added} onHear={onHear}
               onAdd={v => { if (onAdd(v)) setAdded({ voicingId: v.id }); }} />
           </section>;
         })}
