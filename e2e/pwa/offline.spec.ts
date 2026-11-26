@@ -131,6 +131,11 @@ for (const path of ["/", "/mychords/"]) {
     await request.post("/__pwa-test/release?version=b");
     await page.evaluate(async () => { await (await navigator.serviceWorker.ready).update(); });
     await expect(page.getByText(/Update ready\./)).toBeVisible();
+    await page.getByRole("button", { name: "Update now" }).click();
+    await expect(page.getByText(/Close or update your other MyChords windows/)).toBeVisible();
+    await page.getByRole("button", { name: "Later" }).click();
+    await expect(page.getByRole("button", { name: "Update available" })).toBeVisible();
+    await page.getByRole("button", { name: "Update available" }).click();
     await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Autosaved idea");
     await page.close();
     await expect.poll(() => second.evaluate(async () => Boolean((await navigator.serviceWorker.ready).waiting))).toBe(true);
@@ -225,4 +230,84 @@ test("a direct GitHub Pages song URL loads before service worker installation", 
   expect(response?.status()).toBe(404);
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Direct link");
   await expect(page.locator('a[href="/mychords/credits.html"]')).toBeVisible();
+});
+
+test("a single window applies a ready update and retains its saved song", async ({ page, context, request }) => {
+  await ready(page, "/mychords/");
+  await page.reload();
+  await activate(page.getByRole("button", { name: "New song", exact: true }).filter({ visible: true }).first());
+  await page.getByLabel("Song name", { exact: true }).fill("Song before update");
+  await request.post("/__pwa-test/release?version=b");
+  await page.evaluate(async () => { await (await navigator.serviceWorker.ready).update(); });
+  await expect(page.getByRole("button", { name: "Update now" })).toBeVisible();
+  await page.getByRole("button", { name: "Update now" }).click();
+  await expect.poll(async () => (await (await request.get("/__pwa-test/state")).json()).activeRelease).toBe("b");
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Song before update");
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Song before update");
+});
+
+test("an unsaved song blocks update activation until saving succeeds", async ({ page, request }) => {
+  await page.addInitScript(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (key === "mychords.library.v1" && document.documentElement.dataset.failSaving === "yes") throw new Error("storage full");
+      return original.call(this, key, value);
+    };
+  });
+  await ready(page, "/mychords/");
+  await page.reload();
+  await activate(page.getByRole("button", { name: "New song", exact: true }).filter({ visible: true }).first());
+  await page.evaluate(() => { document.documentElement.dataset.failSaving = "yes"; });
+  await page.getByLabel("Song name", { exact: true }).fill("Unsaved song");
+  await request.post("/__pwa-test/release?version=b");
+  await page.evaluate(async () => { await (await navigator.serviceWorker.ready).update(); });
+  await expect(page.getByRole("button", { name: "Update now" })).toBeDisabled();
+  await expect(page.getByText(/Save your song before updating/)).toBeVisible();
+  await page.evaluate(() => { delete document.documentElement.dataset.failSaving; });
+  await page.getByRole("button", { name: "Retry saving" }).click();
+  await expect(page.getByRole("button", { name: "Update now" })).toBeEnabled();
+  await page.getByRole("button", { name: "Update now" }).click();
+  await expect.poll(async () => (await (await request.get("/__pwa-test/state")).json()).activeRelease).toBe("b");
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Unsaved song");
+});
+
+test("a ready update applies on a safe fresh launch", async ({ page, context, request }) => {
+  await ready(page, "/mychords/");
+  await page.reload();
+  await activate(page.getByRole("button", { name: "New song", exact: true }).filter({ visible: true }).first());
+  await request.post("/__pwa-test/release?version=b");
+  await page.evaluate(async () => { await (await navigator.serviceWorker.ready).update(); });
+  await expect(page.getByRole("button", { name: "Update now" })).toBeVisible();
+  const launched = await context.newPage();
+  await launched.goto("/mychords/");
+  await expect(launched.getByText(/Close or update your other MyChords windows/)).toBeVisible();
+  await page.close();
+  await launched.reload();
+  await expect.poll(async () => (await (await request.get("/__pwa-test/state")).json()).activeRelease).toBe("b");
+  await expect(launched.getByRole("button", { name: "Hear C", exact: true })).toBeVisible();
+});
+
+test("checks for updates on launch, foreground, online and every fifteen minutes", async ({ page }) => {
+  await page.clock.install();
+  await page.addInitScript(() => {
+    const original = ServiceWorkerRegistration.prototype.update;
+    ServiceWorkerRegistration.prototype.update = function () {
+      document.documentElement.dataset.updateChecks = String(Number(document.documentElement.dataset.updateChecks || 0) + 1);
+      return original.call(this);
+    };
+  });
+  await ready(page, "/mychords/");
+  const checks = () => page.evaluate(() => Number(document.documentElement.dataset.updateChecks || 0));
+  await expect.poll(checks).toBeGreaterThanOrEqual(1);
+  let previous = await checks();
+  await page.evaluate(() => { document.dispatchEvent(new Event("visibilitychange")); });
+  await expect.poll(checks).toBeGreaterThan(previous);
+  previous = await checks();
+  await page.evaluate(() => { window.dispatchEvent(new Event("online")); });
+  await expect.poll(checks).toBeGreaterThan(previous);
+  previous = await checks();
+  await page.clock.fastForward(15 * 60 * 1000);
+  await expect.poll(checks).toBeGreaterThan(previous);
 });

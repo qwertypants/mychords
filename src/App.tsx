@@ -251,7 +251,7 @@ export default function App() {
           <button className="button secondary" onClick={() => store.saveDraft()}>Retry saving</button>
         </div>
       )}
-      <PwaControls />
+      <PwaControls dirty={store.dirty} />
       <footer className="app-footer">
         <span>
           <LockKeyhole size={13} />

@@ -25,7 +25,8 @@ export default defineConfig({
     workbox: {
       cacheId: "mychords",
       globPatterns: ["**/*.{html,js,css,json,woff,woff2,mp3,svg,png,txt,webmanifest}"],
-      // Keep the previous release active until every window has closed.
+      importScripts: ["update-worker.js"],
+      // Activate only after the waiting worker checks for other windows.
       skipWaiting: false,
       clientsClaim: false,
       // Activation prunes this precache. Broad legacy-cache cleanup can also
