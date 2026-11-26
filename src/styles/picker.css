@@ -102,6 +102,21 @@
   color: var(--ink);
   outline-offset: 0;
 }
+.search-clear {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.search-clear:hover { color: var(--ink); }
+.search-clear:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .picker-playback,
 .picker-strum-speed {
   padding: 3px 28px;

@@ -54,6 +54,9 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "D♭" } });
   expect(screen.getByRole("radio", { name: "Whole neck" })).toBeChecked();
   expect(screen.getByRole("button", { name: "Shapes for C#/C" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+  expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("");
+  expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "no-such-chord" } });
   fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
   expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("");

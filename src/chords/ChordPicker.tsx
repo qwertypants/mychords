@@ -176,11 +176,11 @@ export function ChordPicker({
         </button>
         <div id="picker-search-controls" hidden={!searchExpanded}>
         <div className="search-combobox">
-        <label className="search-field">
+        <div className="search-field">
           <Search size={18} />
-          <span className="sr-only">Search chords</span>
           <input
             ref={search}
+            aria-label="Search chords"
             role="combobox"
             aria-autocomplete="list"
             aria-expanded={suggestionsOpen && suggestions.length > 0}
@@ -230,7 +230,19 @@ export function ChordPicker({
               })
             }
           />
-        </label>
+          {text && <button
+            className="search-clear"
+            type="button"
+            aria-label="Clear search"
+            onClick={() => {
+              filter(() => {
+                setRoot(""); setCategory("All"); setText(""); setRegion("all");
+              });
+              setSuggestionsOpen(false);
+              search.current?.focus();
+            }}
+          ><X size={16} aria-hidden="true" /></button>}
+        </div>
         {suggestionsOpen && suggestions.length > 0 && (
           <ul id="chord-suggestions" className="chord-suggestions" role="listbox" aria-label="Chord suggestions">
             {suggestions.map((group, index) => (
