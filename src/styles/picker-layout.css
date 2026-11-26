@@ -12,16 +12,17 @@
   margin-top: 12px;
 }
 .picker-option-groups > .icon-options,
-.picker-option-groups > .picker-strum-speed {
+.picker-option-groups .picker-strum-speed > .icon-options {
   min-width: 0;
-  padding: 8px;
+  padding: 8px 4px;
   border: 1px solid var(--line);
   border-radius: 8px;
 }
-.picker-option-groups .picker-strum-speed { margin: 0; }
+.picker-option-groups > .picker-strum-speed { min-width: 0; padding: 0; border: 0; margin: 0; }
+.picker-option-groups .picker-strum-speed > .icon-options { width: 100%; height: 100%; box-sizing: border-box; }
 .picker-option-groups legend { margin: 0 0 5px; font-size: 12px; white-space: nowrap; }
 .picker-option-groups legend svg { vertical-align: -2px; margin-right: 2px; }
-.picker-option-groups .icon-options-row { grid-auto-flow: row; gap: 5px; }
+.picker-option-groups .icon-options-row { grid-auto-flow: row; gap: 5px 3px; }
 .picker-option-groups .neck-position .icon-options-row { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .picker-option-groups .neck-position .icon-option { grid-column: span 2; }
 .picker-option-groups .neck-position .icon-option:nth-child(n + 4) { grid-column: span 3; }
