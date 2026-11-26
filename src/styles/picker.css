@@ -33,6 +33,31 @@
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
 }
+.picker-header-copy {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-width: 0;
+}
+.picker-header-copy > .eyebrow { white-space: nowrap; }
+.picker-selected-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+.picker-selected-option {
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--ink);
+  font: 600 11px/1.3 var(--display);
+  overflow-wrap: anywhere;
+}
+.picker-header > .icon-button { flex-shrink: 0; }
 .picker-filters {
   padding: 20px 28px 16px;
   flex-shrink: 0;

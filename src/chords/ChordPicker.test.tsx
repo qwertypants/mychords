@@ -124,6 +124,9 @@ test("restores exploration options after the picker is reopened", () => {
   first.unmount();
 
   render(<ChordPicker {...props} />);
+  expect(screen.getByLabelText("Selected chord options")).toHaveTextContent("Root D");
+  expect(screen.getByLabelText("Selected chord options")).toHaveTextContent("Type Minor");
+  expect(screen.getByLabelText("Selected chord options")).toHaveTextContent("Frets 5–9");
   expect(screen.getByRole("button", { name: "D" })).toHaveAttribute("aria-pressed", "true");
   expect(screen.getByRole("button", { name: "Filters" })).toHaveAttribute("aria-expanded", "false");
   fireEvent.click(screen.getByRole("button", { name: "Filters" }));
@@ -138,6 +141,8 @@ test("restores an exact chord search and ignores invalid saved options", () => {
   fireEvent.click(screen.getByText("C/A", { selector: ".chord-suggestions span" }));
   first.unmount();
   const second = render(<ChordPicker {...props} />);
+  expect(screen.getByLabelText("Selected chord options")).toHaveTextContent("Chord C/A");
+  expect(screen.getByLabelText("Selected chord options")).not.toHaveTextContent("Root C");
   expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("C/A");
   expect(screen.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ })).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /^Shapes for C\/Ab, \d+ other shapes?$/ })).not.toBeInTheDocument();
@@ -145,6 +150,7 @@ test("restores an exact chord search and ignores invalid saved options", () => {
 
   localStorage.setItem("mychords.pickerOptions.v1", JSON.stringify({ root: "H", category: "Other", region: "99" }));
   render(<ChordPicker {...props} />);
+  expect(screen.getByLabelText("Selected chord options")).toHaveTextContent("Root C");
   expect(screen.getByRole("button", { name: "C" })).toHaveAttribute("aria-pressed", "true");
   expect(screen.getByRole("group", { name: "Chord categories" }).querySelector('button[aria-pressed="true"]')).toHaveTextContent("All");
   expect(screen.getByRole("radio", { name: "Whole neck" })).toBeChecked();

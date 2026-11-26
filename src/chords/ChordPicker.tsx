@@ -70,6 +70,11 @@ export function ChordPicker({
   const [region, setRegion] = useState(initial.region);
   const [limit, setLimit] = useState(24);
   const [added, setAdded] = useState<ChordAddition | null>(null);
+  const selectedOptions = [
+    selectedGroupId ? { key: "chord", label: `Chord ${text}` } : root ? { key: "root", label: `Root ${root}` } : null,
+    category !== "All" ? { key: "category", label: `Type ${category}` } : null,
+    region !== "all" ? { key: "region", label: `Frets ${region}–${region === "0" ? "4" : region === "5" ? "9" : region === "10" ? "14" : "22"}` } : null,
+  ].filter((option): option is { key: string; label: string } => option !== null);
   const hideMenus = () => {
     if (!compact || expanded) return;
     if (dialog.current?.querySelector(".picker-menu-stack")?.contains(document.activeElement)) {
@@ -206,8 +211,11 @@ export function ChordPicker({
     >
       <span className="picker-motion-edge" aria-hidden="true" />
       <header className="picker-header" inert={expanded !== null}>
-        <div>
+        <div className="picker-header-copy">
           <span className="eyebrow">THE CHORD LIBRARY</span>
+          {selectedOptions.length > 0 && <div className="picker-selected-options" aria-label="Selected chord options">
+            {selectedOptions.map(option => <span className="picker-selected-option" key={option.key}>{option.label}</span>)}
+          </div>}
         </div>
         <button
           className="icon-button"
