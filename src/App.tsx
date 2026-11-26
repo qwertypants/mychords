@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Guitar,
   Plus,
@@ -19,22 +19,64 @@ import { PlaybackControls } from "./audio/PlaybackControls";
 import { StrumSpeedSelect } from "./audio/StrumSpeedSelect";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { PwaControls } from "./pwa/PwaControls";
+import { appRoot, readSongRoute, songPath } from "./songs/routes";
+import type { SongRoute } from "./songs/routes";
 import "./styles.css";
 export default function App() {
-  const store = useSongLibrary();
+  const [route, setRoute] = useState<SongRoute>(readSongRoute);
+  const importSong = useCallback((song: Song) => {
+    window.history.replaceState(window.history.state, "", `${songPath(song.id)}${window.location.search}`);
+    setRoute({ kind: "song", id: song.id });
+  }, []);
+  const store = useSongLibrary(route.kind === "song" ? route.id : null, importSong);
   const audio = usePlayback();
   const strumSpeedControl = (
     <StrumSpeedSelect speed={audio.strumSpeed} onChange={audio.changeStrumSpeed} />
   );
   const [pickerFor, setPickerFor] = useState<string | null>(null);
-  const [pending, setPending] = useState<(() => void) | null>(null);
+  const [pending, setPending] = useState<{ action: () => void; cancel?: () => void } | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
   const transition = (action: () => void) => {
     audio.stop();
-    if (store.dirty) setPending(() => action);
+    if (store.dirty) setPending({ action });
     else action();
   };
+  const navigate = (next: SongRoute) => {
+    const path = next.kind === "song" ? songPath(next.id) : appRoot();
+    if (window.location.pathname !== path)
+      window.history.pushState(window.history.state, "", path);
+    setRoute(next);
+  };
+  const goHome = () => transition(() => navigate({ kind: "library" }));
+  const createSong = () => transition(() => {
+    const song = store.newDraft();
+    navigate({ kind: "song", id: song.id });
+  });
+  useEffect(() => {
+    const onPopState = () => {
+      const target = readSongRoute();
+      audio.stop();
+      if (store.dirty) {
+        const currentPath = route.kind === "song" ? songPath(route.id) : appRoot();
+        setPending({
+          action: () => setRoute(target),
+          cancel: () => window.history.pushState(window.history.state, "", currentPath),
+        });
+      } else setRoute(target);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [audio, route, store.dirty]);
+  useEffect(() => {
+    if (store.initial.kind === "error") return;
+    if (route.kind === "song") {
+      if (store.draft?.id === route.id) return;
+      const song = store.library.songs.find((item) => item.id === route.id);
+      if (song) store.openSong(song);
+      else store.closeDraft();
+    } else if (store.draft) store.closeDraft();
+  }, [route, store]);
   const change = (song: Song) => {
     audio.stop();
     store.updateDraft(song);
@@ -48,6 +90,7 @@ export default function App() {
       const next = addSection(song ?? newSong("Untitled song"), "Verse");
       const sectionId = next.sections[0].id;
       change(addChord(next, sectionId, v.id));
+      if (!song) navigate({ kind: "song", id: next.id });
       setPickerFor(sectionId);
       return true;
     }
@@ -67,7 +110,7 @@ export default function App() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const blocked = store.initial.kind === "error";
-  const screen = blocked ? "recovery" : (store.draft?.id ?? "library");
+  const screen = blocked ? "recovery" : route.kind === "song" ? route.id : route.kind;
   const previousScreen = useRef(screen);
   useEffect(() => {
     if (previousScreen.current !== screen) {
@@ -85,7 +128,7 @@ export default function App() {
         <button
           className="brand"
           aria-label="MyChords home"
-          onClick={() => transition(store.closeDraft)}
+          onClick={goHome}
         >
           <span className="brand-icon">
             <Guitar size={21} strokeWidth={1.6} />
@@ -96,8 +139,8 @@ export default function App() {
         </button>
         <nav aria-label="Main navigation">
           <button
-            className={!store.draft ? "nav-link active" : "nav-link"}
-            onClick={() => transition(store.closeDraft)}
+            className={route.kind === "library" ? "nav-link active" : "nav-link"}
+            onClick={goHome}
           >
             <BookOpen size={16} />
             My songs
@@ -116,7 +159,7 @@ export default function App() {
         </nav>
         <button
           className="header-new icon-button"
-          onClick={() => transition(store.newDraft)}
+          onClick={createSong}
           disabled={blocked}
           aria-label="New song"
         >
@@ -154,12 +197,12 @@ export default function App() {
             </button>
           </div>
         </main>
-      ) : store.draft ? (
+      ) : route.kind === "song" && store.draft?.id === route.id ? (
         <SongEditor
           key={store.draft.id}
           song={store.draft}
           onChange={change}
-          onBack={() => transition(store.closeDraft)}
+          onBack={goHome}
           onAdd={setPickerFor}
           onHear={hear}
           onPlay={audio.play}
@@ -172,17 +215,23 @@ export default function App() {
             else if (store.draft) change(removeSection(store.draft, id));
           }}
         />
-      ) : (
+      ) : route.kind === "library" ? (
         <SongLibrary
           songs={store.library.songs}
-          onNew={() => transition(store.newDraft)}
-          onOpen={(s) => transition(() => store.openSong(s))}
+          onNew={createSong}
+          onOpen={(s) => transition(() => navigate({ kind: "song", id: s.id }))}
           onExplore={() => setPickerFor("new")}
           onHear={(v) => hear(v, previewEntryId("library", v.id))}
           playback={audio.state}
           strumSpeedControl={strumSpeedControl}
           onStop={audio.stop}
         />
+      ) : (
+        <main className="recovery" id="main-content" tabIndex={-1}>
+          <h1>Song not found</h1>
+          <p>This song isn’t saved in this browser.</p>
+          <button className="button primary" onClick={goHome}>All songs</button>
+        </main>
       )}
       {store.shareError && <div className="storage-error" role="alert">{store.shareError}</div>}
       {store.storageError && (
@@ -198,7 +247,7 @@ export default function App() {
           Saved in your browser. Just for you.
         </span>
         <span>Made for the moments between chords.</span>
-        <a href="./credits.html">Credits</a>
+        <a href={`${appRoot()}credits.html`}>Credits</a>
       </footer>
       {pickerFor && !blocked && (
         <ChordPicker
@@ -223,14 +272,14 @@ export default function App() {
       {pending && (
         <ConfirmDialog
           title="Keep your changes?"
-          onCancel={() => setPending(null)}
+          onCancel={() => { pending.cancel?.(); setPending(null); }}
           actions={
             <>
               <button
                 className="button primary"
                 onClick={() => {
                   if (store.saveDraft()) {
-                    pending();
+                    pending.action();
                     setPending(null);
                   }
                 }}
@@ -240,7 +289,7 @@ export default function App() {
               <button
                 className="button secondary"
                 onClick={() => {
-                  pending();
+                  pending.action();
                   setPending(null);
                 }}
               >

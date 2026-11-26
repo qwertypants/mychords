@@ -3,12 +3,16 @@ import type { Library, Song } from "./types";
 import { readLibrary, writeLibrary, browserStorage } from "./storage";
 import { newSong, addSection } from "./commands";
 import { readSharedSong } from "./share";
-export function useSongLibrary() {
+export function useSongLibrary(routeId: string | null, onImport: (song: Song) => void) {
   const [initial, setInitial] = useState(() => readLibrary(browserStorage));
   const [library, setLibrary] = useState<Library>(() =>
     initial.kind === "ok" ? initial.library : { version: 1, songs: [] },
   );
-  const [draft, setDraft] = useState<Song | null>(null);
+  const [draft, setDraft] = useState<Song | null>(() =>
+    initial.kind === "ok" && routeId
+      ? structuredClone(initial.library.songs.find((song) => song.id === routeId) ?? null)
+      : null,
+  );
   const [dirty, setDirty] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [shareError, setShareError] = useState<string | null>(null);
@@ -37,6 +41,7 @@ export function useSongLibrary() {
     handledShare.current = true;
     const url = new URL(window.location.href);
     if (!url.searchParams.has("song")) return;
+    let imported: Song | null = null;
     try {
       const song = readSharedSong(url.href);
       if (song) {
@@ -44,13 +49,15 @@ export function useSongLibrary() {
         // eslint-disable-next-line react/set-state-in-effect
         setDraft(song);
         saveDraft(song);
+        imported = song;
       }
     } catch (error) {
       setShareError((error as Error).message);
     }
     url.searchParams.delete("song");
     window.history.replaceState(window.history.state, "", url);
-  }, [initial.kind, saveDraft]);
+    if (imported) onImport(imported);
+  }, [initial.kind, saveDraft, onImport]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (dirty) {
@@ -96,6 +103,7 @@ export function useSongLibrary() {
       const song = addSection(newSong("Untitled song"), "Verse");
       setDraft(song);
       saveDraft(song);
+      return song;
     },
     closeDraft: () => {
       setDraft(null);

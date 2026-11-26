@@ -7,7 +7,10 @@ HTMLDialogElement.prototype.showModal = function () {
 HTMLDialogElement.prototype.close = function () {
   this.open = false;
 };
-beforeEach(() => localStorage.clear());
+beforeEach(() => {
+  localStorage.clear();
+  window.history.replaceState(null, "", "/");
+});
 test("compose, save and reopen a song with exact repeated voicings", () => {
   const view = render(<App />);
   fireEvent.click(screen.getAllByRole("button", { name: "New song" })[0]);
@@ -29,7 +32,7 @@ test("compose, save and reopen a song with exact repeated voicings", () => {
   expect(screen.queryByRole("button", { name: "Play song" })).not.toBeInTheDocument();
   view.unmount();
   render(<App />);
-  fireEvent.click(screen.getByRole("button", { name: "Open Idea" }));
+  expect(window.location.pathname).toMatch(/^\/songs\/[^/]+$/);
   expect(screen.getByLabelText("Song name", { exact: true })).toHaveValue(
     "Idea",
   );

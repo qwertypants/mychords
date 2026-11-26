@@ -59,10 +59,7 @@ test("song-card arrows select exact shapes without changing duplicate chords", a
   await page.getByLabel("Section name").last().fill("Chorus");
   await expect(page.locator(".song-toolbar")).toHaveCount(0);
   await page.reload();
-  await activate(page
-    .getByRole("button", { name: "Open Sunday idea", exact: true })
-    );
-  await expect(page.locator("#main-content")).toBeFocused();
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Sunday idea");
   await expect(page.getByLabel("Section name").nth(0)).toHaveValue("Verse");
   await expect(page.getByLabel("Section name").nth(1)).toHaveValue("Chorus");
   expect(
@@ -81,6 +78,7 @@ test("song-card arrows select exact shapes without changing duplicate chords", a
   await activate(page
     .getByRole("button", { name: "Open Sunday idea", exact: true })
     );
+  await expect(page.locator("#main-content")).toBeFocused();
   await expect(page.locator("[data-entry-id]")).toHaveCount(3);
   expect(errors).toEqual([]);
 });

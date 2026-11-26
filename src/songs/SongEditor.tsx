@@ -15,6 +15,7 @@ import {
 } from "./commands";
 import { useViewEntrance } from "../motion";
 import { createShareUrl } from "./share";
+import { appRoot } from "./routes";
 import { ConfirmDialog } from "../ConfirmDialog";
 export function SongEditor({
   song,
@@ -46,7 +47,7 @@ export function SongEditor({
     setShareMessage("");
     let link: string;
     try {
-      link = createShareUrl(song, window.location.href);
+      link = createShareUrl(song, new URL(appRoot(), window.location.href).href);
     } catch (error) {
       setShareMessage((error as Error).message);
       return;

@@ -100,8 +100,9 @@ for (const path of ["/", "/mychords/"]) {
     await activate(installed.getByRole("region", { name: "Fingerings for C", exact: true })
       .getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true }));
     await activate(installed.getByRole("button", { name: "Close chord library" }));
+    const songPath = new URL(installed.url()).pathname;
+    expect(songPath).toMatch(new RegExp(`^${path}songs/[0-9a-f-]{36}$`));
     await installed.reload();
-    await activate(installed.getByRole("button", { name: "Open Offline song", exact: true }));
     await expect(installed.locator("[data-entry-id]")).toHaveCount(1);
     await expect(installed.getByLabel("Song name", { exact: true })).toHaveValue("Offline song");
     const credits = await context.newPage();
@@ -208,5 +209,19 @@ test("shared query link opens offline under the deployed subpath", async ({ page
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Offline shared song");
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs[0].name)).toBe("Offline shared song");
   await page.reload();
-  await expect(page.getByRole("button", { name: "Open Offline shared song" })).toBeVisible();
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Offline shared song");
+});
+
+test("a direct GitHub Pages song URL loads before service worker installation", async ({ page }) => {
+  const id = "c6288f83-72ce-45a8-a9b6-71ca1ed11910";
+  await page.addInitScript((songId) => {
+    localStorage.setItem("mychords.library.v1", JSON.stringify({
+      version: 1,
+      songs: [{ id: songId, name: "Direct link", sections: [], updatedAt: new Date().toISOString() }],
+    }));
+  }, id);
+  const response = await page.goto(`/mychords/songs/${id}`);
+  expect(response?.status()).toBe(404);
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Direct link");
+  await expect(page.locator('a[href="/mychords/credits.html"]')).toBeVisible();
 });

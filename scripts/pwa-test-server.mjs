@@ -57,5 +57,9 @@ createServer(async (req, res) => {
     }
     res.setHeader('Content-Type', types[extname(file)] ?? 'application/octet-stream');
     res.end(body);
-  } catch { res.writeHead(404).end('Not found'); }
+  } catch {
+    if (/^\/(?:mychords\/)?songs\/[^/]+$/.test(url.pathname)) {
+      res.writeHead(404, { 'Content-Type': 'text/html' }).end(await readFile(resolve(root, '404.html')));
+    } else res.writeHead(404).end('Not found');
+  }
 }).listen(4180, '127.0.0.1');

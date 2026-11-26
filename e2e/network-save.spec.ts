@@ -25,7 +25,7 @@ test("add, change shape, and save a song when randomUUID is unavailable", async 
   await activate(page.getByRole("button", { name: "Close chord library" }));
   await expect(page.locator("[data-entry-id]")).toHaveCount(2);
   await page.reload();
-  await activate(page.getByRole("button", { name: "Open Network idea", exact: true }));
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Network idea");
   await expect(page.locator("[data-entry-id]")).toHaveCount(2);
   await expect(page.locator("[data-entry-id]").first()).toHaveAttribute("data-voicing", selected!);
   expect(errors).toEqual([]);

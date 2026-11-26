@@ -41,6 +41,8 @@ Chord imports are reproducible from the checked-in source. Audio imports downloa
 
 Songs use `localStorage` under `mychords.library.v1`. There is no account, server database or synchronization. Clearing browser data removes songs. A private browsing session may discard them when closed. Keep important ideas elsewhere too.
 
+Each saved song opens at `/songs/<id>` (or `/mychords/songs/<id>` on GitHub Pages). These ID links work only where that browser has the song. Use Share in the song editor to copy a portable snapshot link for another browser or device.
+
 A damaged or unsupported saved library is preserved, with options to download its raw contents, retry, or explicitly replace it. Failed writes keep the draft in memory and mark it unsaved. Unsaved navigation offers Save, Discard and Cancel.
 
 This version uses standard six-string tuning, no capo or alternate tunings. It does not include song deletion, chord editing or song import/export.
