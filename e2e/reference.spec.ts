@@ -1,4 +1,4 @@
-import { activate } from "./activate";
+import { activate, expandFilters } from "./activate";
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 const OPEN_C = "C:major:-1,3,2,0,1,0",
@@ -17,6 +17,7 @@ async function addCs(page: Page) {
     .getByRole("button", { name: "Add chord", exact: true })
     .first()
     );
+  await expandFilters(page);
   await activate(page.getByRole("button", { name: "Major", exact: true }));
   await activate(page.getByRole("button", { name: "Shapes for C", exact: true }));
   await activate(page
@@ -180,6 +181,7 @@ test("audio failure is shown inside the picker and can be retried", async ({
   );
   await newSong(page);
   await activate(page.getByRole("button", { name: "Add chord", exact: true }));
+  await expandFilters(page);
   await activate(page.getByRole("button", { name: "Major", exact: true }));
   await activate(page
     .getByRole("button", { name: "Hear C, -1 3 2 0 1 0", exact: true })

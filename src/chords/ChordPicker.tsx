@@ -7,6 +7,8 @@ import {
   catalog,
 } from "./catalog";
 import { groupChords, inCategory, primaryCategories, extraCategories, type Category } from "./browse";
+import { RootSelector } from "./RootSelector";
+import { NeckPositionSelect } from "./NeckPositionSelect";
 import { ChordGroups } from "./ChordGroups";
 import type { Voicing } from "./types";
 import { useMotion } from "../motion";
@@ -42,7 +44,7 @@ export function ChordPicker({
   const [root, setRoot] = useState("C");
   const [category, setCategory] = useState<Category>("All");
   const [more, setMore] = useState(false);
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 600px), (max-height: 600px)").matches);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -55,7 +57,9 @@ export function ChordPicker({
     const el = dialog.current,
       returnTo = opener.current;
     el?.showModal();
-    search.current?.focus({ preventScroll: true });
+    if (window.matchMedia("(pointer: coarse)").matches)
+      el?.querySelector<HTMLButtonElement>(".picker-header button")?.focus({ preventScroll: true });
+    else search.current?.focus({ preventScroll: true });
     return () => {
       el?.close();
       queueMicrotask(() => {
@@ -148,19 +152,7 @@ export function ChordPicker({
           <X size={21} />
         </button>
       </header>
-      <div className="picker-filters">
-        <button
-          className="picker-filter-toggle"
-          type="button"
-          aria-expanded={filtersExpanded}
-          aria-controls="picker-filter-controls"
-          onClick={() => setFiltersExpanded(value => !value)}
-        >
-          <SlidersHorizontal size={16} aria-hidden="true" />
-          Filters
-          <ChevronDown size={16} className={filtersExpanded ? "is-expanded" : ""} aria-hidden="true" />
-        </button>
-        <div id="picker-filter-controls" hidden={!filtersExpanded}>
+      <div className="picker-search-toolbar">
         <div className="search-combobox">
         <label className="search-field">
           <Search size={18} />
@@ -180,7 +172,7 @@ export function ChordPicker({
               if (e.key === "Tab") {
                 e.preventDefault();
                 setSuggestionsOpen(false);
-                const next = e.shiftKey ? ".picker-filter-toggle" : ".root-tabs button";
+                const next = e.shiftKey ? ".picker-header button" : ".root-tabs button";
                 dialog.current?.querySelector<HTMLButtonElement>(next)?.focus();
                 return;
               }
@@ -223,23 +215,21 @@ export function ChordPicker({
           </ul>
         )}
         </div>
-        <div className="root-tabs" aria-label="Chord roots">
-          <button
-            aria-pressed={!root}
-            onClick={() => filter(() => setRoot(""))}
-          >
-            All
-          </button>
-          {roots.map((r) => (
-            <button
-              key={r}
-              aria-pressed={root === r}
-              onClick={() => filter(() => setRoot(r))}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
+        <RootSelector value={root} onChange={value => filter(() => setRoot(value))} />
+        <button
+          className="picker-filter-toggle"
+          type="button"
+          aria-expanded={filtersExpanded}
+          aria-controls="picker-filter-controls"
+          onClick={() => setFiltersExpanded(value => !value)}
+        >
+          <SlidersHorizontal size={16} aria-hidden="true" />
+          Filters
+          <ChevronDown size={16} className={filtersExpanded ? "is-expanded" : ""} aria-hidden="true" />
+        </button>
+      </div>
+      <div className="picker-scroll">
+      <div id="picker-filter-controls" className="picker-filters" hidden={!filtersExpanded}>
         <div className="category-tabs" role="group" aria-label="Chord categories">
           {primaryCategories.map(c => <button key={c} aria-pressed={category === c}
             disabled={c !== "All" && !available.some(v => inCategory(v.suffix, c))}
@@ -251,24 +241,9 @@ export function ChordPicker({
             disabled={!available.some(v => inCategory(v.suffix, c))}
             onClick={() => filter(() => setCategory(c))}>{c}</button>)}
         </div>}
-        <div className="filter-row">
-          <label>
-            Neck position
-            <select
-              value={region}
-              onChange={(e) => filter(() => setRegion(e.target.value))}
-            >
-              <option value="all">Whole neck</option>
-              <option value="0">Frets 0–4</option>
-              <option value="5">Frets 5–9</option>
-              <option value="10">Frets 10–14</option>
-              <option value="15">Frets 15–22</option>
-            </select>
-          </label>
-        </div>
-        </div>
-      </div>
+        <NeckPositionSelect value={region} onChange={value => filter(() => setRegion(value))} />
       {strumSpeedControl && <div className="picker-strum-speed">{strumSpeedControl}</div>}
+      </div>
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">
@@ -304,6 +279,7 @@ export function ChordPicker({
           {catalog.length.toLocaleString()} fingerings across the neck.
           Available voicings vary by chord. Finger numbers 1–4; × muted, ○ open.
         </p>
+      </div>
       </div>
     </dialog>
   );

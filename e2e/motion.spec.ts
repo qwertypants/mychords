@@ -1,4 +1,4 @@
-import { activate } from "./activate";
+import { activate, expandFilters } from "./activate";
 import { test, expect } from "@playwright/test";
 
 test("playing and replaying voicings highlights only the triggering card", async ({ page }) => {
@@ -10,6 +10,7 @@ test("playing and replaying voicings highlights only the triggering card", async
 
   const picker = page.getByRole("dialog");
   await expect(picker.locator(".is-playing")).toHaveCount(0);
+  await expandFilters(page);
   await activate(picker.getByRole("button", { name: "Major", exact: true }));
   await activate(picker.getByRole("button", { name: "Shapes for C", exact: true }));
   const openCard = picker.locator(".shape-panel").locator('[data-voicing="C:major:-1,3,2,0,1,0"]');
@@ -50,6 +51,7 @@ test("the picker stays interactive during motion and confirms each successful ed
   await open.press("Enter");
   const picker = page.getByRole("dialog");
   const search = picker.getByRole("combobox", { name: "Search chords" });
+  await search.focus();
   await expect(search).toBeFocused();
   await page.clock.runFor(64);
   const drawerEdge = picker.locator(".picker-motion-edge");
@@ -62,6 +64,7 @@ test("the picker stays interactive during motion and confirms each successful ed
   await expect(picker.locator(":focus")).toHaveCount(1);
   if (testInfo.project.use.hasTouch) {
     const root = picker.getByRole("button", { name: "G", exact: true });
+    await root.focus();
     const bounds = await root.boundingBox();
     if (!bounds) throw new Error("Missing root filter");
     await page.touchscreen.tap(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
@@ -74,10 +77,12 @@ test("the picker stays interactive during motion and confirms each successful ed
   await expect(picker).toHaveCount(0);
   await expect(open).toBeFocused();
   await open.press("Enter");
+  await search.focus();
   await expect(search).toBeFocused();
   await page.clock.runFor(64);
   await expect(drawerEdge).toHaveCSS("opacity", "0");
 
+  await expandFilters(page);
   await picker.getByRole("button", { name: "Major", exact: true }).press("Enter");
   const add = picker.getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true });
   const addEdge = picker.locator(".voicing-add-edge > span").first();

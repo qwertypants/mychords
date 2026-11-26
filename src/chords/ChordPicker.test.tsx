@@ -27,9 +27,7 @@ test("Hear and Add are independent and diagrams describe exact strings", () => {
   fireEvent.click(screen.getAllByRole("button", { name: /^Add C,/ })[0]);
   expect(add).toHaveBeenCalledOnce();
   expect(screen.getAllByRole("group", { name: /Low E to high E/ })[0]).toHaveAccessibleName(/Low E to high E/);
-  fireEvent.change(screen.getByLabelText("Neck position"), {
-    target: { value: "15" },
-  });
+  fireEvent.click(screen.getByRole("radio", { name: "Frets 15–22" }));
   expect(screen.getAllByRole("group", { name: /Low E to high E/ })[0]).toHaveAccessibleName(
     /fret 1[5-9]|fret 2[0-2]/,
   );
@@ -51,9 +49,9 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   fireEvent.click(screen.getByRole("button", { name: "Close shapes" }));
   expect(trigger).toHaveFocus();
   expect(screen.getByRole("button", { name: "Major" })).toHaveAttribute("aria-pressed", "true");
-  fireEvent.change(screen.getByLabelText("Neck position"), { target: { value: "15" } });
+  fireEvent.click(screen.getByRole("radio", { name: "Frets 15–22" }));
   fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "D♭" } });
-  expect(screen.getByLabelText("Neck position")).toHaveValue("all");
+  expect(screen.getByRole("radio", { name: "Whole neck" })).toBeChecked();
   expect(screen.getByRole("button", { name: "Shapes for C#/C" })).toBeInTheDocument();
   fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "no-such-chord" } });
   fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));

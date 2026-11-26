@@ -1,0 +1,32 @@
+import { expect, test } from "@playwright/test";
+
+test("compact picker keeps chords reachable and roots scroll with edge fades", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 540 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explore chords", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  const toggle = dialog.getByRole("button", { name: "Filters", exact: true });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(dialog.getByRole("group", { name: "Strum speed" })).toBeHidden();
+  await expect(dialog.locator(".chord-diagram").first()).toBeInViewport({ ratio: 0.9 });
+  const roots = dialog.getByRole("group", { name: "Chord roots" });
+  await expect(roots).toHaveAttribute("data-fade-right", "true");
+  const ys = await roots.getByRole("button").evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect().y));
+  expect(new Set(ys).size).toBe(1);
+  await roots.evaluate(el => { el.scrollLeft = el.scrollWidth; });
+  await expect(roots).toHaveAttribute("data-fade-left", "true");
+  await expect(roots).toHaveAttribute("data-fade-right", "false");
+  await roots.getByRole("button", { name: "B", exact: true }).click();
+  await expect(roots.getByRole("button", { name: "B", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(roots.getByRole("button", { name: "B", exact: true })).toBeInViewport({ ratio: 0.99 });
+  await toggle.click();
+  await dialog.getByRole("radio", { name: "Slow" }).check();
+  const last = dialog.locator(".catalog-note");
+  await last.scrollIntoViewIfNeeded();
+  await expect(last).toBeInViewport();
+  await expect(dialog.getByRole("combobox", { name: "Search chords" })).toBeInViewport();
+  await toggle.click();
+  await toggle.click();
+  await expect(dialog.getByRole("radio", { name: "Slow" })).toBeChecked();
+  expect(await dialog.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+});

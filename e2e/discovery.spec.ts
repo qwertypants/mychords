@@ -1,4 +1,4 @@
-import { activate } from "./activate";
+import { activate, expandFilters } from "./activate";
 import { test, expect } from "@playwright/test";
 
 test("browse categories, compare inline shapes, and search the whole catalog", async ({ page }, info) => {
@@ -6,9 +6,11 @@ test("browse categories, compare inline shapes, and search the whole catalog", a
   await activate(page.getByRole("button", { name: "Explore chords", exact: true }));
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByLabel("Chord type", { exact: true })).toHaveCount(0);
+  await expandFilters(page);
   await activate(dialog.getByRole("button", { name: "More", exact: true }));
   await activate(dialog.getByRole("button", { name: "Ninths", exact: true }));
   await expect(dialog.getByRole("button", { name: "Ninths", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expandFilters(page);
   await activate(dialog.getByRole("button", { name: "Major", exact: true }));
   const trigger = dialog.getByRole("button", { name: "Shapes for C", exact: true });
   await trigger.scrollIntoViewIfNeeded();
@@ -35,9 +37,9 @@ test("browse categories, compare inline shapes, and search the whole catalog", a
       await activate(panel.getByRole("button", { name: "Close shapes" }));
     }
   }
-  await dialog.getByLabel("Neck position").selectOption("15");
+  await dialog.getByRole("radio", { name: "Frets 15–22" }).check();
   await dialog.getByRole("combobox", { name: "Search chords" }).fill("D♭");
-  await expect(dialog.getByLabel("Neck position")).toHaveValue("all");
+  await expect(dialog.getByRole("radio", { name: "Whole neck" })).toBeChecked();
   await expect(dialog.getByRole("button", { name: "Shapes for C#/C", exact: true })).toBeVisible();
   await dialog.getByRole("combobox", { name: "Search chords" }).fill("no-such-chord");
   await activate(dialog.getByRole("button", { name: "Reset filters" }));

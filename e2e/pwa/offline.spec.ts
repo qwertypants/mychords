@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { activate } from "../activate";
+import { activate, expandFilters } from "../activate";
 
 declare global {
   interface Window { offlineAnalyser?: AnalyserNode }
@@ -94,6 +94,7 @@ for (const path of ["/", "/mychords/"]) {
     await activate(installed.getByRole("button", { name: "New song", exact: true }).filter({ visible: true }).first());
     await installed.getByLabel("Song name", { exact: true }).fill("Offline song");
     await activate(installed.getByRole("button", { name: "Add chord", exact: true }).first());
+    await expandFilters(installed);
     await activate(installed.getByRole("button", { name: "Major", exact: true }));
     await activate(installed.getByRole("button", { name: "Shapes for C", exact: true }));
     await activate(installed.getByRole("region", { name: "Fingerings for C", exact: true })

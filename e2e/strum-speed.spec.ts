@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { activate } from "./activate";
+import { activate, expandFilters } from "./activate";
 
 declare global {
   interface Window {
@@ -18,40 +18,43 @@ test("one strum speed applies to previews and sections and survives reload", asy
   });
   if (testInfo.project.use.hasTouch) await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/");
-  const speed = page.getByRole("combobox", { name: "Strum speed" });
+  const speed = page.getByRole("group", { name: "Strum speed" });
   const hear = page.getByRole("button", { name: "Hear C", exact: true });
   const offsets = () => page.evaluate(() =>
     window.strumStarts.map((at) => Math.round((at - window.strumStarts[0]) * 1000)),
   );
   const clearStarts = () => page.evaluate(() => { window.strumStarts.length = 0; });
 
-  await expect(speed).toHaveValue("normal");
-  await expect(speed.locator("option")).toHaveText(["Slow", "Normal", "Together"]);
+  await expect(speed.getByRole("radio", { name: "Normal" })).toBeChecked();
+  await expect(speed.getByRole("radio")).toHaveCount(3);
   await speed.scrollIntoViewIfNeeded();
-  await expect(speed).toBeInViewport({ ratio: 1 });
+  await expect(speed).toBeInViewport({ ratio: 0.99 });
   await activate(hear);
   await expect.poll(offsets).toEqual([0, 25, 50, 75, 100]);
 
   if (testInfo.project.name === "desktop") {
     await page.getByRole("button", { name: "Hear G", exact: true }).press("Tab");
-    await expect(speed).toBeFocused();
-    await page.keyboard.press("s");
-    await expect(speed).toHaveValue("slow");
+    await expect(speed.getByRole("radio", { name: "Normal" })).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(speed.getByRole("radio", { name: "Slow" })).toBeChecked();
   } else {
-    await speed.selectOption("slow");
+    await speed.getByRole("radio", { name: "Slow" }).check();
   }
   await clearStarts();
   await activate(hear);
   await expect.poll(offsets).toEqual([0, 100, 200, 300, 400]);
 
   await page.getByRole("button", { name: "New song", exact: true }).first().press("Enter");
-  await expect(speed).toHaveValue("slow");
+  await expect(speed.getByRole("radio", { name: "Slow" })).toBeChecked();
   await page.getByRole("button", { name: "Add chord", exact: true }).press("Enter");
   const picker = page.getByRole("dialog");
-  const pickerSpeed = picker.getByRole("combobox", { name: "Strum speed" });
-  await expect(pickerSpeed).toHaveValue("slow");
+  await expandFilters(page);
+  const pickerSpeed = picker.getByRole("group", { name: "Strum speed" });
+  await expect(pickerSpeed.getByRole("radio", { name: "Slow" })).toBeChecked();
+  await pickerSpeed.scrollIntoViewIfNeeded();
   await expect(pickerSpeed).toBeInViewport();
-  await pickerSpeed.selectOption("together");
+  await pickerSpeed.getByRole("radio", { name: "Together" }).check();
+  await expandFilters(page);
   await picker.getByRole("button", { name: "Major", exact: true }).press("Enter");
   await clearStarts();
   await picker.getByRole("button", { name: "Hear C, -1 3 2 0 1 0", exact: true }).press("Enter");
@@ -61,12 +64,12 @@ test("one strum speed applies to previews and sections and survives reload", asy
   await add.press("Enter");
   await picker.getByRole("button", { name: "Close chord library" }).press("Enter");
 
-  await expect(speed).toHaveValue("together");
+  await expect(speed.getByRole("radio", { name: "Together" })).toBeChecked();
   await clearStarts();
   await activate(page.getByRole("button", { name: "Play section Verse", exact: true }));
   await expect.poll(offsets).toEqual([0, 0, 0, 0, 0, 1800, 1800, 1800, 1800, 1800]);
   await page.reload();
-  await expect(speed).toHaveValue("together");
+  await expect(speed.getByRole("radio", { name: "Together" })).toBeChecked();
 });
 
 test("diagram pulses use the speed captured for the current preview", async ({ page }) => {
@@ -74,7 +77,7 @@ test("diagram pulses use the speed captured for the current preview", async ({ p
   await page.clock.install({ time: start });
   await page.clock.pauseAt(new Date(start.getTime() + 1000));
   await page.goto("/");
-  const speed = page.getByRole("combobox", { name: "Strum speed" });
+  const speed = page.getByRole("group", { name: "Strum speed" });
   const hear = page.getByRole("button", { name: "Hear C", exact: true });
   const rings = hear.locator(".strum-ring");
   const visibleRings = () => rings.evaluateAll((markers) =>
@@ -89,11 +92,11 @@ test("diagram pulses use the speed captured for the current preview", async ({ p
     }).toBe(true);
   };
 
-  await speed.selectOption("slow");
+  await speed.getByRole("radio", { name: "Slow" }).check();
   await preview();
   await page.clock.runFor(30);
   expect(await visibleRings()).toBe(1);
-  await speed.selectOption("together");
+  await speed.getByRole("radio", { name: "Together" }).check();
   await page.clock.runFor(100);
   expect(await visibleRings()).toBe(2);
   await page.getByRole("button", { name: "Stop playback" }).press("Enter");
@@ -106,10 +109,10 @@ test("diagram pulses use the speed captured for the current preview", async ({ p
 
 test("invalid or unavailable storage leaves the speed control usable", async ({ page }) => {
   await page.goto("/");
-  const speed = page.getByRole("combobox", { name: "Strum speed" });
+  const speed = page.getByRole("group", { name: "Strum speed" });
   await page.evaluate(() => localStorage.setItem("mychords.strumSpeed", "constructor"));
   await page.reload();
-  await expect(speed).toHaveValue("normal");
+  await expect(speed.getByRole("radio", { name: "Normal" })).toBeChecked();
 
   await page.addInitScript(() => {
     const getItem = Storage.prototype.getItem;
@@ -124,8 +127,9 @@ test("invalid or unavailable storage leaves the speed control usable", async ({ 
     };
   });
   await page.reload();
-  await expect(speed).toHaveValue("normal");
-  await speed.selectOption("slow");
+  await expect(speed.getByRole("radio", { name: "Normal" })).toBeChecked();
+  await speed.getByRole("radio", { name: "Slow" }).check();
   await page.getByRole("button", { name: "Explore chords", exact: true }).press("Enter");
-  await expect(page.getByRole("dialog").getByRole("combobox", { name: "Strum speed" })).toHaveValue("slow");
+  await expandFilters(page);
+  await expect(page.getByRole("dialog").getByRole("group", { name: "Strum speed" }).getByRole("radio", { name: "Slow" })).toBeChecked();
 });

@@ -9,6 +9,8 @@
 @import './styles/picker.css';
 @import './styles/responsive.css';
 @import './styles/motion.css';
+@import './styles/icon-options.css';
+@import './styles/picker-layout.css';
 
 .editor-heading > .song-actions { display: flex; gap: 10px; flex-wrap: wrap; flex: 0 0 auto; margin-top: 25px; align-items: center; }
 .song-actions .save-button { margin-top: 0; }

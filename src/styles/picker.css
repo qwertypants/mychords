@@ -118,51 +118,6 @@
   color: var(--ink);
   outline-offset: 0;
 }
-.root-tabs {
-  display: grid;
-  grid-template-columns: repeat(13, minmax(0, 1fr));
-  gap: 2px;
-  margin: 14px -3px;
-}
-.root-tabs button {
-  font-size: 11px;
-  min-height: 44px;
-  padding: 0;
-  border-radius: 4px;
-  letter-spacing: -0.3px;
-}
-.root-tabs button[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--on-ink);
-}
-.root-tabs button:hover:not([aria-pressed="true"]) {
-  background: var(--tab-hover);
-}
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 13px;
-}
-.filter-row label {
-  font: 9px var(--mono);
-  letter-spacing: 0.3px;
-  color: var(--muted);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.filter-row select {
-  font:
-    12px "DM Sans",
-    sans-serif;
-  background: var(--surface);
-  border: 1px solid var(--control-border);
-  color: var(--ink);
-  border-radius: 4px;
-  min-height: 44px;
-  padding: 0 8px;
-  width: 100%;
-}
 .picker-playback,
 .picker-strum-speed {
   padding: 3px 28px;
@@ -171,9 +126,6 @@
   flex-shrink: 0;
 }
 .picker-results {
-  overflow-y: auto;
-  flex: 1 1 auto;
-  min-height: 0;
   padding: 17px 28px 25px;
   overscroll-behavior: contain;
 }
@@ -322,7 +274,7 @@
   }
 }
 
-/* Filters stay visible while the chord results scroll. */
+/* Chord filters and results share one scroll surface. */
 .category-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .category-tabs button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--control-border); border-radius: 8px; font-size: 12px; }
 .category-tabs button[aria-pressed="true"] { background: var(--accent); color: var(--on-ink); }

@@ -313,18 +313,6 @@
   .picker-filters {
     padding: 9px 16px 8px;
   }
-  .root-tabs {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 2px;
-    margin: 5px -2px;
-  }
-  .root-tabs button {
-    font-size: 11px;
-    min-height: 44px;
-  }
-  .root-tabs button:first-child {
-    grid-row: span 2;
-  }
   .picker-results {
     padding: 12px 16px 18px;
   }
@@ -357,9 +345,6 @@
   .voicing-actions button {
     font-size: 11px;
     min-height: 46px;
-  }
-  .filter-row {
-    gap: 12px;
   }
   .confirm-dialog {
     padding: 25px;
@@ -454,6 +439,4 @@
   }
   .picker-filters .category-tabs button { flex: 0 0 auto; }
   .picker-filters .extra-categories { padding-top: 5px; }
-  .picker-filters .filter-row label { gap: 3px; }
-  .picker-filters .filter-row select { min-height: 40px; }
 }
