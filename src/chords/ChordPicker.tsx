@@ -49,6 +49,10 @@ export function ChordPicker({
   const [filtersExpanded, setFiltersExpanded] = useState(initial.filtersExpanded);
   const [searchExpanded, setSearchExpanded] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [compact, setCompact] = useState(() => window.matchMedia("(max-width: 600px), (max-height: 600px)").matches);
+  const shapesHideMenus = compact && expanded !== null;
+  const visibleSearch = searchExpanded && !shapesHideMenus;
+  const visibleFilters = filtersExpanded && !shapesHideMenus;
   const [text, setText] = useState(initial.text);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(initial.selectedGroupId);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -59,6 +63,12 @@ export function ChordPicker({
   useEffect(() => {
     writePickerPreferences({ root, category, region, text, selectedGroupId, more, filtersExpanded });
   }, [root, category, region, text, selectedGroupId, more, filtersExpanded]);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 600px), (max-height: 600px)");
+    const update = () => setCompact(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
   useLayoutEffect(() => {
     const el = dialog.current,
       returnTo = opener.current;
@@ -163,18 +173,21 @@ export function ChordPicker({
         <button
           className="picker-filter-toggle"
           type="button"
-          aria-expanded={searchExpanded}
+          aria-expanded={visibleSearch}
           aria-controls="picker-search-controls"
           onClick={() => {
-            setSearchExpanded(value => !value);
+            if (shapesHideMenus) {
+              setExpanded(null);
+              setSearchExpanded(true);
+            } else setSearchExpanded(value => !value);
             setSuggestionsOpen(false);
           }}
         >
           <Search size={16} aria-hidden="true" />
           Search &amp; notes
-          <ChevronDown size={16} className={searchExpanded ? "is-expanded" : ""} aria-hidden="true" />
+          <ChevronDown size={16} className={visibleSearch ? "is-expanded" : ""} aria-hidden="true" />
         </button>
-        <div id="picker-search-controls" hidden={!searchExpanded}>
+        <div id="picker-search-controls" hidden={!visibleSearch}>
         <div className="search-combobox">
         <div className="search-field">
           <Search size={18} />
@@ -261,16 +274,21 @@ export function ChordPicker({
         <button
           className="picker-filter-toggle"
           type="button"
-          aria-expanded={filtersExpanded}
+          aria-expanded={visibleFilters}
           aria-controls="picker-filter-controls"
-          onClick={() => setFiltersExpanded(value => !value)}
+          onClick={() => {
+            if (shapesHideMenus) {
+              setExpanded(null);
+              setFiltersExpanded(true);
+            } else setFiltersExpanded(value => !value);
+          }}
         >
           <SlidersHorizontal size={16} aria-hidden="true" />
           Filters
-          <ChevronDown size={16} className={filtersExpanded ? "is-expanded" : ""} aria-hidden="true" />
+          <ChevronDown size={16} className={visibleFilters ? "is-expanded" : ""} aria-hidden="true" />
         </button>
       </div>
-      <div id="picker-filter-controls" className="picker-filters" hidden={!filtersExpanded}>
+      <div id="picker-filter-controls" className="picker-filters" hidden={!visibleFilters}>
         <div className="category-tabs" role="group" aria-label="Chord categories">
           {primaryCategories.map(c => <button key={c} aria-pressed={category === c}
             disabled={c !== "All" && !available.some(v => inCategory(v.suffix, c))}
@@ -299,7 +317,7 @@ export function ChordPicker({
           const shown = groups.slice(0, limit).filter(g => g.root === r);
           return shown.length > 0 && <section key={r} className="chord-root-section" aria-label={r + " chords"}>
             <h3>{r} chords <span>{visible.length}</span></h3>
-            <ChordGroups groups={shown} expanded={expanded} onExpand={setExpanded}
+            <ChordGroups groups={shown} expanded={expanded} onExpand={id => { setExpanded(id); if (id) setSuggestionsOpen(false); }}
               activeEntryId={activeEntryId} strumInterval={strumInterval} added={added} onHear={onHear}
               onAdd={v => { if (onAdd(v)) setAdded({ voicingId: v.id }); }} />
           </section>;
