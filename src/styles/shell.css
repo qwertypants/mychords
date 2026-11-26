@@ -213,7 +213,7 @@ button {
   color: var(--accent);
 }
 .eyebrow {
-  font: 10px/1.5 var(--mono);
+  font: 500 13px/1.5 var(--display);
   letter-spacing: 1.8px;
   color: var(--muted);
 }
@@ -263,7 +263,7 @@ button {
   min-width: 0;
 }
 .hero-caption {
-  font: 8px var(--mono);
+  font: 500 13px var(--display);
   letter-spacing: 1px;
   display: flex;
   justify-content: space-between;
@@ -298,12 +298,21 @@ button {
   max-width: 125px;
   margin: 3px auto 0;
 }
+.hero-chord .chord-diagram .string-letter {
+  font-size: 20px;
+}
+.hero-chord .chord-diagram .fret-number {
+  font-size: 16px;
+}
+.hero-chord .chord-diagram .finger {
+  font-size: 12px;
+}
 .hero-hear {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   min-height: 29px;
 }
@@ -316,7 +325,7 @@ button {
   flex-wrap: wrap;
   gap: 8px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .hero-footnote .strum-speed {
   margin-left: auto;
@@ -345,7 +354,7 @@ button {
   letter-spacing: -0.4px;
 }
 .library-section-header h2 span {
-  font: 10px var(--mono);
+  font: 500 13px var(--display);
   vertical-align: middle;
   margin-left: 8px;
   color: var(--muted);
@@ -355,7 +364,7 @@ button {
 }
 .library-section-header > .button {
   min-height: 40px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .library-empty {
   margin-top: 25px;
@@ -378,14 +387,14 @@ button {
   font: 700 25px var(--display);
 }
 .library-empty p {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
   color: var(--muted);
   margin-top: 9px;
 }
 .library-empty .text-button {
   color: var(--accent);
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 12px;
 }
 .catalog-banner {
@@ -419,7 +428,7 @@ button {
   display: block;
 }
 .catalog-banner span > span:not(.catalog-icon) {
-  font-size: 11px;
+  font-size: 13px;
   display: block;
   color: var(--muted);
   margin-top: 6px;
@@ -439,7 +448,7 @@ button {
   display: flex;
   align-items: center;
   gap: 20px;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.7;
 }
@@ -473,7 +482,7 @@ button {
   box-shadow: 2px 3px 0 var(--saved-shadow);
 }
 .saved-song-number {
-  font: 10px var(--mono);
+  font: 500 13px var(--display);
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -485,7 +494,7 @@ button {
   overflow-wrap: anywhere;
 }
 .saved-song p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 7px;
 }
@@ -496,6 +505,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font: 10px var(--mono);
+  font: 500 13px var(--display);
   color: var(--muted);
 }

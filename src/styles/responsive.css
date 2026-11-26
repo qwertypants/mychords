@@ -28,7 +28,7 @@
     padding: 16px;
   }
   .hero-caption {
-    font-size: 7px;
+    font-size: 13px;
     letter-spacing: 0.5px;
   }
   .hero-chord-row {
@@ -74,7 +74,7 @@
     gap: 12px;
   }
   .nav-link {
-    font-size: 11px;
+    font-size: 13px;
     gap: 5px;
   }
   .explore-nav {
@@ -109,7 +109,7 @@
     gap: 23px;
   }
   .welcome-copy .eyebrow {
-    font-size: 9px;
+    font-size: 13px;
   }
   .hero-chords {
     margin: 3px 6px 5px 2px;
@@ -118,7 +118,7 @@
     transform: rotate(1deg);
   }
   .hero-caption {
-    font-size: 7px;
+    font-size: 13px;
     padding-bottom: 17px;
     letter-spacing: 0.7px;
   }
@@ -132,12 +132,12 @@
     max-width: 125px;
   }
   .hero-footnote {
-    font-size: 9px;
+    font-size: 13px;
     padding-top: 13px;
     margin-top: 14px;
   }
   .hero-hear {
-    font-size: 10px;
+    font-size: 13px;
   }
   .saved-songs {
     margin-top: 29px;
@@ -146,10 +146,10 @@
     font-size: 31px;
   }
   .library-section-header .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
   }
   .library-section-header > .button {
-    font-size: 11px;
+    font-size: 13px;
     padding: 9px 12px;
   }
   .library-empty {
@@ -160,7 +160,7 @@
     font-size: 25px;
   }
   .library-empty p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .catalog-banner {
     padding: 17px 14px;
@@ -172,17 +172,17 @@
     height: 35px;
   }
   .catalog-banner strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .catalog-banner span > span:not(.catalog-icon) {
-    font-size: 9px;
+    font-size: 13px;
     margin-top: 4px;
   }
   .catalog-banner > svg {
     width: 18px;
   }
   .app-footer {
-    font-size: 9px;
+    font-size: 13px;
     margin-top: 27px;
     padding-top: 18px;
   }
@@ -196,18 +196,18 @@
     font-size: 27px;
   }
   .saved-song p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .editor-breadcrumb {
     padding-top: 14px;
-    font-size: 10px;
+    font-size: 13px;
   }
   .editor-heading {
     margin-top: 20px;
     gap: 8px;
   }
   .editor-heading .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
   }
   .song-title {
     font-size: 42px;
@@ -217,11 +217,11 @@
     padding: 10px 13px;
     min-height: 42px;
     margin-top: 24px;
-    font-size: 12px;
+    font-size: 13px;
     gap: 7px;
   }
   .song-meta {
-    font-size: 9px;
+    font-size: 13px;
     margin-top: 9px;
   }
   .song-meta span {
@@ -233,16 +233,16 @@
     margin-top: 4px;
   }
   .play-song {
-    font-size: 11px;
+    font-size: 13px;
     padding: 9px 12px;
     min-height: 42px;
   }
   .playback-status {
-    font-size: 10px;
+    font-size: 13px;
     gap: 5px;
   }
   .save-status {
-    font-size: 9px;
+    font-size: 13px;
     flex-basis: 100%;
     margin-left: 0;
     margin-top: 2px;
@@ -256,14 +256,14 @@
     margin-bottom: 12px;
   }
   .section-number {
-    font-size: 9px;
+    font-size: 13px;
     padding: 5px;
   }
   .section-title input {
     font-size: 26px;
   }
   .section-count {
-    font-size: 9px;
+    font-size: 13px;
   }
   .section-controls .icon-button {
     min-width: 36px;
@@ -289,12 +289,12 @@
     min-height: 160px;
   }
   .add-section-button {
-    font-size: 11px;
+    font-size: 13px;
     min-height: 48px;
     margin-top: 23px;
   }
   .editor-note {
-    font-size: 9px;
+    font-size: 13px;
   }
   .picker-dialog {
     border: 0;
@@ -308,7 +308,7 @@
     margin-top: 4px;
   }
   .picker-header .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
   }
   .picker-filters {
     padding: 9px 16px 8px;
@@ -321,10 +321,10 @@
     padding: 2px 20px;
   }
   .results-count {
-    font-size: 9px;
+    font-size: 13px;
   }
   .results-count > span {
-    font-size: 8px;
+    font-size: 13px;
   }
   .voicing-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -340,10 +340,10 @@
     font-size: 27px;
   }
   .voicing-heading > span {
-    font-size: 8px;
+    font-size: 13px;
   }
   .voicing-actions button {
-    font-size: 11px;
+    font-size: 13px;
     min-height: 46px;
   }
   .confirm-dialog {
@@ -373,7 +373,7 @@
     padding: 15px;
   }
   .hero-caption {
-    font-size: 6px;
+    font-size: 13px;
   }
   .hero-chord-label {
     font-size: 26px;
@@ -415,7 +415,7 @@
     gap: 6px;
   }
   .nav-link {
-    font-size: 10px;
+    font-size: 13px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

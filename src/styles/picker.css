@@ -38,7 +38,7 @@
   letter-spacing: -0.3px;
 }
 .picker-header p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 8px;
 }
@@ -62,7 +62,7 @@
   min-height: 32px;
   margin-bottom: 10px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
 }
 .picker-filter-toggle svg:last-child { margin-left: auto; transition: transform 150ms ease; }
@@ -94,7 +94,7 @@
   padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
 }
 .chord-suggestions [role="option"] small { color: var(--muted); }
 .chord-suggestions [role="option"]:hover,
@@ -114,7 +114,7 @@
   min-height: 44px;
   border: 0;
   background: none;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink);
   outline-offset: 0;
 }
@@ -133,12 +133,12 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   margin-bottom: 17px;
 }
 .results-count > span {
-  font-size: 9px;
+  font-size: 13px;
 }
 .voicing-grid {
   display: grid;
@@ -165,7 +165,7 @@
 }
 .voicing-heading > span {
   white-space: nowrap;
-  font: 8px var(--mono);
+  font: 500 13px var(--display);
   color: var(--muted);
 }
 .voicing-card .chord-diagram {
@@ -183,7 +183,7 @@
   justify-content: center;
   min-height: 44px;
   flex: 1;
-  font-size: 10px;
+  font-size: 13px;
   padding: 2px 0;
 }
 .voicing-actions button:hover {
@@ -194,7 +194,7 @@
   border-left: 1px solid var(--card-divider);
 }
 .catalog-note {
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.8;
   color: var(--muted);
   margin-top: 23px;
@@ -276,19 +276,19 @@
 
 /* Chord filters and results share one scroll surface. */
 .category-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.category-tabs button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--control-border); border-radius: 8px; font-size: 12px; }
+.category-tabs button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--control-border); border-radius: 8px; font-size: 13px; }
 .category-tabs button[aria-pressed="true"] { background: var(--accent); color: var(--on-ink); }
 .category-tabs button:disabled { opacity: .45; cursor: default; }
 .extra-categories { padding-top: 10px; border-top: 1px solid var(--line); }
 .chord-root-section { margin-bottom: 24px; }
 .chord-root-section > h3 { font: 700 24px var(--display); margin-bottom: 12px; }
-.chord-root-section > h3 span { font: 11px var(--mono); color: var(--muted); }
+.chord-root-section > h3 span { font: 500 13px var(--display); color: var(--muted); }
 .chord-group { min-width: 0; }
-.shape-toggle { width: 100%; min-height: 44px; font-size: 12px; border: 1px solid var(--voicing-border); border-top: 0; border-radius: 0 0 5px 5px; }
+.shape-toggle { width: 100%; min-height: 44px; font-size: 13px; border: 1px solid var(--voicing-border); border-top: 0; border-radius: 0 0 5px 5px; }
 .shape-toggle[aria-expanded="true"] { background: var(--accent); color: var(--on-ink); }
 .shape-panel { grid-column: 1 / -1; padding: 12px; border: 1px solid var(--control-border); border-radius: 8px; background: var(--paper); min-width: 0; }
 .shape-panel > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .shape-panel h4 { font: 700 20px var(--display); }
-.shape-panel > header button { min-height: 44px; font-size: 12px; }
+.shape-panel > header button { min-height: 44px; font-size: 13px; }
 .shape-panel .voicing-card { padding-left: 6px; padding-right: 6px; }
 .empty-results .button { display: block; margin-top: 12px; }
