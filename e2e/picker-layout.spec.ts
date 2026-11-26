@@ -30,6 +30,22 @@ test("compact picker keeps chords reachable and roots scroll with edge fades", a
   await searchToggle.click();
   await expect(roots.getByRole("button", { name: "B", exact: true })).toHaveAttribute("aria-pressed", "true");
   await toggle.click();
+  const groups = dialog.locator(".picker-option-groups");
+  const layout = await groups.evaluate(container => {
+    const [neck, speed] = [...container.children].map(element => element.getBoundingClientRect());
+    const choices = [...container.querySelectorAll(".icon-option-face")].map(element => element.getBoundingClientRect());
+    const rowsInEachGroup = [...container.querySelectorAll(".icon-options-row")].every(row =>
+      new Set([...row.querySelectorAll(".icon-option-face")].map(choice => Math.round(choice.getBoundingClientRect().top))).size === 2,
+    );
+    return {
+      sameBand: Math.abs(neck.top - speed.top) < 1,
+      separated: neck.right < speed.left,
+      allFit: choices.every(choice => choice.left >= container.getBoundingClientRect().left && choice.right <= container.getBoundingClientRect().right),
+      rowsInEachGroup,
+      choiceCount: choices.length,
+    };
+  });
+  expect(layout).toEqual({ sameBand: true, separated: true, allFit: true, rowsInEachGroup: true, choiceCount: 8 });
   await dialog.getByRole("radio", { name: "Slow" }).check();
   const last = dialog.locator(".catalog-note");
   await last.scrollIntoViewIfNeeded();

@@ -282,8 +282,10 @@ export function ChordPicker({
             disabled={!available.some(v => inCategory(v.suffix, c))}
             onClick={() => filter(() => setCategory(c))}>{c}</button>)}
         </div>}
-        <NeckPositionSelect value={region} onChange={value => filter(() => setRegion(value))} />
-      {strumSpeedControl && <div className="picker-strum-speed">{strumSpeedControl}</div>}
+        <div className="picker-option-groups">
+          <NeckPositionSelect value={region} onChange={value => filter(() => setRegion(value))} />
+          {strumSpeedControl && <div className="picker-strum-speed">{strumSpeedControl}</div>}
+        </div>
       </div>
       <div className="picker-scroll">
       {playback && <div className="picker-playback">{playback}</div>}

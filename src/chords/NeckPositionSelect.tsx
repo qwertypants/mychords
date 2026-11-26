@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { Guitar } from "lucide-react";
 
 const choices = [
   { value: "all", label: "All", accessibleLabel: "Whole neck" },
@@ -15,7 +16,7 @@ export function NeckPositionSelect({ value, onChange }: {
   const name = useId();
   return (
     <fieldset className="icon-options neck-position">
-      <legend>Neck position · frets</legend>
+      <legend><Guitar size={14} aria-hidden="true" /> Neck position</legend>
       <div className="icon-options-row">
         {choices.map(choice => (
           <label className="icon-option" key={choice.value}>

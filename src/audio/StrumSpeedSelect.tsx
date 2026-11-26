@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { AudioLines } from "lucide-react";
 import type { StrumSpeed } from "./guitar";
 
 const choices = [
@@ -14,7 +15,7 @@ export function StrumSpeedSelect({ speed, onChange }: {
   const name = useId();
   return (
     <fieldset className="icon-options strum-speed">
-      <legend>Strum speed</legend>
+      <legend><AudioLines size={14} aria-hidden="true" /> Strum speed</legend>
       <div className="icon-options-row">
         {choices.map(({ value, label }) => (
           <label className="icon-option" key={value}>
