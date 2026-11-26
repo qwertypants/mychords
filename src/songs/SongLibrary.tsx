@@ -4,7 +4,7 @@ import {
   Plus,
   Music2,
   FolderOpen,
-  Volume2,
+  Play,
   ArrowRight,
 } from "lucide-react";
 import type { Song } from "./types";
@@ -94,8 +94,7 @@ export function SongLibrary({
                   <span className="hero-chord-label">{v.label}</span>
                   <ChordDiagram voicing={v} playing={playing} strumInterval={playback.strumInterval} />
                   <span className="hero-hear">
-                    <Volume2 size={14} />
-                    Hear
+                    <Play size={18} fill="currentColor" aria-hidden="true" />
                   </span>
                 </button>
               );
@@ -186,7 +185,7 @@ export function SongLibrary({
         </span>
         <ArrowUpRight size={22} />
       </button>
-      <PlaybackControls state={playback} onStop={onStop} />
+      {playback.status !== "idle" && <PlaybackControls state={playback} onStop={onStop} />}
     </main>
   );
 }
