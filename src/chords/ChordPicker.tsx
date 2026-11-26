@@ -12,6 +12,7 @@ import { NeckPositionSelect } from "./NeckPositionSelect";
 import { ChordGroups } from "./ChordGroups";
 import type { Voicing } from "./types";
 import { useMotion } from "../motion";
+import { readPickerPreferences, writePickerPreferences } from "./pickerPreferences";
 
 type ChordAddition = { voicingId: string };
 
@@ -41,18 +42,22 @@ export function ChordPicker({
       ? document.activeElement
       : null,
   );
-  const [root, setRoot] = useState("C");
-  const [category, setCategory] = useState<Category>("All");
-  const [more, setMore] = useState(false);
-  const [filtersExpanded, setFiltersExpanded] = useState(() => !window.matchMedia("(max-width: 600px), (max-height: 600px)").matches);
+  const [initial] = useState(readPickerPreferences);
+  const [root, setRoot] = useState(initial.root);
+  const [category, setCategory] = useState<Category>(initial.category);
+  const [more, setMore] = useState(initial.more);
+  const [filtersExpanded, setFiltersExpanded] = useState(initial.filtersExpanded);
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [text, setText] = useState("");
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [text, setText] = useState(initial.text);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(initial.selectedGroupId);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(0);
-  const [region, setRegion] = useState("all");
+  const [region, setRegion] = useState(initial.region);
   const [limit, setLimit] = useState(24);
   const [added, setAdded] = useState<ChordAddition | null>(null);
+  useEffect(() => {
+    writePickerPreferences({ root, category, region, text, selectedGroupId, more, filtersExpanded });
+  }, [root, category, region, text, selectedGroupId, more, filtersExpanded]);
   useLayoutEffect(() => {
     const el = dialog.current,
       returnTo = opener.current;

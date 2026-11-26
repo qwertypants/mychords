@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 import { ChordPicker } from "./ChordPicker";
 import { catalog } from "./catalog";
+beforeEach(() => localStorage.clear());
 HTMLDialogElement.prototype.showModal = function () {
   this.open = true;
 };
@@ -93,4 +94,40 @@ test("type-ahead offers chords and selecting one shows its exact shapes", () => 
   expect(screen.queryByRole("button", { name: "Shapes for C/Ab" })).not.toBeInTheDocument();
   fireEvent.change(search, { target: { value: "C/Ab" } });
   expect(screen.getByRole("button", { name: "Shapes for C/Ab" })).toBeInTheDocument();
+});
+
+test("restores exploration options after the picker is reopened", () => {
+  const props = { onHear: () => {}, onAdd: () => true, onClose: () => {}, sectionName: "Verse", activeEntryId: null };
+  const first = render(<ChordPicker {...props} />);
+  fireEvent.click(screen.getByRole("button", { name: "D" }));
+  fireEvent.click(screen.getByRole("button", { name: "Minor" }));
+  fireEvent.click(screen.getByRole("radio", { name: "Frets 5–9" }));
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  first.unmount();
+
+  render(<ChordPicker {...props} />);
+  expect(screen.getByRole("button", { name: "D" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: "Filters" })).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  expect(screen.getByRole("button", { name: "Minor" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("radio", { name: "Frets 5–9" })).toBeChecked();
+});
+
+test("restores an exact chord search and ignores invalid saved options", () => {
+  const props = { onHear: () => {}, onAdd: () => true, onClose: () => {}, sectionName: "Verse", activeEntryId: null };
+  const first = render(<ChordPicker {...props} />);
+  fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "C/A" } });
+  fireEvent.click(screen.getByText("C/A", { selector: ".chord-suggestions span" }));
+  first.unmount();
+  const second = render(<ChordPicker {...props} />);
+  expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("C/A");
+  expect(screen.getByRole("button", { name: "Shapes for C/A" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Shapes for C/Ab" })).not.toBeInTheDocument();
+  second.unmount();
+
+  localStorage.setItem("mychords.pickerOptions.v1", JSON.stringify({ root: "H", category: "Other", region: "99" }));
+  render(<ChordPicker {...props} />);
+  expect(screen.getByRole("button", { name: "C" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("group", { name: "Chord categories" }).querySelector('button[aria-pressed="true"]')).toHaveTextContent("All");
+  expect(screen.getByRole("radio", { name: "Whole neck" })).toBeChecked();
 });
