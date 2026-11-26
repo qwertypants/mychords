@@ -26,14 +26,12 @@
 }
 .picker-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 12px 28px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
-}
-.picker-header > .icon-button {
-  align-self: center;
 }
 .picker-filters {
   padding: 20px 28px 16px;
