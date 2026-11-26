@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import type { Voicing } from "./types";
-import { positionOf } from "./pitch";
+import { midiForString, positionOf } from "./pitch";
+import { roots } from "./catalog";
 import { STRUM_INTERVALS } from "../audio/guitar";
 import { useMotion } from "../motion";
 
@@ -39,6 +40,10 @@ export function ChordDiagram({
   const start = Math.max(1, positionOf(voicing.frets));
   const rows = Math.max(4, Math.max(...voicing.frets) - start + 1);
   const stringNames = ["low E", "A", "D", "G", "B", "high E"];
+  const noteNames = voicing.frets.map((_, i) => {
+    const midi = midiForString(voicing.frets, i);
+    return midi === null ? "" : roots[midi % 12];
+  });
   const noteProps = (stringIndex: number, fret: number) => onNote ? {
     role: "button" as const,
     tabIndex: 0,
@@ -98,7 +103,7 @@ export function ChordDiagram({
             textAnchor="middle"
             className="string-letter"
           >
-            {["E", "A", "D", "G", "B", "e"][i]}
+            {noteNames[i]}
           </text>
         </g>
       ))}
