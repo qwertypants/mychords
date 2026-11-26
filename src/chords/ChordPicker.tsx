@@ -100,12 +100,19 @@ export function ChordPicker({
     [root, text, region],
   );
   const suggestions = useMemo(() => {
-    if (!text.trim()) return [];
     const query = text.trim().toLowerCase();
     return groupChords(findVoicings({ text }))
-      .sort((a, b) => Number(b.label.toLowerCase().startsWith(query)) - Number(a.label.toLowerCase().startsWith(query)) || a.label.localeCompare(b.label))
-      .slice(0, 8);
+      .sort((a, b) => Number(b.label.toLowerCase().startsWith(query)) - Number(a.label.toLowerCase().startsWith(query)) || a.label.localeCompare(b.label));
   }, [text]);
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    const list = dialog.current?.querySelector<HTMLElement>("#chord-suggestions");
+    const option = list?.children[activeSuggestion] as HTMLElement | undefined;
+    if (!list || !option) return;
+    if (option.offsetTop < list.scrollTop) list.scrollTop = option.offsetTop;
+    else if (option.offsetTop + option.offsetHeight > list.scrollTop + list.clientHeight)
+      list.scrollTop = option.offsetTop + option.offsetHeight - list.clientHeight;
+  }, [suggestionsOpen, activeSuggestion, suggestions]);
   const results = useMemo(() => available.filter(v =>
     inCategory(v.suffix, category) && (!selectedGroupId || `${v.root}:${v.suffix}` === selectedGroupId)
   ), [available, category, selectedGroupId]);
@@ -165,8 +172,10 @@ export function ChordPicker({
             aria-activedescendant={suggestionsOpen && suggestions.length > 0 ? `chord-suggestion-${activeSuggestion}` : undefined}
             placeholder="Search a chord or quality…"
             value={text}
-            onFocus={() => setSuggestionsOpen(true)}
-            onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 0)}
+            onFocus={() => { setSuggestionsOpen(true); setActiveSuggestion(0); }}
+            onBlur={() => window.setTimeout(() => {
+              if (document.activeElement !== search.current) setSuggestionsOpen(false);
+            }, 0)}
             onKeyDown={(e) => {
               if (e.key === "Tab") {
                 e.preventDefault();
@@ -175,7 +184,12 @@ export function ChordPicker({
                 dialog.current?.querySelector<HTMLButtonElement>(next)?.focus();
                 return;
               }
-              if (e.key === "Escape") setSuggestionsOpen(false);
+              if (e.key === "Escape" && suggestionsOpen) {
+                e.preventDefault();
+                e.stopPropagation();
+                setSuggestionsOpen(false);
+                return;
+              }
               if (!suggestionsOpen || !suggestions.length) return;
               if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                 e.preventDefault();
