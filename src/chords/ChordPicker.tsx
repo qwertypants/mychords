@@ -79,11 +79,9 @@ export function ChordPicker({
   }, []);
   useMotion(dialog, true, (element) => {
     const edge = element.querySelector(".picker-motion-edge");
-    const heading = element.querySelector("#picker-heading");
     gsap.timeline({ defaults: { overwrite: "auto", ease: "power2.out" } })
       .fromTo(edge, { scaleY: 0, opacity: 0.9 }, { scaleY: 1, duration: 0.15 }, 0)
-      .to(edge, { opacity: 0, duration: 0.07, clearProps: "transform,opacity" }, 0.15)
-      .fromTo(heading, { y: 10 }, { y: 0, duration: 0.22, clearProps: "transform" }, 0);
+      .to(edge, { opacity: 0, duration: 0.07, clearProps: "transform,opacity" }, 0.15);
   });
   useEffect(() => {
     if (!added) return;
@@ -138,16 +136,12 @@ export function ChordPicker({
         e.preventDefault();
         onClose();
       }}
-      aria-labelledby="picker-heading"
+      aria-label={`Chord library for ${sectionName}`}
     >
       <span className="picker-motion-edge" aria-hidden="true" />
       <header className="picker-header">
         <div>
           <span className="eyebrow">THE CHORD LIBRARY</span>
-          <h2 id="picker-heading">Find your next chord.</h2>
-          <p>
-            Add to <strong>{sectionName}</strong>
-          </p>
         </div>
         <button
           className="icon-button"
@@ -233,7 +227,6 @@ export function ChordPicker({
           <ChevronDown size={16} className={filtersExpanded ? "is-expanded" : ""} aria-hidden="true" />
         </button>
       </div>
-      <div className="picker-scroll">
       <div id="picker-filter-controls" className="picker-filters" hidden={!filtersExpanded}>
         <div className="category-tabs" role="group" aria-label="Chord categories">
           {primaryCategories.map(c => <button key={c} aria-pressed={category === c}
@@ -249,6 +242,7 @@ export function ChordPicker({
         <NeckPositionSelect value={region} onChange={value => filter(() => setRegion(value))} />
       {strumSpeedControl && <div className="picker-strum-speed">{strumSpeedControl}</div>}
       </div>
+      <div className="picker-scroll">
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">

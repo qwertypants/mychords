@@ -1,6 +1,7 @@
 .picker-search-toolbar { padding: 12px 28px 0; flex-shrink: 0; border-bottom: 1px solid var(--line); }
 .picker-scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; overscroll-behavior-y: contain; }
 .picker-filter-toggle { min-height: 44px; margin-bottom: 0; }
+.picker-filters { max-height: 40dvh; overflow-y: auto; overscroll-behavior-y: contain; }
 .picker-filters[hidden] { display: none; }
 .picker-filters .picker-strum-speed { padding: 14px 0 0; border: 0; margin-top: 12px; border-top: 1px solid var(--line); }
 .root-tabs {
@@ -39,9 +40,6 @@
 }
 .root-tabs button:hover:not([aria-pressed="true"]) { background: var(--tab-hover); color: var(--ink); }
 @media (max-width: 600px), (max-height: 600px) {
-  .picker-header { padding: 10px 16px; }
-  .picker-header .eyebrow { display: none; }
-  .picker-header h2 { font-size: 20px; margin: 0; }
-  .picker-header p { margin-top: 3px; }
+  .picker-header { padding: 8px 16px; }
   .picker-search-toolbar { padding: 8px 16px 0; }
 }

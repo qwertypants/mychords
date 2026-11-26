@@ -301,11 +301,7 @@
     width: 100%;
   }
   .picker-header {
-    padding: 12px 16px 10px;
-  }
-  .picker-header h2 {
-    font-size: 21px;
-    margin-top: 4px;
+    padding: 8px 16px;
   }
   .picker-header .eyebrow {
     font-size: 13px;
@@ -338,9 +334,6 @@
   }
   .voicing-heading h3 {
     font-size: 27px;
-  }
-  .voicing-heading > span {
-    font-size: 13px;
   }
   .voicing-actions button {
     font-size: 13px;
@@ -426,7 +419,6 @@
 }
 
 @media (max-width: 600px) {
-  .picker-header p { margin-top: 3px; }
   .picker-filter-toggle { margin-bottom: 5px; }
   .picker-filters .category-tabs {
     flex-wrap: nowrap;

@@ -28,26 +28,12 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding: 28px 28px 20px;
+  padding: 12px 28px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
 }
-.picker-header h2 {
-  font: 700 35px var(--display);
-  margin-top: 9px;
-  letter-spacing: -0.3px;
-}
-.picker-header p {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 8px;
-}
-.picker-header p strong {
-  color: var(--accent);
-  font-weight: 500;
-}
 .picker-header > .icon-button {
-  align-self: flex-start;
+  align-self: center;
 }
 .picker-filters {
   padding: 20px 28px 16px;
@@ -177,11 +163,6 @@
   font: 700 26px var(--display);
   overflow-wrap: anywhere;
   min-width: 0;
-}
-.voicing-heading > span {
-  white-space: nowrap;
-  font: 500 13px var(--display);
-  color: var(--muted);
 }
 .voicing-card .chord-diagram {
   width: 127px;

@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { Play, Plus, Check } from "lucide-react";
-import { positionOf } from "./pitch";
 import { ChordDiagram } from "./ChordDiagram";
 import type { Voicing } from "./types";
 import { pulseIcon, useMotion } from "../motion";
@@ -38,7 +37,6 @@ export function VoicingCard({ voicing, playing, strumInterval, added, onHear, on
       )}
       <div className="voicing-heading">
         <h3>{label}</h3>
-        <span>Fret {positionOf(frets)}</span>
       </div>
       <ChordDiagram voicing={voicing} playing={playing} strumInterval={strumInterval} onNote={onNote} />
       <div className="voicing-actions">
