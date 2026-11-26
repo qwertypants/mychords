@@ -58,3 +58,25 @@ test("Shapes leaves menus open on a wide viewport", async ({ page }) => {
   await expect(search).toHaveAttribute("aria-expanded", "true");
   await expect(filters).toHaveAttribute("aria-expanded", "true");
 });
+
+test("scrolling through chords frees space and keeps chords interactive", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openPicker(page);
+  const search = page.getByRole("button", { name: "Search & notes" });
+  const filters = page.getByRole("button", { name: "Filters", exact: true });
+  if (await filters.getAttribute("aria-expanded") === "false") await filters.click();
+  const scroller = page.locator(".picker-scroll");
+  const menus = page.locator(".picker-menu-stack");
+  const before = (await scroller.boundingBox())!.height;
+  await scroller.evaluate(element => { element.scrollTop = 250; });
+  await expect(menus).toHaveClass(/is-hidden/);
+  await expect.poll(async () => (await scroller.boundingBox())!.height).toBeGreaterThan(before + 50);
+  await expect(menus).toHaveAttribute("inert", "");
+  const chord = page.locator(".chord-group").first();
+  await chord.getByRole("button", { name: /^Hear / }).click();
+  await chord.getByRole("button", { name: /^Add / }).click();
+  await scroller.evaluate(element => { element.scrollTop -= 80; });
+  await expect(menus).not.toHaveClass(/is-hidden/);
+  await expect(search).toHaveAttribute("aria-expanded", "true");
+  await expect(filters).toHaveAttribute("aria-expanded", "true");
+});

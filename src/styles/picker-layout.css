@@ -1,8 +1,10 @@
+.picker-menu-stack { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); flex: 0 0 auto; min-width: 0; min-height: 0; }
+.picker-menu-content { min-width: 0; min-height: 0; }
 .picker-search-toolbar { padding: 12px 28px 0; flex-shrink: 0; border-bottom: 1px solid var(--line); }
 .picker-search-toolbar #picker-search-controls[hidden] { display: none; }
 #picker-search-controls { padding-top: 4px; }
 .picker-scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; overscroll-behavior-y: contain; }
-.picker-filter-toggle { min-height: 44px; margin-bottom: 0; }
+.picker-filter-toggle { position: relative; z-index: 6; min-height: 44px; margin-bottom: 0; }
 .picker-filters { max-height: 40dvh; overflow-y: auto; overscroll-behavior-y: contain; }
 .picker-filters[hidden] { display: none; }
 .picker-option-groups {
@@ -67,4 +69,11 @@
 @media (max-width: 600px), (max-height: 600px) {
   .picker-header { padding: 8px 16px; }
   .picker-search-toolbar { padding: 8px 16px 0; }
+  .picker-menu-stack { max-height: calc(100dvh - 180px); transition: grid-template-rows 180ms ease, opacity 150ms ease; }
+  .picker-menu-content { overflow-y: auto; overscroll-behavior-y: contain; }
+  .picker-menu-stack.is-hidden { grid-template-rows: minmax(0, 0fr); opacity: 0; pointer-events: none; }
+  .picker-menu-stack.is-hidden .picker-menu-content { overflow: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .picker-menu-stack { transition: none; }
 }

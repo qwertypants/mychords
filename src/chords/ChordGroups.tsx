@@ -35,25 +35,26 @@ export function ChordGroups({ groups, expanded, onExpand, activeEntryId, strumIn
     const trigger = triggers.current.get(group.id);
     const before = trigger?.getBoundingClientRect().top;
     onExpand(expanded === group.id ? null : group.id);
-    requestAnimationFrame(() => {
-      const scroller = trigger?.closest(".picker-results");
+    const keepTriggerInPlace = () => {
+      const scroller = trigger?.closest(".picker-scroll");
       if (scroller && before !== undefined && trigger) scroller.scrollTop += trigger.getBoundingClientRect().top - before;
-    });
+    };
+    requestAnimationFrame(keepTriggerInPlace);
   };
   return <div className="voicing-grid grouped-chords">
     {groups.map((group, index) => <Fragment key={group.id}>
       <div className="chord-group">
         {card(group.voicings[0], true)}
-        <button className="shape-toggle" ref={node => { if (node) triggers.current.set(group.id, node); else triggers.current.delete(group.id); }}
+        {group.voicings.length > 1 && <button className="shape-toggle" ref={node => { if (node) triggers.current.set(group.id, node); else triggers.current.delete(group.id); }}
           aria-label={`Shapes for ${group.label}`} aria-expanded={expanded === group.id}
           aria-controls={expanded === group.id ? `shapes-${group.id}` : undefined} onClick={() => toggle(group)}>
-          {group.voicings.length} {group.voicings.length === 1 ? "shape" : "shapes"} {expanded === group.id ? "−" : "+"}
-        </button>
+          {group.voicings.length - 1} other {group.voicings.length === 2 ? "shape" : "shapes"} {expanded === group.id ? "−" : "+"}
+        </button>}
       </div>
       {index === rowEnd && selected && <section className="shape-panel" id={`shapes-${selected.id}`} aria-label={`Fingerings for ${selected.label}`}>
-        <header><h4>{selected.label} · {selected.voicings.length} shapes</h4>
+        <header><h4>{selected.label} · {selected.voicings.length - 1} other {selected.voicings.length === 2 ? "shape" : "shapes"}</h4>
           <button onClick={() => { onExpand(null); triggers.current.get(selected.id)?.focus({ preventScroll: true }); }}>Close shapes</button></header>
-        <div className="voicing-grid">{selected.voicings.map(v => card(v))}</div>
+        <div className="voicing-grid">{selected.voicings.slice(1).map(v => card(v))}</div>
       </section>}
     </Fragment>)}
   </div>;

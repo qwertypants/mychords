@@ -37,6 +37,9 @@ export function ChordPicker({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLInputElement>(null);
+  const resultsScroll = useRef<HTMLDivElement>(null);
+  const lastScrollTop = useRef(0);
+  const scrollTravel = useRef(0);
   const opener = useRef(
     document.activeElement instanceof HTMLElement
       ? document.activeElement
@@ -50,6 +53,8 @@ export function ChordPicker({
   const [searchExpanded, setSearchExpanded] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [compact, setCompact] = useState(() => window.matchMedia("(max-width: 600px), (max-height: 600px)").matches);
+  const [scrollMenusHidden, setScrollMenusHidden] = useState(false);
+  const menusHidden = compact && scrollMenusHidden;
   const shapesHideMenus = compact && expanded !== null;
   const visibleSearch = searchExpanded && !shapesHideMenus;
   const visibleFilters = filtersExpanded && !shapesHideMenus;
@@ -60,12 +65,44 @@ export function ChordPicker({
   const [region, setRegion] = useState(initial.region);
   const [limit, setLimit] = useState(24);
   const [added, setAdded] = useState<ChordAddition | null>(null);
+  const hideMenus = () => {
+    if (!compact || expanded) return;
+    if (dialog.current?.querySelector(".picker-menu-stack")?.contains(document.activeElement)) {
+      (document.activeElement as HTMLElement).blur();
+    }
+    setSuggestionsOpen(false);
+    setScrollMenusHidden(true);
+  };
+  const handleResultsScroll = () => {
+    const top = resultsScroll.current?.scrollTop ?? 0;
+    const delta = top - lastScrollTop.current;
+    lastScrollTop.current = top;
+    if (!compact || expanded) return;
+    if (top <= 2) {
+      scrollTravel.current = 0;
+      setScrollMenusHidden(false);
+      return;
+    }
+    if (Math.sign(delta) !== Math.sign(scrollTravel.current)) scrollTravel.current = delta;
+    else scrollTravel.current += delta;
+    if (scrollTravel.current >= 20) {
+      scrollTravel.current = 0;
+      hideMenus();
+    } else if (scrollTravel.current <= -12) {
+      scrollTravel.current = 0;
+      setScrollMenusHidden(false);
+    }
+  };
   useEffect(() => {
     writePickerPreferences({ root, category, region, text, selectedGroupId, more, filtersExpanded });
   }, [root, category, region, text, selectedGroupId, more, filtersExpanded]);
   useEffect(() => {
     const media = window.matchMedia("(max-width: 600px), (max-height: 600px)");
-    const update = () => setCompact(media.matches);
+    const update = () => {
+      setCompact(media.matches);
+      setScrollMenusHidden(false);
+      scrollTravel.current = 0;
+    };
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
@@ -169,6 +206,8 @@ export function ChordPicker({
           <X size={21} />
         </button>
       </header>
+      <div className={`picker-menu-stack${menusHidden ? " is-hidden" : ""}`} inert={menusHidden}>
+      <div className="picker-menu-content">
       <div className="picker-search-toolbar">
         <button
           className="picker-filter-toggle"
@@ -305,7 +344,9 @@ export function ChordPicker({
           {strumSpeedControl && <div className="picker-strum-speed">{strumSpeedControl}</div>}
         </div>
       </div>
-      <div className="picker-scroll">
+      </div>
+      </div>
+      <div className="picker-scroll" ref={resultsScroll} onScroll={handleResultsScroll}>
       {playback && <div className="picker-playback">{playback}</div>}
       <div className="picker-results">
         <div className="results-count" role="status">
@@ -317,7 +358,14 @@ export function ChordPicker({
           const shown = groups.slice(0, limit).filter(g => g.root === r);
           return shown.length > 0 && <section key={r} className="chord-root-section" aria-label={r + " chords"}>
             <h3>{r} chords <span>{visible.length}</span></h3>
-            <ChordGroups groups={shown} expanded={expanded} onExpand={id => { setExpanded(id); if (id) setSuggestionsOpen(false); }}
+            <ChordGroups groups={shown} expanded={expanded} onExpand={id => {
+              setExpanded(id);
+              if (id) {
+                setSuggestionsOpen(false);
+                setScrollMenusHidden(false);
+                scrollTravel.current = 0;
+              }
+            }}
               activeEntryId={activeEntryId} strumInterval={strumInterval} added={added} onHear={onHear}
               onAdd={v => { if (onAdd(v)) setAdded({ voicingId: v.id }); }} />
           </section>;

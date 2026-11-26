@@ -20,7 +20,8 @@ test("browse categories, compare inline shapes, and search the whole catalog", a
   await expect(panel).toBeVisible();
   await expect(panel.getByRole("img")).not.toHaveCount(1);
   const after = await trigger.boundingBox();
-  expect(Math.abs(before!.y - after!.y)).toBeLessThan(3);
+  if (info.project.use.hasTouch) await expect(trigger).toBeInViewport();
+  else expect(Math.abs(before!.y - after!.y)).toBeLessThan(3);
   expect((await panel.boundingBox())!.y).toBeGreaterThan(after!.y);
   await activate(panel.getByRole("button", { name: "Close shapes" }));
   await expect(trigger).toBeFocused();

@@ -21,15 +21,12 @@ async function addCs(page: Page) {
   await expandFilters(page);
   await activate(page.getByRole("button", { name: "Major", exact: true }));
   await activate(page.getByRole("button", { name: "Shapes for C", exact: true }));
-  await activate(page
-    .getByRole("region", { name: "Fingerings for C", exact: true }).getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true })
-    );
+  const displayedC = page.locator(".chord-group").filter({ has: page.getByRole("button", { name: "Shapes for C", exact: true }) });
+  await activate(displayedC.getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true }));
   await activate(page
     .getByRole("button", { name: "Add C, 8 10 10 9 8 8", exact: true })
     );
-  await activate(page
-    .getByRole("region", { name: "Fingerings for C", exact: true }).getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true })
-    );
+  await activate(displayedC.getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true }));
   await activate(page.getByRole("button", { name: "Close chord library" }));
 }
 test("song-card arrows select exact shapes without changing duplicate chords", async ({

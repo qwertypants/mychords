@@ -62,6 +62,20 @@ test("categories, full search, inline comparison and reset keep shapes reachable
   expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("");
 });
 
+test("expanded shapes exclude the fingering already shown on the group card", () => {
+  render(<ChordPicker onHear={() => {}} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
+  const trigger = screen.getByRole("button", { name: "Shapes for C/A" });
+  const group = trigger.closest(".chord-group")!;
+  const preview = group.querySelector(".voicing-card")!.getAttribute("data-voicing");
+  fireEvent.click(trigger);
+  const panel = document.querySelector(".shape-panel")!;
+  expect(panel.querySelector(`[data-voicing="${preview}"]`)).toBeNull();
+  const alternatives = panel.querySelectorAll(".voicing-card");
+  expect(alternatives.length).toBeGreaterThan(0);
+  expect(trigger).toHaveTextContent(`${alternatives.length} other`);
+  expect(panel.querySelector("h4")).toHaveTextContent(`${alternatives.length} other`);
+});
+
 
 test("filter toggle hides controls without losing the selected filters", () => {
   render(<ChordPicker onHear={() => {}} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
