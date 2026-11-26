@@ -32,6 +32,7 @@ export function SongLibrary({
   playback,
   strumSpeedControl,
   onStop,
+  onViewAll,
 }: {
   songs: Song[];
   onNew: () => void;
@@ -41,6 +42,7 @@ export function SongLibrary({
   playback: PlaybackState;
   strumSpeedControl?: React.ReactNode;
   onStop: () => void;
+  onViewAll: () => void;
 }) {
   const main = useRef<HTMLElement>(null);
   useViewEntrance(main);
@@ -119,35 +121,12 @@ export function SongLibrary({
           </button>
         </header>
         {songs.length ? (
-          <div className="saved-song-grid" data-motion-entrance>
-            {songs.map((s, i) => (
-              <button
-                className="saved-song"
-                key={s.id}
-                onClick={() => onOpen(s)}
-                aria-label={`Open ${s.name || "Untitled song"}`}
-              >
-                <span className="motion-card-edge" aria-hidden="true" />
-                <span className="saved-song-number">
-                  {String(i + 1).padStart(2, "0")}
-                  <Music2 size={18} />
-                </span>
-                <h3>{s.name || "Untitled song"}</h3>
-                <p>
-                  {s.sections.length} sections ·{" "}
-                  {s.sections.reduce((n, sec) => n + sec.chords.length, 0)}{" "}
-                  chords
-                </p>
-                <span className="saved-song-bottom">
-                  {new Date(s.updatedAt).toLocaleDateString(undefined, {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                  <ArrowUpRight size={18} />
-                </span>
-              </button>
-            ))}
-          </div>
+          <>
+            <SongCards songs={songs.slice(0, 3)} onOpen={onOpen} />
+            <button className="text-button view-all-songs" onClick={onViewAll}>
+              View all songs <ArrowRight size={17} />
+            </button>
+          </>
         ) : (
           <div className="library-empty" data-motion-entrance>
             <span className="motion-card-edge" aria-hidden="true" />
@@ -187,5 +166,43 @@ export function SongLibrary({
       </button>
       {playback.status !== "idle" && <PlaybackControls state={playback} onStop={onStop} />}
     </main>
+  );
+}
+
+export function SongCards({ songs, onOpen, start = 0 }: {
+  songs: Song[];
+  onOpen: (song: Song) => void;
+  start?: number;
+}) {
+  return (
+    <div className="saved-song-grid" data-motion-entrance>
+      {songs.map((s, i) => (
+        <button
+          className="saved-song"
+          key={s.id}
+          onClick={() => onOpen(s)}
+          aria-label={`Open ${s.name || "Untitled song"}`}
+        >
+          <span className="motion-card-edge" aria-hidden="true" />
+          <span className="saved-song-number">
+            {String(start + i + 1).padStart(2, "0")}
+            <Music2 size={18} />
+          </span>
+          <h3>{s.name || "Untitled song"}</h3>
+          <p>
+            {s.sections.length} sections ·{" "}
+            {s.sections.reduce((n, sec) => n + sec.chords.length, 0)}{" "}
+            chords
+          </p>
+          <span className="saved-song-bottom">
+            {new Date(s.updatedAt).toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            })}
+            <ArrowUpRight size={18} />
+          </span>
+        </button>
+      ))}
+    </div>
   );
 }

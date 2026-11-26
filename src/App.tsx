@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useSongLibrary } from "./songs/useSongLibrary";
 import { SongLibrary } from "./songs/SongLibrary";
+import { SongsPage } from "./songs/SongsPage";
 import { SongEditor } from "./songs/SongEditor";
 import { addChord, addSection, newSong, removeSection } from "./songs/commands";
 import { ChordPicker } from "./chords/ChordPicker";
@@ -19,7 +20,7 @@ import { PlaybackControls } from "./audio/PlaybackControls";
 import { StrumSpeedSelect } from "./audio/StrumSpeedSelect";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { PwaControls } from "./pwa/PwaControls";
-import { appRoot, readSongRoute, songPath } from "./songs/routes";
+import { appRoot, readSongRoute, songPath, songsPath } from "./songs/routes";
 import type { SongRoute } from "./songs/routes";
 import "./styles.css";
 export default function App() {
@@ -43,12 +44,13 @@ export default function App() {
     else action();
   };
   const navigate = (next: SongRoute) => {
-    const path = next.kind === "song" ? songPath(next.id) : appRoot();
-    if (window.location.pathname !== path)
+    const path = next.kind === "song" ? songPath(next.id) : next.kind === "songs" ? songsPath(next.page) : appRoot();
+    if (`${window.location.pathname}${window.location.search}` !== path)
       window.history.pushState(window.history.state, "", path);
     setRoute(next);
   };
   const goHome = () => transition(() => navigate({ kind: "library" }));
+  const goSongs = () => transition(() => navigate({ kind: "songs", page: 1 }));
   const createSong = () => transition(() => {
     const song = store.newDraft();
     navigate({ kind: "song", id: song.id });
@@ -58,7 +60,7 @@ export default function App() {
       const target = readSongRoute();
       audio.stop();
       if (store.dirty) {
-        const currentPath = route.kind === "song" ? songPath(route.id) : appRoot();
+        const currentPath = route.kind === "song" ? songPath(route.id) : route.kind === "songs" ? songsPath(route.page) : appRoot();
         setPending({
           action: () => setRoute(target),
           cancel: () => window.history.pushState(window.history.state, "", currentPath),
@@ -110,7 +112,7 @@ export default function App() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const blocked = store.initial.kind === "error";
-  const screen = blocked ? "recovery" : route.kind === "song" ? route.id : route.kind;
+  const screen = blocked ? "recovery" : route.kind === "song" ? route.id : route.kind === "songs" ? `songs-${route.page}` : route.kind;
   const previousScreen = useRef(screen);
   useEffect(() => {
     if (previousScreen.current !== screen) {
@@ -139,8 +141,8 @@ export default function App() {
         </button>
         <nav aria-label="Main navigation">
           <button
-            className={route.kind === "library" ? "nav-link active" : "nav-link"}
-            onClick={goHome}
+            className={route.kind === "songs" ? "nav-link active" : "nav-link"}
+            onClick={goSongs}
           >
             <BookOpen size={16} />
             My songs
@@ -202,7 +204,7 @@ export default function App() {
           key={store.draft.id}
           song={store.draft}
           onChange={change}
-          onBack={goHome}
+          onBack={goSongs}
           onAdd={setPickerFor}
           onHear={hear}
           onPlay={audio.play}
@@ -225,12 +227,21 @@ export default function App() {
           playback={audio.state}
           strumSpeedControl={strumSpeedControl}
           onStop={audio.stop}
+          onViewAll={goSongs}
+        />
+      ) : route.kind === "songs" ? (
+        <SongsPage
+          songs={store.library.songs}
+          page={route.page}
+          onPage={(page) => navigate({ kind: "songs", page })}
+          onNew={createSong}
+          onOpen={(s) => transition(() => navigate({ kind: "song", id: s.id }))}
         />
       ) : (
         <main className="recovery" id="main-content" tabIndex={-1}>
           <h1>Song not found</h1>
           <p>This song isn’t saved in this browser.</p>
-          <button className="button primary" onClick={goHome}>All songs</button>
+          <button className="button primary" onClick={goSongs}>All songs</button>
         </main>
       )}
       {store.shareError && <div className="storage-error" role="alert">{store.shareError}</div>}

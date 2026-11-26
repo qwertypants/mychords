@@ -142,7 +142,8 @@
   .saved-songs {
     margin-top: 29px;
   }
-  .library-section-header h2 {
+  .library-section-header h2,
+  .library-section-header h1 {
     font-size: 31px;
   }
   .library-section-header .eyebrow {
@@ -151,6 +152,9 @@
   .library-section-header > .button {
     font-size: 13px;
     padding: 9px 12px;
+  }
+  .songs-pagination {
+    gap: 10px;
   }
   .library-empty {
     margin-top: 19px;

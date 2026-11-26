@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build && node scripts/prepare-routes.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
+    "preview:songs": "node scripts/preview-songs.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "catalog:import": "node scripts/import-chords.mjs",
