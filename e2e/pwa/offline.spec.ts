@@ -99,6 +99,7 @@ for (const path of ["/", "/mychords/"]) {
     await activate(installed.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ }));
     await activate(installed.getByRole("region", { name: "Fingerings for C", exact: true })
       .getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true }));
+    await activate(installed.getByRole("button", { name: "Close shapes" }));
     await activate(installed.getByRole("button", { name: "Close chord library" }));
     const songPath = new URL(installed.url()).pathname;
     expect(songPath).toMatch(new RegExp(`^${path}songs/[0-9a-f-]{36}$`));
