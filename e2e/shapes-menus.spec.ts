@@ -13,7 +13,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }
     await openPicker(page);
     const search = page.getByRole("button", { name: "Search & notes" });
     const filters = page.getByRole("button", { name: "Filters", exact: true });
-    const shape = page.getByRole("button", { name: "Shapes for C/A", exact: true });
+    const shape = page.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ });
 
     for (const searchOpen of [false, true]) {
       for (const filtersOpen of [false, true]) {
@@ -55,7 +55,7 @@ test("Shapes leaves menus open on a wide viewport", async ({ page }) => {
   const search = page.getByRole("button", { name: "Search & notes" });
   const filters = page.getByRole("button", { name: "Filters", exact: true });
   if (await filters.getAttribute("aria-expanded") === "false") await filters.click();
-  await page.getByRole("button", { name: "Shapes for C/A", exact: true }).click();
+  await page.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ }).click();
   await expect(search).toHaveAttribute("aria-expanded", "true");
   await expect(filters).toHaveAttribute("aria-expanded", "true");
 });
@@ -63,7 +63,7 @@ test("Shapes leaves menus open on a wide viewport", async ({ page }) => {
 test("fan focuses its controls and Escape returns to the shape trigger", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openPicker(page);
-  const trigger = page.getByRole("button", { name: "Shapes for C/A", exact: true });
+  const trigger = page.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ });
   await trigger.click();
   const panel = page.getByRole("region", { name: "Fingerings for C/A" });
   await expect(panel.getByRole("button", { name: "Close shapes" })).toBeFocused();
@@ -77,7 +77,7 @@ test("fan focuses its controls and Escape returns to the shape trigger", async (
 test("fan keeps its origin in place and leaves every shape actionable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openPicker(page);
-  const original = page.locator('.picker-scroll .shape-toggle[aria-label="Shapes for C/A"]');
+  const original = page.locator('.picker-scroll .shape-toggle[aria-label^="Shapes for C/A,"]');
   await original.click();
   const origin = page.locator(".shape-fan-origin");
   const sourceBox = await original.locator("..").boundingBox();

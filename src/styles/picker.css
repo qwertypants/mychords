@@ -294,6 +294,7 @@
 .chord-root-section > h3 span { font: 500 13px var(--display); color: var(--muted); }
 .chord-group { min-width: 0; }
 .shape-toggle { width: 100%; min-height: 44px; font-size: 13px; border: 1px solid var(--voicing-border); border-top: 0; border-radius: 0 0 5px 5px; }
+.shape-toggle svg { vertical-align: middle; margin-left: 3px; }
 .shape-toggle[aria-expanded="true"] { background: var(--accent); color: var(--on-ink); }
 .shape-fan-backdrop {
   position: absolute;
@@ -324,6 +325,7 @@
   z-index: 10;
   display: block;
   float: right;
+  min-width: 44px;
   min-height: 44px;
   margin: 12px 12px -56px 0;
   padding: 0 12px;

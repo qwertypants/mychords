@@ -20,7 +20,7 @@ async function addCs(page: Page) {
     );
   await expandFilters(page);
   await activate(page.getByRole("button", { name: "Major", exact: true }));
-  await activate(page.getByRole("button", { name: "Shapes for C", exact: true }));
+  await activate(page.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ }));
   const displayedC = page.locator(".shape-fan-canvas");
   await activate(displayedC.getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true }));
   await activate(page

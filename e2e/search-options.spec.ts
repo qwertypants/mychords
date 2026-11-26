@@ -17,7 +17,7 @@ test("search offers chords on focus and narrows them while typing", async ({ pag
   await options.filter({ has: page.locator("span", { hasText: /^Am7$/ }) }).click();
   await expect(search).toHaveValue("Am7");
   await expect(search).toHaveAttribute("aria-expanded", "false");
-  await expect(page.getByRole("button", { name: "Shapes for Am7", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Shapes for Am7, \d+ other shapes?$/ })).toBeVisible();
   await search.focus();
   await search.fill("");
   await expect(options).toHaveCount(total);

@@ -39,7 +39,7 @@ test("categories, full search, focused comparison and reset keep shapes reachabl
   const hear = vi.fn(), add = vi.fn(() => true);
   render(<ChordPicker onHear={hear} onAdd={add} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
   fireEvent.click(screen.getByRole("button", { name: "Major" }));
-  const trigger = screen.getByRole("button", { name: "Shapes for C" });
+  const trigger = screen.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ });
   fireEvent.click(trigger);
   expect(trigger).toHaveAttribute("aria-expanded", "true");
   const high = catalog.find(v => v.id === "C:major:8,10,10,9,8,8")!;
@@ -53,7 +53,7 @@ test("categories, full search, focused comparison and reset keep shapes reachabl
   fireEvent.click(screen.getByRole("radio", { name: "Frets 15–22" }));
   fireEvent.change(screen.getByRole("combobox", { name: "Search chords" }), { target: { value: "D♭" } });
   expect(screen.getByRole("radio", { name: "Whole neck" })).toBeChecked();
-  expect(screen.getByRole("button", { name: "Shapes for C#/C" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /^Shapes for C#\/C, \d+ other shapes?$/ })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
   expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("");
   expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
@@ -64,7 +64,7 @@ test("categories, full search, focused comparison and reset keep shapes reachabl
 
 test("fan includes the selected fingering and all alternatives", () => {
   render(<ChordPicker onHear={() => {}} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
-  const trigger = screen.getByRole("button", { name: "Shapes for C/A" });
+  const trigger = screen.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ });
   const group = trigger.closest(".chord-group")!;
   const preview = group.querySelector(".voicing-card")!.getAttribute("data-voicing");
   fireEvent.click(trigger);
@@ -72,7 +72,8 @@ test("fan includes the selected fingering and all alternatives", () => {
   expect(panel.querySelector(`[data-voicing="${preview}"]`)).not.toBeNull();
   const alternatives = panel.querySelectorAll(".voicing-card");
   expect(alternatives.length).toBeGreaterThan(1);
-  expect(trigger).toHaveTextContent(`${alternatives.length - 1} other`);
+  expect(trigger).toHaveTextContent(`${alternatives.length - 1}`);
+  expect(trigger.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   expect(panel.querySelector("h4")).toHaveTextContent(`${alternatives.length - 1} other`);
 });
 
@@ -84,7 +85,7 @@ test("filter toggle hides controls without losing the selected filters", () => {
   fireEvent.click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
   expect(screen.queryByRole("button", { name: "Major" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Shapes for C" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ })).toBeInTheDocument();
   fireEvent.click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "true");
   expect(screen.getByRole("button", { name: "Major" })).toHaveAttribute("aria-pressed", "true");
@@ -107,10 +108,10 @@ test("type-ahead offers chords and selecting one shows its exact shapes", () => 
   fireEvent.click(option);
   expect(search).toHaveValue("C/A");
   expect(search).toHaveAttribute("aria-expanded", "false");
-  expect(screen.getByRole("button", { name: "Shapes for C/A" })).toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "Shapes for C/Ab" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^Shapes for C\/Ab, \d+ other shapes?$/ })).not.toBeInTheDocument();
   fireEvent.change(search, { target: { value: "C/Ab" } });
-  expect(screen.getByRole("button", { name: "Shapes for C/Ab" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /^Shapes for C\/Ab, \d+ other shapes?$/ })).toBeInTheDocument();
 });
 
 test("restores exploration options after the picker is reopened", () => {
@@ -138,8 +139,8 @@ test("restores an exact chord search and ignores invalid saved options", () => {
   first.unmount();
   const second = render(<ChordPicker {...props} />);
   expect(screen.getByRole("combobox", { name: "Search chords" })).toHaveValue("C/A");
-  expect(screen.getByRole("button", { name: "Shapes for C/A" })).toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "Shapes for C/Ab" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /^Shapes for C\/A, \d+ other shapes?$/ })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^Shapes for C\/Ab, \d+ other shapes?$/ })).not.toBeInTheDocument();
   second.unmount();
 
   localStorage.setItem("mychords.pickerOptions.v1", JSON.stringify({ root: "H", category: "Other", region: "99" }));

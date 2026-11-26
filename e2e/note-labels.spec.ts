@@ -18,7 +18,7 @@ test("note labels follow the fingering everywhere a chord chart appears", async 
   await expandFilters(page);
   await activate(page.getByRole("button", { name: "Major", exact: true }));
   await expect(page.locator(".chord-group [data-voicing='C:major:-1,3,2,0,1,0'] .string-letter")).toHaveText(["", "C", "E", "G", "C", "E"]);
-  await activate(page.getByRole("button", { name: "Shapes for C", exact: true }));
+  await activate(page.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ }));
   const high = page.getByRole("region", { name: "Fingerings for C", exact: true }).locator("[data-voicing='C:major:8,10,10,9,8,8']");
   await expect(high.locator(".string-letter")).toHaveText(["C", "G", "C", "E", "G", "C"]);
   await activate(high.getByRole("button", { name: /^Add C,/ }));

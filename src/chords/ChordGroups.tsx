@@ -1,12 +1,24 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
+import { X } from "lucide-react";
 import type { ChordGroup } from "./browse";
 import type { Voicing } from "./types";
 import { VoicingCard } from "./VoicingCard";
 import { previewEntryId } from "../audio/guitar";
 
 type CardPosition = { left: number; top: number };
+function ShapesIcon() {
+  return <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+    <path d="M16 2 21 10H11L16 2Z" />
+    <rect x="2.5" y="8.5" width="8" height="8" rx="1" />
+    <circle cx="16" cy="17.5" r="4" />
+  </svg>;
+}
+
+function shapesLabel(label: string, count: number) {
+  return `Shapes for ${label}, ${count} other ${count === 1 ? "shape" : "shapes"}`;
+}
 type FanLayout = {
   origin: CardPosition;
   width: number;
@@ -136,22 +148,22 @@ export function ChordGroups({ groups, expanded, onExpand, dialog, activeEntryId,
       {card(group.voicings[0], true)}
       {group.voicings.length > 1 && <button className="shape-toggle" ref={node => { if (node) triggers.current.set(group.id, node); else triggers.current.delete(group.id); }}
         data-shape-count={group.voicings.length - 1}
-        aria-label={`Shapes for ${group.label}`} aria-expanded={expanded === group.id}
+        aria-label={shapesLabel(group.label, group.voicings.length - 1)} aria-expanded={expanded === group.id}
         aria-controls={expanded === group.id ? `shapes-${group.id}` : undefined} onClick={() => onExpand(group.id)}>
-        {group.voicings.length - 1} other {group.voicings.length === 2 ? "shape" : "shapes"} {expanded === group.id ? "−" : "+"}
+        {group.voicings.length - 1} <ShapesIcon />
       </button>}
     </div>)}
     {selected && dialog && layout && createPortal(<div className="shape-fan-backdrop" onClick={close}>
       <section className="shape-fan-canvas" ref={fan} id={`shapes-${selected.id}`}
         aria-label={`Fingerings for ${selected.label}`} style={{ height: layout.height }}>
-        <button className="shape-fan-close" onClick={event => { event.stopPropagation(); close(); }}>Close shapes</button>
+        <button className="shape-fan-close" aria-label="Close shapes" onClick={event => { event.stopPropagation(); close(); }}><X size={20} aria-hidden="true" /></button>
         <h4 className="sr-only">{selected.label} · {selected.voicings.length - 1} other {selected.voicings.length === 2 ? "shape" : "shapes"}</h4>
         <div className="shape-fan-origin chord-group" style={{ left: layout.origin.left, top: layout.origin.top, width: layout.width }}
           onClick={event => event.stopPropagation()}>
           {card(selected.voicings[0], true)}
-          <button className="shape-toggle" aria-label={`Shapes for ${selected.label}`} aria-expanded="true"
+          <button className="shape-toggle" aria-label={shapesLabel(selected.label, selected.voicings.length - 1)} aria-expanded="true"
             aria-controls={`shapes-${selected.id}`} onClick={close}>
-            {selected.voicings.length - 1} other {selected.voicings.length === 2 ? "shape" : "shapes"} −
+            {selected.voicings.length - 1} <ShapesIcon />
           </button>
         </div>
         {selected.voicings.slice(1).map((voicing, index) => {

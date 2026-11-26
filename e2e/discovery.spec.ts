@@ -12,7 +12,7 @@ test("browse categories, compare fanned shapes, and search the whole catalog", a
   await expect(dialog.getByRole("button", { name: "Ninths", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expandFilters(page);
   await activate(dialog.getByRole("button", { name: "Major", exact: true }));
-  const trigger = dialog.getByRole("button", { name: "Shapes for C", exact: true });
+  const trigger = dialog.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ });
   await trigger.scrollIntoViewIfNeeded();
   const before = await trigger.boundingBox();
   await activate(trigger);
@@ -41,7 +41,7 @@ test("browse categories, compare fanned shapes, and search the whole catalog", a
   await dialog.getByRole("radio", { name: "Frets 15–22" }).check();
   await dialog.getByRole("combobox", { name: "Search chords" }).fill("D♭");
   await expect(dialog.getByRole("radio", { name: "Whole neck" })).toBeChecked();
-  await expect(dialog.getByRole("button", { name: "Shapes for C#/C", exact: true })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /^Shapes for C#\/C, \d+ other shapes?$/ })).toBeVisible();
   await dialog.getByRole("combobox", { name: "Search chords" }).fill("no-such-chord");
   await activate(dialog.getByRole("button", { name: "Reset filters" }));
   await expect(dialog.locator(".chord-group")).toHaveCount(24);

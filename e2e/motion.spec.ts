@@ -12,7 +12,7 @@ test("playing and replaying voicings highlights only the triggering card", async
   await expect(picker.locator(".is-playing")).toHaveCount(0);
   await expandFilters(page);
   await activate(picker.getByRole("button", { name: "Major", exact: true }));
-  await activate(picker.getByRole("button", { name: "Shapes for C", exact: true }));
+  await activate(picker.getByRole("button", { name: /^Shapes for C, \d+ other shapes?$/ }));
   const openCard = picker.locator(".chord-group").locator('[data-voicing="C:major:-1,3,2,0,1,0"]');
   const hearOpen = openCard.getByRole("button", { name: /^Hear / });
   const hearHigh = picker.getByRole("button", { name: "Hear C, 8 10 10 9 8 8", exact: true });
