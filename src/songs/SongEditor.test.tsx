@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { expect, test, beforeEach } from "vitest";
+import { expect, test, beforeEach, vi } from "vitest";
 import App from "../App";
 HTMLDialogElement.prototype.showModal = function () {
   this.open = true;
@@ -26,7 +26,6 @@ test("compose, save and reopen a song with exact repeated voicings", () => {
   fireEvent.click(screen.getByRole("button", { name: "Shapes for C" }));
   fireEvent.click(screen.getByRole("button", { name: "Add C, 8 10 10 9 8 8" }));
   fireEvent.click(screen.getByRole("button", { name: "Close chord library" }));
-  fireEvent.click(screen.getByRole("button", { name: "Save" }));
   expect(screen.queryByRole("button", { name: "Play song" })).not.toBeInTheDocument();
   view.unmount();
   render(<App />);
@@ -38,16 +37,30 @@ test("compose, save and reopen a song with exact repeated voicings", () => {
   expect(screen.getAllByLabelText("Section name")[1]).toHaveValue("Chorus");
   expect(document.querySelectorAll("[data-entry-id]")).toHaveLength(3);
 });
-test("unsaved navigation can be cancelled or discarded", () => {
+test("autosaved edits navigate without a confirmation", () => {
   render(<App />);
   fireEvent.click(screen.getAllByRole("button", { name: "New song" })[0]);
-  fireEvent.change(screen.getByLabelText("Song name"), {
-    target: { value: "Keep this" },
-  });
+  fireEvent.change(screen.getByLabelText("Song name"), { target: { value: "Keep this" } });
+  expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "All songs" }));
-  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Open Keep this" }));
   expect(screen.getByLabelText("Song name")).toHaveValue("Keep this");
-  fireEvent.click(screen.getByRole("button", { name: "All songs" }));
-  fireEvent.click(screen.getByRole("button", { name: "Discard changes" }));
-  expect(screen.queryByLabelText("Song name")).not.toBeInTheDocument();
+});
+test("failed autosave keeps the edit and retries it", () => {
+  render(<App />);
+  fireEvent.click(screen.getAllByRole("button", { name: "New song" })[0]);
+  const write = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("Full"); });
+  try {
+    fireEvent.change(screen.getByLabelText("Song name"), { target: { value: "Recovered idea" } });
+    expect(screen.getByRole("alert")).toHaveTextContent("Could not save");
+    expect(screen.getByLabelText("Song name")).toHaveValue("Recovered idea");
+    write.mockRestore();
+    fireEvent.click(screen.getByRole("button", { name: "Retry saving" }));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "All songs" }));
+    expect(screen.getByRole("button", { name: "Open Recovered idea" })).toBeInTheDocument();
+  } finally {
+    write.mockRestore();
+  }
 });

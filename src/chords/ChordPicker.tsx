@@ -47,6 +47,7 @@ export function ChordPicker({
   const [category, setCategory] = useState<Category>(initial.category);
   const [more, setMore] = useState(initial.more);
   const [filtersExpanded, setFiltersExpanded] = useState(initial.filtersExpanded);
+  const [searchExpanded, setSearchExpanded] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [text, setText] = useState(initial.text);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(initial.selectedGroupId);
@@ -159,6 +160,21 @@ export function ChordPicker({
         </button>
       </header>
       <div className="picker-search-toolbar">
+        <button
+          className="picker-filter-toggle"
+          type="button"
+          aria-expanded={searchExpanded}
+          aria-controls="picker-search-controls"
+          onClick={() => {
+            setSearchExpanded(value => !value);
+            setSuggestionsOpen(false);
+          }}
+        >
+          <Search size={16} aria-hidden="true" />
+          Search &amp; notes
+          <ChevronDown size={16} className={searchExpanded ? "is-expanded" : ""} aria-hidden="true" />
+        </button>
+        <div id="picker-search-controls" hidden={!searchExpanded}>
         <div className="search-combobox">
         <label className="search-field">
           <Search size={18} />
@@ -229,6 +245,7 @@ export function ChordPicker({
         )}
         </div>
         <RootSelector value={root} onChange={value => filter(() => setRoot(value))} />
+        </div>
         <button
           className="picker-filter-toggle"
           type="button"

@@ -12,13 +12,18 @@
 @import './styles/icon-options.css';
 @import './styles/picker-layout.css';
 
-.editor-heading > .song-actions { display: flex; gap: 10px; flex-wrap: wrap; flex: 0 0 auto; margin-top: 25px; align-items: center; }
-.song-actions .save-button { margin-top: 0; }
+.editor-heading { align-items: center; }
+.editor-heading h1 { margin-top: 0; }
+.editor-heading > .song-actions { display: flex; flex: 0 0 auto; align-items: center; }
+.song-actions .button { min-height: 44px; padding: 10px 16px; }
+.editor-main > .strum-speed { margin-top: 24px; }
+.editor-main > .strum-speed legend { margin-bottom: 8px; }
+.editor-main > .sections { margin-top: 16px; }
 .share-status { font-size: 14px; }
 .share-status:empty { display: none; }
 .share-link { width: 100%; min-height: 100px; resize: vertical; }
 @media (max-width: 600px) {
-  .editor-heading { flex-wrap: wrap; }
-  .editor-heading > div:first-child { flex-basis: 100%; }
-  .editor-heading > .song-actions { width: 100%; margin-top: 12px; }
+  .editor-heading { flex-wrap: nowrap; gap: 12px; }
+  .editor-heading .song-title { font-size: clamp(28px, 7vw, 42px); }
+  .song-actions .button { padding: 10px 12px; }
 }

@@ -82,6 +82,9 @@ test("the picker stays interactive during motion and confirms each successful ed
   await page.clock.runFor(64);
   await expect(drawerEdge).toHaveCSS("opacity", "0");
 
+  await search.fill("");
+  await search.press("Escape");
+  await picker.getByRole("group", { name: "Chord roots" }).getByRole("button", { name: "All", exact: true }).press("Enter");
   await expandFilters(page);
   await picker.getByRole("button", { name: "Major", exact: true }).press("Enter");
   const add = picker.getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true });
@@ -103,21 +106,12 @@ test("the picker stays interactive during motion and confirms each successful ed
   await page.keyboard.press("Escape");
   await expect(page.locator("[data-entry-id]")).toHaveCount(3);
 
-  const save = page.getByRole("button", { name: "Save", exact: true });
-  const icon = save.locator("svg");
-  await save.press("Enter");
-  await page.clock.runFor(64);
-  await expect(icon).not.toHaveCSS("transform", "none");
-  await expect(page.locator(".song-toolbar")).toHaveCount(0);
-
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {
       throw new DOMException("Full", "QuotaExceededError");
     };
   });
   await page.getByLabel("Song name", { exact: true }).fill("Keep this draft");
-  await save.press("Enter");
-  await expect(icon).toHaveCSS("transform", "none");
   await expect(page.getByRole("alert")).toContainText("Could not save");
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Keep this draft");
 });

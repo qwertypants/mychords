@@ -100,7 +100,6 @@ for (const path of ["/", "/mychords/"]) {
     await activate(installed.getByRole("region", { name: "Fingerings for C", exact: true })
       .getByRole("button", { name: "Add C, -1 3 2 0 1 0", exact: true }));
     await activate(installed.getByRole("button", { name: "Close chord library" }));
-    await activate(installed.getByRole("button", { name: "Save", exact: true }));
     await installed.reload();
     await activate(installed.getByRole("button", { name: "Open Offline song", exact: true }));
     await expect(installed.locator("[data-entry-id]")).toHaveCount(1);
@@ -124,14 +123,13 @@ for (const path of ["/", "/mychords/"]) {
     });
     await activate(page.getByRole("button", { name: "New song", exact: true }).filter({ visible: true }).first());
     await page.getByLabel("Song name", { exact: true }).fill("Saved before update");
-    await activate(page.getByRole("button", { name: "Save", exact: true }));
-    await page.getByLabel("Song name", { exact: true }).fill("Unsaved idea");
+    await page.getByLabel("Song name", { exact: true }).fill("Autosaved idea");
     const second = await context.newPage();
     await second.goto(path);
     await request.post("/__pwa-test/release?version=b");
     await page.evaluate(async () => { await (await navigator.serviceWorker.ready).update(); });
     await expect(page.getByText(/Update ready\./)).toBeVisible();
-    await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Unsaved idea");
+    await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Autosaved idea");
     await page.close();
     await expect.poll(() => second.evaluate(async () => Boolean((await navigator.serviceWorker.ready).waiting))).toBe(true);
     // An about:blank page keeps the browser context alive without controlling the app.
@@ -142,7 +140,7 @@ for (const path of ["/", "/mychords/"]) {
     await expect.poll(() => reopened.evaluate(async () => (await navigator.serviceWorker.ready).waiting === null)).toBe(true);
     await context.setOffline(true);
     await reopened.reload();
-    await expect(reopened.getByRole("button", { name: "Open Saved before update", exact: true })).toBeVisible();
+    await expect(reopened.getByRole("button", { name: "Open Autosaved idea", exact: true })).toBeVisible();
     expect(await reopened.evaluate(async () => Boolean(await (await caches.open(`other-app-precache-v2-${location.origin}/neighbor/`)).match("/unrelated")))).toBe(true);
   });
 
@@ -208,8 +206,7 @@ test("shared query link opens offline under the deployed subpath", async ({ page
   const encoded = btoa(JSON.stringify({ version: 1, name: "Offline shared song", sections: [] })).replace(/=+$/, "");
   await page.goto("/mychords/?song=" + encoded);
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Offline shared song");
-  expect(await page.evaluate(() => localStorage.getItem("mychords.library.v1"))).toBeNull();
-  await page.getByRole("button", { name: "Save", exact: true }).click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs[0].name)).toBe("Offline shared song");
   await page.reload();
   await expect(page.getByRole("button", { name: "Open Offline shared song" })).toBeVisible();
 });

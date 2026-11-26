@@ -15,16 +15,11 @@ test("share an unsaved snapshot into a separate library", async ({ page, browser
   const other = await recipient.newPage();
   await other.goto(link! + "&keep=yes");
   await expect(other.getByLabel("Song name", { exact: true })).toHaveValue("Café 🎸");
-  await expect(other.getByText("Shared song — save to keep a copy.")).toBeVisible();
   expect(new URL(other.url()).search).toBe("?keep=yes");
-  expect(await other.evaluate(() => localStorage.getItem("mychords.library.v1"))).toBeNull();
+  expect(await other.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs.length)).toBe(1);
   await other.getByRole("button", { name: "All songs", exact: true }).click();
-  await expect(other.getByRole("dialog")).toBeVisible();
-  await other.getByRole("button", { name: "Cancel", exact: true }).click();
-  await other.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(other.getByText("Shared song — save to keep a copy.")).toHaveCount(0);
+  await expect(other.getByRole("dialog")).toHaveCount(0);
   await other.goto(link!);
-  await other.getByRole("button", { name: "Save", exact: true }).click();
   expect(await other.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs.length)).toBe(2);
   const titleBounds = await other.getByLabel("Song name", { exact: true }).boundingBox();
   expect(titleBounds!.width).toBeGreaterThan(200);
@@ -39,7 +34,6 @@ test("clipboard failure offers a selectable link and invalid links preserve data
   });
   await page.goto("/");
   await page.getByRole("button", { name: "New song", exact: true }).first().click();
-  await page.getByRole("button", { name: "Save", exact: true }).click();
   const before = await page.evaluate(() => localStorage.getItem("mychords.library.v1"));
   await page.getByRole("button", { name: "Share", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Copy song link" })).toBeVisible();

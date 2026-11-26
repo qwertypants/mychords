@@ -26,7 +26,6 @@ test("note labels follow the fingering everywhere a chord chart appears", async 
   const labels = page.locator(".song-chord .string-letter");
   await expect(labels).toHaveText(["C", "G", "C", "E", "G", "C"]);
   for (const label of await labels.all()) await expect(label).toBeVisible();
-  await activate(page.getByRole("button", { name: "Save", exact: true }));
   await page.reload();
   await activate(page.getByRole("button", { name: "Open Note labels", exact: true }));
   await expect(labels).toHaveText(["C", "G", "C", "E", "G", "C"]);
@@ -34,6 +33,6 @@ test("note labels follow the fingering everywhere a chord chart appears", async 
   await expect(page.locator("html")).toHaveAttribute("data-copied", /\?song=/);
   const link = await page.locator("html").getAttribute("data-copied");
   await page.goto(link!);
-  await expect(page.getByText("Shared song — save to keep a copy.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Save", exact: true })).toHaveCount(0);
   await expect(labels).toHaveText(["C", "G", "C", "E", "G", "C"]);
 });

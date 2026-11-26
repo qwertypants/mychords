@@ -1,4 +1,6 @@
 .picker-search-toolbar { padding: 12px 28px 0; flex-shrink: 0; border-bottom: 1px solid var(--line); }
+.picker-search-toolbar #picker-search-controls[hidden] { display: none; }
+#picker-search-controls { padding-top: 4px; }
 .picker-scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; overscroll-behavior-y: contain; }
 .picker-filter-toggle { min-height: 44px; margin-bottom: 0; }
 .picker-filters { max-height: 40dvh; overflow-y: auto; overscroll-behavior-y: contain; }

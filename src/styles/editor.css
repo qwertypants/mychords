@@ -179,13 +179,9 @@
 .card-top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   height: 33px;
   margin-right: -7px;
-}
-.chord-index {
-  font: 500 13px var(--display);
-  color: var(--chord-index);
 }
 .drag-handle {
   cursor: grab;

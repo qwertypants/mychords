@@ -158,9 +158,7 @@ export default function App() {
         <SongEditor
           key={store.draft.id}
           song={store.draft}
-          isShared={store.isShared}
           onChange={change}
-          onSave={store.saveDraft}
           onBack={() => transition(store.closeDraft)}
           onAdd={setPickerFor}
           onHear={hear}
@@ -189,6 +187,7 @@ export default function App() {
       {store.storageError && (
         <div className="storage-error" role="alert">
           {store.storageError}
+          <button className="button secondary" onClick={() => store.saveDraft()}>Retry saving</button>
         </div>
       )}
       <PwaControls />
@@ -269,7 +268,7 @@ export default function App() {
           }
         >
           <p>
-            Its chords will be removed from this draft. Save to keep the change.
+            Its chords will be removed from this song.
           </p>
         </ConfirmDialog>
       )}

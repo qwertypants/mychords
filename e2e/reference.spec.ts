@@ -2,6 +2,7 @@ import { activate, expandFilters } from "./activate";
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 const OPEN_C = "C:major:-1,3,2,0,1,0",
+  MID_C = "C:major:-1,3,5,5,5,3",
   HIGH_C = "C:major:8,10,10,9,8,8";
 async function newSong(page: Page) {
   await page.goto("/");
@@ -31,25 +32,31 @@ async function addCs(page: Page) {
     );
   await activate(page.getByRole("button", { name: "Close chord library" }));
 }
-test("exact voicings, duplicate reorder, sections and saved-song isolation", async ({
+test("song-card arrows select exact shapes without changing duplicate chords", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await newSong(page);
   await addCs(page);
-  await activate(page
-    .getByRole("button", { name: "Move C earlier, position 3", exact: true })
-    );
+  const firstCard = page.locator("[data-entry-id]").first();
+  await expect(firstCard.getByRole("button", { name: "Previous shape for C, position 1" })).toBeDisabled();
+  await activate(firstCard.getByRole("button", { name: "Next shape for C, position 1" }));
+  await expect(firstCard.getByRole("button", { name: "Previous shape for C, position 1" })).toBeEnabled();
+  await expect(firstCard.getByRole("button", { name: "Play C D string fret 5" })).toBeVisible();
+  for (let i = 0; i < 5; i++)
+    await activate(firstCard.getByRole("button", { name: "Next shape for C, position 1" }));
+  await expect(firstCard.getByRole("button", { name: "Next shape for C, position 1" })).toBeDisabled();
+  for (let i = 0; i < 5; i++)
+    await activate(firstCard.getByRole("button", { name: "Previous shape for C, position 1" }));
   await expect(page.locator("[data-entry-id]")).toHaveCount(3);
   expect(
     await page
       .locator("[data-entry-id]")
       .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("data-voicing"))),
-  ).toEqual([OPEN_C, OPEN_C, HIGH_C]);
+  ).toEqual([MID_C, HIGH_C, OPEN_C]);
   await activate(page.getByRole("button", { name: "Add section", exact: true }));
   await page.getByLabel("Section name").last().fill("Chorus");
-  await activate(page.getByRole("button", { name: "Save", exact: true }));
   await expect(page.locator(".song-toolbar")).toHaveCount(0);
   await page.reload();
   await activate(page
@@ -62,7 +69,7 @@ test("exact voicings, duplicate reorder, sections and saved-song isolation", asy
     await page
       .locator("[data-entry-id]")
       .evaluateAll((nodes) => nodes.map((n) => n.getAttribute("data-voicing"))),
-  ).toEqual([OPEN_C, OPEN_C, HIGH_C]);
+  ).toEqual([MID_C, HIGH_C, OPEN_C]);
   await activate(page.getByRole("button", { name: "All songs", exact: true }));
   await activate(page
     .getByRole("button", { name: "New song", exact: true })
@@ -70,7 +77,6 @@ test("exact voicings, duplicate reorder, sections and saved-song isolation", asy
     .first()
     );
   await page.getByLabel("Song name", { exact: true }).fill("Second idea");
-  await activate(page.getByRole("button", { name: "Save", exact: true }));
   await activate(page.getByRole("button", { name: "All songs", exact: true }));
   await activate(page
     .getByRole("button", { name: "Open Sunday idea", exact: true })
@@ -78,21 +84,27 @@ test("exact voicings, duplicate reorder, sections and saved-song isolation", asy
   await expect(page.locator("[data-entry-id]")).toHaveCount(3);
   expect(errors).toEqual([]);
 });
+test("a chord with one shape has both shape arrows disabled", async ({ page }) => {
+  await newSong(page);
+  await activate(page.getByRole("button", { name: "Add chord", exact: true }).first());
+  await page.getByRole("combobox", { name: "Search chords" }).fill("Ab9#11");
+  await activate(page.getByRole("button", { name: "Add Ab9#11, -1 11 10 11 11 10" }));
+  await activate(page.getByRole("button", { name: "Close chord library" }));
+  const card = page.locator("[data-entry-id]").first();
+  await expect(card).toHaveAttribute("data-voicing", "Ab:9#11:-1,11,10,11,11,10");
+  await expect(card.getByRole("button", { name: "Previous shape for Ab9#11, position 1" })).toBeDisabled();
+  await expect(card.getByRole("button", { name: "Next shape for Ab9#11, position 1" })).toBeDisabled();
+});
 test("unsaved navigation and failed saves preserve the draft", async ({
   page,
 }) => {
   await newSong(page);
-  await activate(page.getByRole("button", { name: "All songs", exact: true }));
-  await activate(page.getByRole("button", { name: "Cancel", exact: true }));
-  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue(
-    "Sunday idea",
-  );
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {
       throw new DOMException("Full", "QuotaExceededError");
     };
   });
-  await activate(page.getByRole("button", { name: "Save", exact: true }));
+  await page.getByLabel("Song name", { exact: true }).fill("Sunday idea unsaved");
   await expect(page.getByRole("alert")).toContainText("Could not save");
 
   await activate(page.getByRole("button", { name: "All songs", exact: true }));
@@ -100,7 +112,7 @@ test("unsaved navigation and failed saves preserve the draft", async ({
   await expect(page.getByRole("dialog")).toBeVisible();
   await activate(page.getByRole("button", { name: "Cancel", exact: true }));
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue(
-    "Sunday idea",
+    "Sunday idea unsaved",
   );
 });
 test("corrupt stored data is preserved until explicit reset", async ({
@@ -216,6 +228,8 @@ test("mobile widths, picker focus and desktop pointer drag", async ({
     .first()
     );
   await expect(page.getByRole("dialog")).toBeVisible();
+  const search = page.getByRole("dialog").getByRole("combobox", { name: "Search chords" });
+  if (await search.getAttribute("aria-expanded") === "true") await search.press("Escape");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(

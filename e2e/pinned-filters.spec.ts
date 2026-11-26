@@ -6,6 +6,7 @@ for (const short of [false, true]) {
     await page.goto("/");
     await page.getByRole("button", { name: "New song", exact: true }).filter({ visible: true }).first().click();
     await page.getByRole("button", { name: "Add chord", exact: true }).first().click();
+    await page.getByRole("button", { name: "Search & notes" }).click();
     const toggle = page.getByRole("button", { name: "Filters", exact: true });
     const panel = page.locator("#picker-filter-controls");
     const scroller = page.locator(".picker-scroll");

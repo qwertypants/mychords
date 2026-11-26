@@ -1,3 +1,4 @@
+import { createId } from "./createId";
 import type { Song, Section } from "./types";
 const stamp = (song: Song, sections: Section[]): Song => ({
   ...song,
@@ -6,7 +7,7 @@ const stamp = (song: Song, sections: Section[]): Song => ({
 });
 export function newSong(name: string): Song {
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     name,
     sections: [],
     updatedAt: new Date().toISOString(),
@@ -15,7 +16,7 @@ export function newSong(name: string): Song {
 export function addSection(song: Song, name: string): Song {
   return stamp(song, [
     ...song.sections,
-    { id: crypto.randomUUID(), name, chords: [] },
+    { id: createId(), name, chords: [] },
   ]);
 }
 function editSection(
@@ -36,7 +37,7 @@ export function addChord(
 ): Song {
   return editSection(song, sectionId, (s) => ({
     ...s,
-    chords: [...s.chords, { id: crypto.randomUUID(), voicingId }],
+    chords: [...s.chords, { id: createId(), voicingId }],
   }));
 }
 export function moveChord(
@@ -56,6 +57,19 @@ export function moveChord(
     chords.splice(Math.max(0, Math.min(chords.length, targetIndex)), 0, entry);
     return { ...s, chords };
   });
+}
+export function replaceChordVoicing(
+  song: Song,
+  sectionId: string,
+  entryId: string,
+  voicingId: string,
+): Song {
+  const entry = song.sections.find((s) => s.id === sectionId)?.chords.find((c) => c.id === entryId);
+  if (!entry || entry.voicingId === voicingId) return song;
+  return editSection(song, sectionId, (s) => ({
+    ...s,
+    chords: s.chords.map((c) => c.id === entryId ? { ...c, voicingId } : c),
+  }));
 }
 export function removeChord(
   song: Song,

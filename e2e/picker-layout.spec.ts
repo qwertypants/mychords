@@ -5,6 +5,7 @@ test("compact picker keeps chords reachable and roots scroll with edge fades", a
   await page.goto("/");
   await page.getByRole("button", { name: "Explore chords", exact: true }).click();
   const dialog = page.getByRole("dialog");
+  await dialog.getByRole("combobox", { name: "Search chords" }).press("Escape");
   const toggle = dialog.getByRole("button", { name: "Filters", exact: true });
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(dialog.getByRole("group", { name: "Strum speed" })).toBeHidden();
@@ -19,6 +20,15 @@ test("compact picker keeps chords reachable and roots scroll with edge fades", a
   await roots.getByRole("button", { name: "B", exact: true }).click();
   await expect(roots.getByRole("button", { name: "B", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(roots.getByRole("button", { name: "B", exact: true })).toBeInViewport({ ratio: 0.99 });
+  const searchToggle = dialog.getByRole("button", { name: "Search & notes" });
+  const count = await dialog.locator(".results-count").textContent();
+  await searchToggle.click();
+  await expect(searchToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(roots).toBeHidden();
+  await expect(dialog.getByRole("combobox", { name: "Search chords" })).toBeHidden();
+  expect(await dialog.locator(".results-count").textContent()).toBe(count);
+  await searchToggle.click();
+  await expect(roots.getByRole("button", { name: "B", exact: true })).toHaveAttribute("aria-pressed", "true");
   await toggle.click();
   await dialog.getByRole("radio", { name: "Slow" }).check();
   const last = dialog.locator(".catalog-note");

@@ -1,3 +1,4 @@
+import { createId } from "./createId";
 import { z } from "zod";
 import { getVoicing } from "../chords/catalog";
 import type { Song } from "./types";
@@ -45,10 +46,10 @@ export function readSharedSong(location: string): Song | null {
     if (bytes.length > MAX_PAYLOAD_BYTES) throw new Error();
     const snapshot = snapshotSchema.parse(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
     return {
-      id: crypto.randomUUID(), name: snapshot.name, updatedAt: new Date().toISOString(),
+      id: createId(), name: snapshot.name, updatedAt: new Date().toISOString(),
       sections: snapshot.sections.map((section) => ({
-        id: crypto.randomUUID(), name: section.name,
-        chords: section.chords.map((voicingId) => ({ id: crypto.randomUUID(), voicingId })),
+        id: createId(), name: section.name,
+        chords: section.chords.map((voicingId) => ({ id: createId(), voicingId })),
       })),
     };
   } catch {

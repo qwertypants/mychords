@@ -26,9 +26,9 @@ import {
 } from "lucide-react";
 import type { Section, ChordEntry } from "./types";
 import type { Voicing } from "../chords/types";
-import { getVoicing } from "../chords/catalog";
+import { catalog, getVoicing } from "../chords/catalog";
+import { groupChords } from "../chords/browse";
 import { ChordDiagram } from "../chords/ChordDiagram";
-import { positionOf } from "../chords/pitch";
 import { previewEntryId } from "../audio/guitar";
 import { useViewEntrance } from "../motion";
 type Props = {
@@ -42,24 +42,26 @@ type Props = {
   onHear: (v: Voicing, entryId: string, stringIndex?: number) => void;
   onPlay: () => void;
   onMove: (id: string, index: number) => void;
+  onChangeVoicing: (id: string, voicingId: string) => void;
   onRemoveChord: (id: string) => void;
 };
+const shapesByChord = new Map(
+  groupChords(catalog).map((group) => [group.id, group.voicings]),
+);
 function ChordCard({
   entry,
   index,
-  total,
   active,
   strumInterval,
-  onMove,
+  onSelectShape,
   onRemove,
   onHear,
 }: {
   entry: ChordEntry;
   index: number;
-  total: number;
   active: boolean;
   strumInterval?: number;
-  onMove: (index: number) => void;
+  onSelectShape: (voicingId: string) => void;
   onRemove: () => void;
   onHear: Props["onHear"];
 }) {
@@ -73,6 +75,10 @@ function ChordCard({
   } = useSortable({ id: entry.id });
   const voicing = getVoicing(entry.voicingId);
   if (!voicing) return null;
+  const shapes = shapesByChord.get(`${voicing.root}:${voicing.suffix}`) ?? [voicing];
+  const shapeIndex = shapes.findIndex((shape) => shape.id === voicing.id);
+  const previous = shapes[shapeIndex - 1];
+  const next = shapes[shapeIndex + 1];
   return (
     <article
       ref={setNodeRef}
@@ -83,9 +89,6 @@ function ChordCard({
     >
       <span className="motion-card-edge" aria-hidden="true" />
       <div className="card-top">
-        <span className="chord-index">
-          {String(index + 1).padStart(2, "0")}
-        </span>
         <button
           className="drag-handle icon-button"
           {...attributes}
@@ -97,7 +100,6 @@ function ChordCard({
       </div>
       <div className="song-chord-name">
         <h3>{voicing.label}</h3>
-        <span>Fret {positionOf(voicing.frets)}</span>
       </div>
       <ChordDiagram
         voicing={voicing}
@@ -115,17 +117,17 @@ function ChordCard({
       <div className="card-bottom">
         <button
           className="icon-button"
-          onClick={() => onMove(index - 1)}
-          disabled={index === 0}
-          aria-label={`Move ${voicing.label} earlier, position ${index + 1}`}
+          onClick={() => previous && onSelectShape(previous.id)}
+          disabled={!previous}
+          aria-label={`Previous shape for ${voicing.label}, position ${index + 1}`}
         >
           <ArrowLeft size={16} />
         </button>
         <button
           className="icon-button"
-          onClick={() => onMove(index + 1)}
-          disabled={index === total - 1}
-          aria-label={`Move ${voicing.label} later, position ${index + 1}`}
+          onClick={() => next && onSelectShape(next.id)}
+          disabled={!next}
+          aria-label={`Next shape for ${voicing.label}, position ${index + 1}`}
         >
           <ArrowRight size={16} />
         </button>
@@ -151,6 +153,7 @@ export function SectionEditor({
   onHear,
   onPlay,
   onMove,
+  onChangeVoicing,
   onRemoveChord,
 }: Props) {
   const sectionElement = useRef<HTMLElement>(null);
@@ -233,10 +236,9 @@ export function SectionEditor({
                 key={entry.id}
                 entry={entry}
                 index={i}
-                total={section.chords.length}
                 active={activeEntryId === previewEntryId("song", entry.id)}
                 strumInterval={strumInterval}
-                onMove={(target) => move(entry.id, target)}
+                onSelectShape={(voicingId) => onChangeVoicing(entry.id, voicingId)}
                 onRemove={() => onRemoveChord(entry.id)}
                 onHear={onHear}
               />
