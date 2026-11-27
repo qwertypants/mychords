@@ -53,7 +53,7 @@ test("diagram note markers start individual guitar playback", async ({ page }) =
   await page.goto("/");
   await activate(page.getByRole("button", { name: "Explore chords", exact: true }));
   const picker = page.getByRole("dialog");
-  const note = picker.getByRole("button", { name: "Play C/A D string fret 2", exact: true }).first();
+  const note = picker.getByRole("button", { name: "Play C/A D string fret 2, E, major third", exact: true }).first();
   await expect(note).toBeVisible();
   const request = page.waitForRequest("**/audio/manifest.json");
   await activate(note);
@@ -86,7 +86,7 @@ test("song card notes play individually without the song toolbar", async ({ page
   await activate(picker.getByRole("button", { name: "Close chord library" }));
   const card = page.locator(".song-chord");
   const request = page.waitForRequest("**/audio/manifest.json");
-  await activate(card.getByRole("button", { name: "Play C/A D string fret 2", exact: true }));
+  await activate(card.getByRole("button", { name: "Play C/A D string fret 2, E, major third", exact: true }));
   await request;
   await expect(card.getByRole("button", { name: /Play C\/A low E string/ })).toHaveCount(0);
   await expect(page.locator(".song-toolbar")).toHaveCount(0);

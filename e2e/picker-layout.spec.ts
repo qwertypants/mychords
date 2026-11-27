@@ -9,6 +9,7 @@ test("compact picker keeps chords reachable and roots scroll with edge fades", a
   const toggle = dialog.getByRole("button", { name: "Filters", exact: true });
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(dialog.getByRole("group", { name: "Strum speed" })).toBeHidden();
+  await expect(dialog.locator(".chord-tone-key")).toHaveCount(0);
   await expect(dialog.locator(".chord-diagram").first()).toBeInViewport({ ratio: 0.9 });
   const roots = dialog.getByRole("group", { name: "Chord roots" });
   await expect(roots).toHaveAttribute("data-fade-right", "true");
@@ -25,6 +26,7 @@ test("compact picker keeps chords reachable and roots scroll with edge fades", a
   await searchToggle.click();
   await expect(searchToggle).toHaveAttribute("aria-expanded", "false");
   await expect(roots).toBeHidden();
+  await expect(dialog.locator(".chord-diagram").first()).toBeInViewport({ ratio: 0.9 });
   await expect(dialog.getByRole("combobox", { name: "Search chords" })).toBeHidden();
   expect(await dialog.locator(".results-count").textContent()).toBe(count);
   await searchToggle.click();

@@ -107,6 +107,10 @@ button {
   align-items: center;
   gap: 30px;
 }
+.brand-heading {
+  --brand-indent: 46px;
+  flex-shrink: 0;
+}
 .brand {
   display: flex;
   align-items: center;
@@ -304,9 +308,6 @@ button {
 }
 .hero-chord .chord-diagram .fret-number {
   font-size: 16px;
-}
-.hero-chord .chord-diagram .finger {
-  font-size: 12px;
 }
 .hero-hear {
   display: flex;

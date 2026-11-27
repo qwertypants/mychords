@@ -94,7 +94,7 @@ test("filter toggle hides controls without losing the selected filters", () => {
 test("clicking a labeled diagram note requests that string alone", () => {
   const hear = vi.fn();
   render(<ChordPicker onHear={hear} onAdd={() => true} onClose={() => {}} sectionName="Verse" activeEntryId={null} />);
-  fireEvent.click(screen.getAllByRole("button", { name: "Play C/A D string fret 2" })[0]);
+  fireEvent.click(screen.getAllByRole("button", { name: "Play C/A D string fret 2, E, major third" })[0]);
   expect(hear).toHaveBeenCalledWith(expect.objectContaining({ label: "C/A" }), 2);
   expect(screen.queryByRole("button", { name: /Play C\/A E string muted/ })).not.toBeInTheDocument();
 });

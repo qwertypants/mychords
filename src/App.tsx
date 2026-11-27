@@ -11,6 +11,7 @@ import { SongLibrary } from "./songs/SongLibrary";
 import { SongsPage } from "./songs/SongsPage";
 import { SongEditor } from "./songs/SongEditor";
 import { addChord, addSection, newSong, removeSection } from "./songs/commands";
+import { ChordToneLegend } from "./chords/ChordToneLegend";
 import { ChordPicker } from "./chords/ChordPicker";
 import type { Voicing } from "./chords/types";
 import type { Song } from "./songs/types";
@@ -128,18 +129,21 @@ export default function App() {
         Skip to content
       </a>
       <header className="app-header">
-        <button
-          className="brand"
-          aria-label="MyChords home"
-          onClick={goHome}
-        >
-          <span className="brand-icon">
-            <Guitar size={21} strokeWidth={1.6} />
-          </span>
-          <span>
-            mychords<span className="brand-period">.</span>
-          </span>
-        </button>
+        <div className="brand-heading">
+          <button
+            className="brand"
+            aria-label="MyChords home"
+            onClick={goHome}
+          >
+            <span className="brand-icon">
+              <Guitar size={21} strokeWidth={1.6} />
+            </span>
+            <span>
+              mychords<span className="brand-period">.</span>
+            </span>
+          </button>
+          <ChordToneLegend />
+        </div>
         <nav aria-label="Main navigation">
           <button
             className={route.kind === "songs" ? "nav-link active" : "nav-link"}

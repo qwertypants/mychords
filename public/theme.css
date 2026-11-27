@@ -46,6 +46,9 @@
   --drag-handle: #667B99;
   --fret-line: #8FA3BF;
   --finger-text: #FFFFFF;
+  --tone-root: #B72D3B;
+  --tone-third: #21733F;
+  --tone-fifth: #2457C6;
   --fret-label: #536985;
   --string-label: #657B99;
   --card-divider: #E1E9F5;
@@ -120,6 +123,9 @@
     --drag-handle: #ACBBD3;
     --fret-line: #8EA6C9;
     --finger-text: #101827;
+    --tone-root: #FF8C98;
+    --tone-third: #7DD5A0;
+    --tone-fifth: #91B7FF;
     --fret-label: #B9C9E2;
     --string-label: #B4C6E0;
     --card-divider: #3A4C68;

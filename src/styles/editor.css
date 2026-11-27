@@ -219,10 +219,6 @@
   stroke: none;
   fill: var(--ink);
 }
-.chord-diagram .finger {
-  font: 600 10px var(--display);
-  fill: var(--finger-text);
-}
 .chord-diagram .fret-number {
   font: 600 12px var(--display);
   fill: var(--fret-label);
@@ -242,6 +238,31 @@
   stroke-width: 14;
   stroke-linecap: round;
 }
+:is(.chord-chart, .chord-tone-key) [data-tone="root"] { --tone-color: var(--tone-root); }
+:is(.chord-chart, .chord-tone-key) [data-tone="third"] { --tone-color: var(--tone-third); }
+:is(.chord-chart, .chord-tone-key) [data-tone="fifth"] { --tone-color: var(--tone-fifth); }
+.chord-diagram [data-tone] .tone-note { fill: var(--tone-color); }
+.chord-diagram .tone-open { fill: var(--finger-text); }
+.chord-diagram .tone-guides { pointer-events: none; }
+.chord-diagram .tone-guide circle {
+  fill: var(--tone-color);
+  fill-opacity: 0.3;
+  stroke: var(--tone-color);
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+}
+.chord-diagram .tone-guide text {
+  fill: var(--ink);
+  font: 700 9px var(--display);
+}
+.chord-tone-key {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-left: var(--brand-indent);
+  font: 600 12px/1.4 var(--display);
+}
+.chord-tone-key > span { color: var(--tone-color); white-space: nowrap; }
 .hear-chord {
   display: flex;
   align-items: center;
@@ -338,3 +359,4 @@
 .chord-diagram [role="button"]:hover .strum-ring,
 .chord-diagram [role="button"]:focus-visible .strum-ring { opacity: 1; }
 .chord-diagram [role="button"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chord-diagram [role="button"]:is(:hover, :focus-visible) .tone-open { fill: var(--finger-text); }

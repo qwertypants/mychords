@@ -407,7 +407,7 @@ export function ChordPicker({
         )}
         <p className="catalog-note">
           {catalog.length.toLocaleString()} fingerings across the neck.
-          Available voicings vary by chord. Finger numbers 1–4; × muted, ○ open.
+          Available voicings vary by chord. × muted, ○ open.
         </p>
       </div>
       </div>

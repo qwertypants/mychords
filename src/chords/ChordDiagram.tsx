@@ -1,10 +1,11 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import type { Voicing } from "./types";
-import { midiForString, positionOf } from "./pitch";
+import { midiForFrets, midiForString, positionOf } from "./pitch";
 import { roots } from "./catalog";
 import { STRUM_INTERVALS } from "../audio/guitar";
 import { useMotion } from "../motion";
+import { chordTone } from "./chordTones";
 
 export function ChordDiagram({
   voicing,
@@ -44,10 +45,21 @@ export function ChordDiagram({
     const midi = midiForString(voicing.frets, i);
     return midi === null ? "" : roots[midi % 12];
   });
+  const tones = voicing.frets.map((_, i) => {
+    const midi = midiForString(voicing.frets, i);
+    return midi === null ? null : chordTone(midi, voicing);
+  });
+  const guides = midiForFrets([0, 0, 0, 0, 0, 0]).flatMap((open, stringIndex) => {
+    const selectedFret = voicing.frets[stringIndex];
+    return [0, ...Array.from({ length: rows }, (_, row) => start + row)].flatMap(fret => {
+      const tone = chordTone(open + fret, voicing);
+      return tone && fret !== selectedFret ? [{ stringIndex, fret, tone }] : [];
+    });
+  });
   const noteProps = (stringIndex: number, fret: number) => onNote ? {
     role: "button" as const,
     tabIndex: 0,
-    "aria-label": `Play ${voicing.label} ${stringNames[stringIndex]} string ${fret === 0 ? "open" : `fret ${fret}`}`,
+    "aria-label": `Play ${voicing.label} ${stringNames[stringIndex]} string ${fret === 0 ? "open" : `fret ${fret}`}, ${noteNames[stringIndex]}${tones[stringIndex] ? `, ${tones[stringIndex].description}` : ""}`,
     onClick: () => onNote(stringIndex),
     onKeyDown: (event: React.KeyboardEvent<SVGGElement>) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -56,95 +68,99 @@ export function ChordDiagram({
       }
     },
   } : {};
-  const description = `${voicing.label}. Low E to high E: ${voicing.frets.map((f) => (f < 0 ? "muted" : f === 0 ? "open" : `fret ${f}`)).join(", ")}.`;
+  const description = `${voicing.label}. Low E to high E: ${voicing.frets.map((f, i) => (f < 0 ? "muted" : `${f === 0 ? "open" : `fret ${f}`} ${noteNames[i]}${tones[i] ? `, ${tones[i].description}` : ""}`)).join("; ")}. Faint labeled circles show other positions of the root, third and fifth; they are visual guides, not played notes.`;
   return (
-    <svg
-      ref={diagram}
-      className="chord-diagram"
-      viewBox={`0 0 150 ${68 + rows * 22}`}
-      role={onNote ? "group" : "img"}
-      aria-label={description}
-    >
-      <text x="6" y="58" className="fret-number">
-        {start}
-      </text>
-      {Array.from({ length: rows + 1 }, (_, i) => (
-        <line
-          key={`f${i}`}
-          x1="29"
-          x2="129"
-          y1={42 + i * 22}
-          y2={42 + i * 22}
-          strokeWidth={i === 0 && start === 1 ? 3 : 1}
-        />
-      ))}
-      {voicing.frets.map((f, i) => (
-        <g key={i}>
+    <div className="chord-chart">
+      <svg
+        ref={diagram}
+        className="chord-diagram"
+        viewBox={`0 -12 150 ${80 + rows * 22}`}
+        role={onNote ? "group" : "img"}
+        aria-label={description}
+      >
+        <text x="6" y="58" className="fret-number">
+          {start}
+        </text>
+        {Array.from({ length: rows + 1 }, (_, i) => (
           <line
-            x1={29 + i * 20}
-            x2={29 + i * 20}
-            y1="42"
-            y2={42 + rows * 22}
-            strokeWidth={1 + (5 - i) * 0.13}
+            key={`f${i}`}
+            x1="29"
+            x2="129"
+            y1={42 + i * 22}
+            y2={42 + i * 22}
+            strokeWidth={i === 0 && start === 1 ? 3 : 1}
           />
-          {f <= 0 ? (
-            <g data-strum-string={f === 0 ? i : undefined} {...(f === 0 ? noteProps(i, f) : {})}>
-              {f === 0 && (
-                <circle className="strum-ring" cx={29 + i * 20} cy="23" r="9" aria-hidden="true" />
-              )}
-              <text x={29 + i * 20} y="28" textAnchor="middle" className="open-marker">
-                {f < 0 ? "×" : "○"}
-              </text>
-            </g>
-          ) : null}
-          <text
-            x={29 + i * 20}
-            y={60 + rows * 22}
-            textAnchor="middle"
-            className="string-letter"
-          >
-            {noteNames[i]}
-          </text>
-        </g>
-      ))}
-      {voicing.barres.map((f) => {
-        const strings = voicing.frets
-          .map((n, i) => (n === f ? i : -1))
-          .filter((i) => i >= 0);
-        if (strings.length < 2) return null;
-        return (
-          <line
-            key={f}
-            className="barre"
-            x1={29 + Math.min(...strings) * 20}
-            x2={29 + Math.max(...strings) * 20}
-            y1={53 + (f - start) * 22}
-            y2={53 + (f - start) * 22}
-          />
-        );
-      })}
-      {voicing.frets.map((f, i) =>
-        f > 0 ? (
-          <g key={i} data-strum-string={i} {...noteProps(i, f)}>
-            <circle
-              className="strum-ring"
-              cx={29 + i * 20}
-              cy={53 + (f - start) * 22}
-              r="10.5"
-              aria-hidden="true"
+        ))}
+        {voicing.frets.map((f, i) => (
+          <g key={i}>
+            <line
+              x1={29 + i * 20}
+              x2={29 + i * 20}
+              y1="42"
+              y2={42 + rows * 22}
+              strokeWidth={1 + (5 - i) * 0.13}
             />
-            <circle cx={29 + i * 20} cy={53 + (f - start) * 22} r="7.5" />
+            {f <= 0 ? (
+              <g data-tone={tones[i]?.role} data-strum-string={f === 0 ? i : undefined} {...(f === 0 ? noteProps(i, f) : {})}>
+                {f === 0 && (
+                  <circle className="strum-ring" cx={29 + i * 20} cy="23" r="9" aria-hidden="true" />
+                )}
+                {f === 0 && tones[i] && <circle className="tone-note" cx={29 + i * 20} cy="23" r="7.5" />}
+                <text x={29 + i * 20} y="28" textAnchor="middle" className={`open-marker${f === 0 && tones[i] ? " tone-open" : ""}`}>
+                  {f < 0 ? "×" : "○"}
+                </text>
+              </g>
+            ) : null}
             <text
-              className="finger"
               x={29 + i * 20}
-              y={56 + (f - start) * 22}
+              y={60 + rows * 22}
               textAnchor="middle"
+              className="string-letter"
             >
-              {voicing.fingers[i]}
+              {noteNames[i]}
             </text>
           </g>
-        ) : null,
-      )}
-    </svg>
+        ))}
+        {voicing.barres.map((f) => {
+          const strings = voicing.frets
+            .map((n, i) => (n === f ? i : -1))
+            .filter((i) => i >= 0);
+          if (strings.length < 2) return null;
+          return (
+            <line
+              key={f}
+              className="barre"
+              x1={29 + Math.min(...strings) * 20}
+              x2={29 + Math.max(...strings) * 20}
+              y1={53 + (f - start) * 22}
+              y2={53 + (f - start) * 22}
+            />
+          );
+        })}
+        <g className="tone-guides" aria-hidden="true">
+          {guides.map(({ stringIndex, fret, tone }) => (
+            <g key={`${stringIndex}:${fret}`} className="tone-guide" data-tone={tone.role} data-string={stringIndex} data-fret={fret}
+              transform={`translate(${29 + stringIndex * 20} ${fret === 0 ? 0 : 53 + (fret - start) * 22})`}>
+              <circle r="7.5" />
+              <text y="3.2" textAnchor="middle">{tone.label}</text>
+            </g>
+          ))}
+        </g>
+        {voicing.frets.map((f, i) =>
+          f > 0 ? (
+            <g key={i} data-tone={tones[i]?.role} data-strum-string={i} {...noteProps(i, f)}>
+              <circle
+                className="strum-ring"
+                cx={29 + i * 20}
+                cy={53 + (f - start) * 22}
+                r="10.5"
+                aria-hidden="true"
+              />
+              <circle className="tone-note" cx={29 + i * 20} cy={53 + (f - start) * 22} r="7.5" />
+            </g>
+          ) : null,
+        )}
+      </svg>
+    </div>
   );
 }

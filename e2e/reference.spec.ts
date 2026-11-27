@@ -41,7 +41,7 @@ test("song-card arrows select exact shapes without changing duplicate chords", a
   await expect(firstCard.getByRole("button", { name: "Previous shape for C, position 1" })).toBeDisabled();
   await activate(firstCard.getByRole("button", { name: "Next shape for C, position 1" }));
   await expect(firstCard.getByRole("button", { name: "Previous shape for C, position 1" })).toBeEnabled();
-  await expect(firstCard.getByRole("button", { name: "Play C D string fret 5" })).toBeVisible();
+  await expect(firstCard.getByRole("button", { name: "Play C D string fret 5, G, perfect fifth" })).toBeVisible();
   for (let i = 0; i < 5; i++)
     await activate(firstCard.getByRole("button", { name: "Next shape for C, position 1" }));
   await expect(firstCard.getByRole("button", { name: "Next shape for C, position 1" })).toBeDisabled();

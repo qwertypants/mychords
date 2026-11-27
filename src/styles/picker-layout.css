@@ -77,3 +77,8 @@
 @media (prefers-reduced-motion: reduce) {
   .picker-menu-stack { transition: none; }
 }
+@media (max-height: 600px) {
+  .picker-results { padding-top: 6px; }
+  .results-count { margin-bottom: 6px; }
+  .chord-root-section > h3 { margin-bottom: 6px; }
+}
