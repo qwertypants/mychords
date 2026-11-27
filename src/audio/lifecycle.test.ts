@@ -9,6 +9,7 @@ const nodes: {
 }[] = [];
 class FakeContext {
   currentTime = 0;
+  state: AudioContextState = "running";
   destination = {};
   resume = vi.fn(async () => {});
   close = vi.fn(async () => {});
@@ -125,5 +126,21 @@ test("slow playback lets the final note ring after the normal preview end", asyn
   expect(last.stop).toHaveBeenCalledTimes(1);
   await vi.advanceTimersByTimeAsync(350);
   expect(states.at(-1)?.status).toBe("idle");
+  player.dispose();
+});
+
+test("a stalled audio context reports an error instead of loading forever", async () => {
+  class StalledContext extends FakeContext {
+    state: AudioContextState = "suspended";
+    resume = vi.fn(() => new Promise<void>(() => {}));
+  }
+  vi.stubGlobal("AudioContext", StalledContext);
+  const player = createGuitarPlayer();
+  const states: PlaybackState[] = [];
+  const pending = player.play([item], (state) => states.push(state));
+  expect(states.at(-1)?.status).toBe("loading");
+  await vi.advanceTimersByTimeAsync(3001);
+  await pending;
+  expect(states.at(-1)?.status).toBe("error");
   player.dispose();
 });

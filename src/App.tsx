@@ -224,7 +224,6 @@ export default function App() {
           songs={store.library.songs}
           onNew={createSong}
           onOpen={(s) => transition(() => navigate({ kind: "song", id: s.id }))}
-          onDelete={setDeleteTarget}
           onExplore={() => setPickerFor("new")}
           onHear={(v) => hear(v, previewEntryId("library", v.id))}
           playback={audio.state}
@@ -239,6 +238,7 @@ export default function App() {
           onPage={(page) => navigate({ kind: "songs", page })}
           onNew={createSong}
           onOpen={(s) => transition(() => navigate({ kind: "song", id: s.id }))}
+          onDelete={setDeleteTarget}
         />
       ) : (
         <main className="recovery" id="main-content" tabIndex={-1}>

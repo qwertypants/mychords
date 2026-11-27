@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createGuitarPlayer, STRUM_INTERVALS } from "./guitar";
+import { createGuitarPlayer, createMediaGuitarPlayer, prefersMediaPlayback, STRUM_INTERVALS } from "./guitar";
 import type { PreviewItem, GuitarPlayer, PlaybackState, StrumSpeed } from "./guitar";
 
 const STRUM_SPEED_KEY = "mychords.strumSpeed";
@@ -23,7 +23,10 @@ export function usePlayback() {
   });
   useEffect(() => {
     const hidden = () => {
-      if (document.hidden) player.current?.stop();
+      if (document.hidden) {
+        player.current?.dispose();
+        player.current = null;
+      }
     };
     document.addEventListener("visibilitychange", hidden);
     return () => {
@@ -44,7 +47,9 @@ export function usePlayback() {
       }
     },
     play: (items: readonly PreviewItem[]) => {
-      player.current ??= createGuitarPlayer();
+      player.current ??= prefersMediaPlayback()
+        ? createMediaGuitarPlayer()
+        : createGuitarPlayer();
       void player.current.play(items, setState, strumSpeed);
     },
     stop: () => player.current?.stop(),

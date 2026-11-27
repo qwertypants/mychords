@@ -126,7 +126,7 @@ test("failed share copy does not open a modal", async () => {
     });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Could not copy link");
+    expect(screen.getByText("Could not copy link. Allow clipboard access and try again.")).toBeInTheDocument();
   } finally {
     if (clipboardDescriptor) Object.defineProperty(navigator, "clipboard", clipboardDescriptor);
     else Reflect.deleteProperty(navigator, "clipboard");
