@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { midiForFrets, midiForString } from "../chords/pitch";
 import type { Voicing } from "../chords/types";
+import { appRoot } from "../songs/routes";
 export type PreviewItem = { entryId: string; voicing: Voicing; stringIndex?: number };
 export type PlaybackState = {
   status: "idle" | "loading" | "playing" | "error";
@@ -23,6 +24,7 @@ const CHORD_INTERVAL = 1.8;
 const NOTE_DURATION = 1.65;
 const START_DELAY = 0.05;
 const RESUME_TIMEOUT = 3000;
+const SAMPLE_ONSET = 0.04;
 
 export function previewEntryId(source: "library" | "picker" | "song", id: string) {
   return `${source}:${id}`;
@@ -121,14 +123,14 @@ export function createGuitarPlayer(): GuitarPlayer {
     if (buffers) return buffers;
     buffers = (async () => {
       const response = await fetch(
-        `${import.meta.env.BASE_URL}audio/manifest.json`,
+        `${appRoot()}audio/manifest.json`,
       );
       if (!response.ok) throw new Error("Sample manifest unavailable");
       const manifest = manifestSchema.parse(await response.json());
       const loaded = await Promise.all(
         manifest.samples.map(async (sample) => {
           const response = await fetch(
-            `${import.meta.env.BASE_URL}audio/${sample.file}`,
+            `${appRoot()}audio/${sample.file}`,
           );
           if (!response.ok) throw new Error("Guitar sample unavailable");
           const buffer = await ctx.decodeAudioData(
@@ -246,11 +248,14 @@ export function createGuitarPlayer(): GuitarPlayer {
 }
 
 export function createMediaGuitarPlayer(): GuitarPlayer {
-  let manifest: Promise<z.infer<typeof manifestSchema>> | null = null;
+  type Sample = z.infer<typeof manifestSchema>["samples"][number];
+  type Voice = { audio: HTMLAudioElement; busy: boolean };
+  let manifest: Promise<Sample[]> | null = null;
+  let readySamples: Sample[] | null = null;
   let run = 0;
   let disposed = false;
   let notify: (s: PlaybackState) => void = () => {};
-  const media = new Set<HTMLAudioElement>();
+  const voices = new Map<string, Voice[]>();
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const later = (fn: () => void, ms: number) => {
     const timer = setTimeout(() => {
@@ -263,27 +268,113 @@ export function createMediaGuitarPlayer(): GuitarPlayer {
     run++;
     for (const timer of timers) clearTimeout(timer);
     timers.clear();
-    for (const audio of media) {
-      audio.pause();
-      audio.removeAttribute("src");
-      audio.load();
+    for (const pool of voices.values()) for (const voice of pool) {
+      voice.audio.pause();
+      voice.busy = false;
     }
-    media.clear();
     notify(idle);
   }
   function loadManifest() {
-    manifest ??= fetch(`${import.meta.env.BASE_URL}audio/manifest.json`)
+    manifest ??= fetch(`${appRoot()}audio/manifest.json`)
       .then((response) => {
         if (!response.ok) throw new Error("Sample manifest unavailable");
         return response.json();
       })
-      .then((json) => manifestSchema.parse(json))
+      .then((json) => manifestSchema.parse(json).samples)
+      .then((samples) => {
+        if (!disposed) {
+          for (const sample of samples) makeVoice(sample.file);
+          readySamples = samples;
+        }
+        return samples;
+      })
       .catch((error) => {
         manifest = null;
+        readySamples = null;
         throw error;
       });
     return manifest;
   }
+  function makeVoice(file: string): Voice {
+    const audio = new Audio();
+    audio.preload = "auto";
+    audio.preservesPitch = false;
+    audio.volume = 0.12;
+    audio.src = `${appRoot()}audio/${file}`;
+    audio.load();
+    const voice = { audio, busy: false };
+    const pool = voices.get(file) ?? [];
+    pool.push(voice);
+    voices.set(file, pool);
+    return voice;
+  }
+  function takeVoice(file: string): Voice {
+    return voices.get(file)?.find((voice) => !voice.busy) ?? makeVoice(file);
+  }
+  function removeVoice(file: string, voice: Voice) {
+    voice.audio.pause();
+    voice.audio.removeAttribute("src");
+    voice.audio.load();
+    voices.set(file, (voices.get(file) ?? []).filter((candidate) => candidate !== voice));
+  }
+  function startPlayback(items: readonly PreviewItem[], speed: StrumSpeed, token: number) {
+    if (token !== run || disposed || !readySamples) return;
+    const byMidi = new Map(readySamples.map((sample) => [sample.midi, sample.file]));
+    const keys = [...byMidi.keys()];
+    const events = planStrums(items, speed);
+    if (!events.length) {
+      notify(idle);
+      return;
+    }
+    let latestStartedAt = -1;
+    const fail = (file?: string, voice?: Voice) => {
+      if (token !== run || disposed) return;
+      stop();
+      if (file && voice) removeVoice(file, voice);
+      notify({ status: "error", activeEntryId: null, message: "Could not play guitar sound. Try again." });
+    };
+    const startEvent = (event: (typeof events)[number], first = false) => {
+      if (token !== run || disposed) return;
+      let file: string | undefined;
+      let voice: Voice | undefined;
+      try {
+        const sample = nearestSample(event.midi, keys);
+        file = byMidi.get(sample);
+        if (!file) throw new Error("Missing guitar sample");
+        voice = takeVoice(file);
+        const activeVoice = voice;
+        const audio = activeVoice.audio;
+        activeVoice.busy = true;
+        audio.playbackRate = 2 ** ((event.midi - sample) / 12);
+        if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+          try { audio.currentTime = SAMPLE_ONSET; } catch { /* A cold element may not be seekable yet. */ }
+        }
+        const started = audio.play();
+        void started.then(() => {
+          if (token !== run || disposed) return;
+          if (event.at >= latestStartedAt) {
+            latestStartedAt = event.at;
+            notify({ status: "playing", activeEntryId: event.entryId, message: null, strumInterval: STRUM_INTERVALS[speed] });
+          }
+          later(() => {
+            if (token !== run) return;
+            audio.pause();
+            activeVoice.busy = false;
+          }, NOTE_DURATION * 1000);
+          if (first) {
+            for (const next of events.slice(1)) later(() => startEvent(next), next.at * 1000);
+            const lastNoteEnd = (events.at(-1)?.at ?? 0) + NOTE_DURATION;
+            const previewEnd = Math.max(items.length * CHORD_INTERVAL, lastNoteEnd);
+            later(() => { if (token === run) stop(); }, Math.ceil(previewEnd * 1000));
+          }
+        }).catch(() => fail(file, voice));
+      } catch {
+        fail(file, voice);
+      }
+    };
+    startEvent(events[0], true);
+  }
+  void loadManifest().catch(() => {});
   return {
     async play(items, onState, speed = "normal") {
       stop();
@@ -291,46 +382,11 @@ export function createMediaGuitarPlayer(): GuitarPlayer {
       const token = run;
       if (disposed || !items.length) return;
       try {
-        notify({ status: "loading", activeEntryId: null, message: "Loading acoustic guitar…" });
-        const samples = (await loadManifest()).samples;
-        if (token !== run || disposed) return;
-        const byMidi = new Map(samples.map((sample) => [sample.midi, sample.file]));
-        const keys = [...byMidi.keys()];
-        const events = planStrums(items, speed);
-        let latestStartedAt = -1;
-        for (const event of events) {
-          const sample = nearestSample(event.midi, keys);
-          const file = byMidi.get(sample);
-          if (!file) throw new Error("Missing guitar sample");
-          const audio = new Audio(`${import.meta.env.BASE_URL}audio/${file}`);
-          audio.preload = "auto";
-          audio.preservesPitch = false;
-          audio.playbackRate = 2 ** ((event.midi - sample) / 12);
-          audio.volume = 0.12;
-          media.add(audio);
-          const start = () => {
-            if (token !== run || disposed) return;
-            void audio.play().then(() => {
-              if (token !== run || disposed || event.at < latestStartedAt) return;
-              latestStartedAt = event.at;
-              notify({
-                status: "playing",
-                activeEntryId: event.entryId,
-                message: null,
-                strumInterval: STRUM_INTERVALS[speed],
-              });
-            }).catch(() => {
-              if (token !== run || disposed) return;
-              stop();
-              notify({ status: "error", activeEntryId: null, message: "Could not play guitar sound. Try again." });
-            });
-          };
-          if (event.at === 0) start();
-          else later(start, event.at * 1000);
+        if (!readySamples) {
+          notify({ status: "loading", activeEntryId: null, message: "Loading acoustic guitar…" });
+          await loadManifest();
         }
-        const lastNoteEnd = (events.at(-1)?.at ?? 0) + NOTE_DURATION;
-        const previewEnd = Math.max(items.length * CHORD_INTERVAL, lastNoteEnd);
-        later(() => { if (token === run) stop(); }, Math.ceil(previewEnd * 1000));
+        startPlayback(items, speed, token);
       } catch {
         if (token !== run || disposed) return;
         stop();
@@ -341,6 +397,9 @@ export function createMediaGuitarPlayer(): GuitarPlayer {
     dispose() {
       stop();
       disposed = true;
+      for (const [file, pool] of voices) for (const voice of pool) removeVoice(file, voice);
+      voices.clear();
+      readySamples = null;
     },
   };
 }

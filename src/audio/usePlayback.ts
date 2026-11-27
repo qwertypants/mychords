@@ -22,10 +22,15 @@ export function usePlayback() {
     message: null,
   });
   useEffect(() => {
+    const mediaPlayback = prefersMediaPlayback();
+    if (mediaPlayback) player.current = createMediaGuitarPlayer();
     const hidden = () => {
       if (document.hidden) {
-        player.current?.dispose();
-        player.current = null;
+        if (mediaPlayback) player.current?.stop();
+        else {
+          player.current?.dispose();
+          player.current = null;
+        }
       }
     };
     document.addEventListener("visibilitychange", hidden);

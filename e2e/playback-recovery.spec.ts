@@ -32,6 +32,11 @@ test("installed iPhone uses media playback after returning to the app", async ({
   test.skip(info.project.name !== "webkit-mobile");
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "standalone", { configurable: true, value: true });
+    const NativeAudio = window.Audio;
+    window.Audio = function (src?: string) {
+      document.documentElement.dataset.mediaCreates = String(Number(document.documentElement.dataset.mediaCreates || 0) + 1);
+      return new NativeAudio(src);
+    } as typeof Audio;
     const nativePlay = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function () {
       document.documentElement.dataset.mediaPlays = String(Number(document.documentElement.dataset.mediaPlays || 0) + 1);
@@ -43,6 +48,8 @@ test("installed iPhone uses media playback after returning to the app", async ({
   await activate(hear);
   await expect(page.locator("html")).toHaveAttribute("data-media-plays", /[1-9]/);
   await expect(page.getByText("Acoustic preview", { exact: true })).toBeVisible();
+  await page.waitForTimeout(200);
+  const created = await page.locator("html").getAttribute("data-media-creates");
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: true });
     document.dispatchEvent(new Event("visibilitychange"));
@@ -50,4 +57,6 @@ test("installed iPhone uses media playback after returning to the app", async ({
   });
   await activate(hear);
   await expect(page.getByText("Acoustic preview", { exact: true })).toBeVisible();
+  await page.waitForTimeout(200);
+  await expect(page.locator("html")).toHaveAttribute("data-media-creates", created!);
 });
