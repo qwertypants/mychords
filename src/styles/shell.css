@@ -485,6 +485,12 @@ button {
   margin: 24px 0 0;
   border-top: 1px solid var(--line);
 }
+.song-list-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
 .song-list-row {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 160px 80px 18px;
@@ -493,11 +499,19 @@ button {
   width: 100%;
   padding: 20px 12px;
   border: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 0;
   background: transparent;
   color: inherit;
   text-align: left;
   cursor: pointer;
+}
+.song-list-delete,
+.song-delete-button {
+  color: var(--muted);
+}
+.song-list-delete:hover,
+.song-delete-button:hover {
+  color: #a93842;
 }
 .song-list-row:hover,
 .song-list-row:focus-visible {

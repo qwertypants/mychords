@@ -37,6 +37,7 @@ export default function App() {
   const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [pending, setPending] = useState<{ action: () => void; cancel?: () => void } | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Song | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
   const transition = (action: () => void) => {
     audio.stop();
@@ -205,6 +206,7 @@ export default function App() {
           song={store.draft}
           onChange={change}
           onBack={goSongs}
+          onDelete={() => setDeleteTarget(store.draft)}
           onAdd={setPickerFor}
           onHear={hear}
           onPlay={audio.play}
@@ -222,6 +224,7 @@ export default function App() {
           songs={store.library.songs}
           onNew={createSong}
           onOpen={(s) => transition(() => navigate({ kind: "song", id: s.id }))}
+          onDelete={setDeleteTarget}
           onExplore={() => setPickerFor("new")}
           onHear={(v) => hear(v, previewEntryId("library", v.id))}
           playback={audio.state}
@@ -331,6 +334,28 @@ export default function App() {
           <p>
             Its chords will be removed from this song.
           </p>
+        </ConfirmDialog>
+      )}
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete this song?"
+          onCancel={() => setDeleteTarget(null)}
+          actions={
+            <button
+              className="button danger"
+              onClick={() => {
+                audio.stop();
+                if (store.deleteSong(deleteTarget.id)) {
+                  navigate({ kind: "songs", page: route.kind === "songs" ? route.page : 1 });
+                }
+                setDeleteTarget(null);
+              }}
+            >
+              Delete song
+            </button>
+          }
+        >
+          <p>“{deleteTarget.name || "Untitled song"}” will be permanently removed from this browser.</p>
         </ConfirmDialog>
       )}
       {resetConfirm && (

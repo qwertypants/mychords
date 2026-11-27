@@ -84,6 +84,22 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
       setLibrary(empty);
     } else setStorageError(result.message);
   }
+  function deleteSong(id: string): boolean {
+    const next: Library = {
+      version: 1,
+      songs: library.songs.filter((song) => song.id !== id),
+    };
+    const result = writeLibrary(browserStorage, next);
+    if (!result.ok) {
+      setStorageError(result.message);
+      return false;
+    }
+    setLibrary(next);
+    if (draft?.id === id) setDraft(null);
+    setDirty(false);
+    setStorageError(null);
+    return true;
+  }
   return {
     library,
     shareError,
@@ -94,6 +110,7 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
     saveDraft,
     retry,
     reset,
+    deleteSong,
     openSong: (song: Song) => {
       setDraft(structuredClone(song));
       setDirty(false);

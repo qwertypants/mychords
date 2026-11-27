@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Plus, ArrowLeft, Share2 } from "lucide-react";
+import { Plus, ArrowLeft, Share2, Trash2 } from "lucide-react";
 import type { Song } from "./types";
 import type { Voicing } from "../chords/types";
 import type { PlaybackState, PreviewItem } from "../audio/guitar";
@@ -21,6 +21,7 @@ export function SongEditor({
   song,
   onChange,
   onBack,
+  onDelete,
   onAdd,
   onHear,
   onPlay,
@@ -32,6 +33,7 @@ export function SongEditor({
   song: Song;
   onChange: (s: Song) => void;
   onBack: () => void;
+  onDelete: () => void;
   onAdd: (sectionId: string) => void;
   onHear: (v: Voicing, entryId: string, stringIndex?: number) => void;
   onPlay: (items: PreviewItem[]) => void;
@@ -95,6 +97,9 @@ export function SongEditor({
         <div className="song-actions">
           <button className="icon-button" onClick={share} aria-label="Share">
             <Share2 size={20} aria-hidden="true" />
+          </button>
+          <button className="icon-button song-delete-button" onClick={onDelete} aria-label="Delete song">
+            <Trash2 size={20} aria-hidden="true" />
           </button>
         </div>
       </div>

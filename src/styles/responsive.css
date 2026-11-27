@@ -55,8 +55,8 @@
 }
 @media (max-width: 600px) {
   .song-list-row {
-    grid-template-columns: 30px minmax(0, 1fr) 18px;
-    gap: 12px;
+    grid-template-columns: 24px minmax(0, 1fr) 18px;
+    gap: 8px;
     padding: 16px 4px;
   }
   .song-list-name {
@@ -76,6 +76,11 @@
   .song-list-row > svg {
     grid-column: 3;
     grid-row: 1;
+  }
+  .song-list-delete {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 7px;
   }
   .app-header {
     height: 72px;

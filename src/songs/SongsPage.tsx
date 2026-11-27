@@ -1,14 +1,15 @@
-import { ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight, Plus, Trash2 } from "lucide-react";
 import type { Song } from "./types";
 
 const PAGE_SIZE = 12;
 
-export function SongsPage({ songs, page, onPage, onNew, onOpen }: {
+export function SongsPage({ songs, page, onPage, onNew, onOpen, onDelete }: {
   songs: Song[];
   page: number;
   onPage: (page: number) => void;
   onNew: () => void;
   onOpen: (song: Song) => void;
+  onDelete: (song: Song) => void;
 }) {
   const totalPages = Math.max(1, Math.ceil(songs.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -24,7 +25,7 @@ export function SongsPage({ songs, page, onPage, onNew, onOpen }: {
         {songs.length ? (
           <ul className="song-list">
             {songs.slice(start, start + PAGE_SIZE).map((song, index) => (
-              <li key={song.id}>
+              <li className="song-list-item" key={song.id}>
                 <button className="song-list-row" onClick={() => onOpen(song)} aria-label={`Open ${song.name || "Untitled song"}`}>
                   <span className="song-list-number">{String(start + index + 1).padStart(2, "0")}</span>
                   <span className="song-list-name">{song.name || "Untitled song"}</span>
@@ -33,6 +34,9 @@ export function SongsPage({ songs, page, onPage, onNew, onOpen }: {
                   </span>
                   <span className="song-list-date">{new Date(song.updatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
                   <ArrowUpRight size={18} aria-hidden="true" />
+                </button>
+                <button className="icon-button song-list-delete" onClick={() => onDelete(song)} aria-label={`Delete ${song.name || "Untitled song"}`}>
+                  <Trash2 size={18} aria-hidden="true" />
                 </button>
               </li>
             ))}
