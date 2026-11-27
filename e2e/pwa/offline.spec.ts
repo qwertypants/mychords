@@ -103,9 +103,11 @@ for (const path of ["/", "/mychords/"]) {
     await activate(installed.getByRole("button", { name: "Close chord library" }));
     const songPath = new URL(installed.url()).pathname;
     expect(songPath).toMatch(new RegExp(`^${path}songs/[0-9a-f-]{36}$`));
-    await installed.reload();
+    await installed.goto(songPath);
     await expect(installed.locator("[data-entry-id]")).toHaveCount(1);
     await expect(installed.getByLabel("Song name", { exact: true })).toHaveValue("Offline song");
+    await activate(installed.getByRole("button", { name: /^Hear C, position / }));
+    await expect(installed.locator(".song-chord.is-playing")).toHaveCount(1);
     const credits = await context.newPage();
     await credits.goto(`${path}credits.html`);
     await expect(credits.getByRole("heading", { name: "Credits & sources" })).toBeVisible();
