@@ -83,7 +83,7 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 5;
+  z-index: 7;
   max-height: min(260px, 40dvh);
   overflow-y: auto;
   margin: 0;
