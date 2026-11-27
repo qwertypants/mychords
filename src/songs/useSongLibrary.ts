@@ -100,7 +100,7 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
       setStorageError(null);
     },
     newDraft: () => {
-      const song = addSection(newSong("Untitled song"), "Verse");
+      const song = addSection(newSong(), "Verse");
       setDraft(song);
       saveDraft(song);
       return song;

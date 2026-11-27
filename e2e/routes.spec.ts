@@ -1,6 +1,26 @@
 import { test, expect } from "@playwright/test";
 import sampleLibrary from "./fixtures/pagination-songs.json" with { type: "json" };
 
+const generatedName = /^\S+(?:\s+\S+)?$/;
+
+test("creating a song from the library starts with a generated name", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "New song", exact: true }).first().click();
+  const name = page.getByLabel("Song name", { exact: true });
+  await expect(name).toHaveValue(generatedName);
+  await expect(name).not.toHaveValue("Untitled song");
+});
+
+test("adding the first chord from Explore chords creates a generated name", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explore chords", exact: true }).click();
+  await page.getByRole("combobox", { name: "Search chords" }).fill("Ab9#11");
+  await page.getByRole("button", { name: "Add Ab9#11, -1 11 10 11 11 10" }).click();
+  const name = page.getByLabel("Song name", { exact: true });
+  await expect(name).toHaveValue(generatedName);
+  await expect(name).not.toHaveValue("Untitled song");
+});
+
 test("songs use stable ID routes across reload and browser history", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "New song", exact: true }).first().click();

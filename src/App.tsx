@@ -89,7 +89,7 @@ export default function App() {
     const song = store.draft;
     if (!pickerFor) return false;
     if (pickerFor === "new" || !song) {
-      const next = addSection(song ?? newSong("Untitled song"), "Verse");
+      const next = addSection(song ?? newSong(), "Verse");
       const sectionId = next.sections[0].id;
       change(addChord(next, sectionId, v.id));
       if (!song) navigate({ kind: "song", id: next.id });

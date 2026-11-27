@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import {
   newSong,
   addSection,
@@ -9,6 +9,18 @@ import {
   renameSection,
   removeChord,
 } from "./commands";
+test.each([0, 0.9])("new songs get a random one or two word name (%s)", (randomValue) => {
+  vi.spyOn(Math, "random").mockReturnValue(randomValue);
+  try {
+    const song = newSong();
+    expect(song.name.trim().split(/\s+/)).toHaveLength(randomValue < 0.5 ? 1 : 2);
+  } finally {
+    vi.restoreAllMocks();
+  }
+});
+test("newSong preserves an explicitly supplied name", () => {
+  expect(newSong("Idea").name).toBe("Idea");
+});
 test("duplicate voicings remain independent and reorder immutably", () => {
   let s = addSection(newSong("Idea"), "Verse");
   const id = s.sections[0].id;
