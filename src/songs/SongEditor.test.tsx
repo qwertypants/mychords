@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, beforeEach, vi } from "vitest";
 import App from "../App";
 HTMLDialogElement.prototype.showModal = function () {
@@ -65,5 +65,72 @@ test("failed autosave keeps the edit and retries it", () => {
     expect(screen.getByRole("button", { name: "Open Recovered idea" })).toBeInTheDocument();
   } finally {
     write.mockRestore();
+  }
+});
+
+test("share confirms a successful copy and restores the icon after 1.5 seconds", async () => {
+  const clipboardDescriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { writeText },
+  });
+  vi.useFakeTimers();
+  try {
+    render(<App />);
+    fireEvent.click(screen.getAllByRole("button", { name: "New song" })[0]);
+    const share = screen.getByRole("button", { name: "Share" });
+
+    await act(async () => {
+      fireEvent.click(share);
+      await Promise.resolve();
+    });
+    expect(writeText).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("tooltip")).toHaveTextContent("Copied");
+    expect(share).toHaveAccessibleDescription("Copied");
+
+    act(() => { vi.advanceTimersByTime(1000); });
+    await act(async () => {
+      fireEvent.click(share);
+      await Promise.resolve();
+    });
+    act(() => { vi.advanceTimersByTime(1000); });
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    act(() => { vi.advanceTimersByTime(500); });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(share).not.toHaveAttribute("aria-describedby");
+  } finally {
+    vi.useRealTimers();
+    if (clipboardDescriptor) Object.defineProperty(navigator, "clipboard", clipboardDescriptor);
+    else Reflect.deleteProperty(navigator, "clipboard");
+  }
+});
+
+test("failed share copy does not open a modal", async () => {
+  const clipboardDescriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+  const execCommandDescriptor = Object.getOwnPropertyDescriptor(document, "execCommand");
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { writeText: vi.fn().mockRejectedValue(new Error("Clipboard unavailable")) },
+  });
+  Object.defineProperty(document, "execCommand", {
+    configurable: true,
+    value: vi.fn().mockReturnValue(false),
+  });
+  try {
+    render(<App />);
+    fireEvent.click(screen.getAllByRole("button", { name: "New song" })[0]);
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Share" }));
+      await Promise.resolve();
+    });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Could not copy link");
+  } finally {
+    if (clipboardDescriptor) Object.defineProperty(navigator, "clipboard", clipboardDescriptor);
+    else Reflect.deleteProperty(navigator, "clipboard");
+    if (execCommandDescriptor) Object.defineProperty(document, "execCommand", execCommandDescriptor);
+    else Reflect.deleteProperty(document, "execCommand");
   }
 });

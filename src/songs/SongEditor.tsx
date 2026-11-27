@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Plus, ArrowLeft, Share2, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Plus, ArrowLeft, Check, Share2, Trash2 } from "lucide-react";
 import type { Song } from "./types";
 import type { Voicing } from "../chords/types";
 import type { PlaybackState, PreviewItem } from "../audio/guitar";
@@ -16,7 +16,24 @@ import {
 import { useViewEntrance } from "../motion";
 import { createShareUrl } from "./share";
 import { appRoot } from "./routes";
-import { ConfirmDialog } from "../ConfirmDialog";
+
+const SHARE_FEEDBACK_DURATION = 1500;
+
+function copyLinkWithLegacyClipboard(link: string): boolean {
+  const field = document.createElement("textarea");
+  field.value = link;
+  field.readOnly = true;
+  field.style.position = "fixed";
+  field.style.opacity = "0";
+  document.body.appendChild(field);
+  field.select();
+  try {
+    return document.execCommand("copy");
+  } finally {
+    field.remove();
+  }
+}
+
 export function SongEditor({
   song,
   onChange,
@@ -44,9 +61,19 @@ export function SongEditor({
 }) {
   const [playingSectionId, setPlayingSectionId] = useState<string | null>(null);
   const [shareMessage, setShareMessage] = useState("");
-  const [fallbackLink, setFallbackLink] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
+  const shareFeedbackTimer = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (shareFeedbackTimer.current !== null) window.clearTimeout(shareFeedbackTimer.current);
+  }, []);
+
   async function share() {
     setShareMessage("");
+    setShareCopied(false);
+    if (shareFeedbackTimer.current !== null) {
+      window.clearTimeout(shareFeedbackTimer.current);
+      shareFeedbackTimer.current = null;
+    }
     let link: string;
     try {
       link = createShareUrl(song, new URL(appRoot(), window.location.href).href);
@@ -54,12 +81,29 @@ export function SongEditor({
       setShareMessage((error as Error).message);
       return;
     }
+    let copied = false;
     try {
       await navigator.clipboard.writeText(link);
-      setShareMessage("Link copied.");
+      copied = true;
     } catch {
-      setFallbackLink(link);
+      try {
+        copied = copyLinkWithLegacyClipboard(link);
+      } catch {
+        copied = false;
+      }
     }
+    if (!copied) {
+      setShareMessage("Could not copy link. Allow clipboard access and try again.");
+      return;
+    }
+    if (shareFeedbackTimer.current !== null) {
+      window.clearTimeout(shareFeedbackTimer.current);
+    }
+    setShareCopied(true);
+    shareFeedbackTimer.current = window.setTimeout(() => {
+      setShareCopied(false);
+      shareFeedbackTimer.current = null;
+    }, SHARE_FEEDBACK_DURATION);
   }
   const heading = useRef<HTMLDivElement>(null);
   useViewEntrance(heading);
@@ -95,8 +139,18 @@ export function SongEditor({
           </h1>
         </div>
         <div className="song-actions">
-          <button className="icon-button" onClick={share} aria-label="Share">
-            <Share2 size={20} aria-hidden="true" />
+          <button
+            className="icon-button share-button"
+            onClick={share}
+            aria-label="Share"
+            aria-describedby={shareCopied ? "share-copied-tooltip" : undefined}
+          >
+            {shareCopied ? <Check size={20} aria-hidden="true" /> : <Share2 size={20} aria-hidden="true" />}
+            {shareCopied && (
+              <span className="share-tooltip" id="share-copied-tooltip" role="tooltip">
+                Copied
+              </span>
+            )}
           </button>
           <button className="icon-button song-delete-button" onClick={onDelete} aria-label="Delete song">
             <Trash2 size={20} aria-hidden="true" />
@@ -104,13 +158,6 @@ export function SongEditor({
         </div>
       </div>
       <p className="share-status" role="status">{shareMessage}</p>
-      {fallbackLink && (
-        <ConfirmDialog title="Copy song link" onCancel={() => setFallbackLink(null)} actions={null}>
-          <p>Copy this link to share a snapshot of your song.</p>
-          <textarea className="share-link" aria-label="Song share link" readOnly value={fallbackLink}
-            onFocus={(event) => event.currentTarget.select()} />
-        </ConfirmDialog>
-      )}
       {playback.status === "error" && <p role="alert">{playback.message}</p>}
       {strumSpeedControl}
       <div className="sections">

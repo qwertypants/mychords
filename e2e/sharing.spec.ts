@@ -8,7 +8,8 @@ test("share an unsaved snapshot into a separate library", async ({ page, browser
   await page.getByRole("button", { name: "New song", exact: true }).first().click();
   await page.getByLabel("Song name", { exact: true }).fill("Café 🎸");
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Link copied." })).toBeVisible();
+  await expect(page.getByRole("tooltip")).toHaveText("Copied");
+  await expect(page.getByRole("status")).not.toContainText("Link copied.");
   const link = await page.locator("html").getAttribute("data-copied");
   expect(link).toContain("?song=");
   const recipient = await browser.newContext({ viewport: page.viewportSize() });
@@ -28,16 +29,17 @@ test("share an unsaved snapshot into a separate library", async ({ page, browser
   await recipient.close();
 });
 
-test("clipboard failure offers a selectable link and invalid links preserve data", async ({ page }) => {
+test("clipboard failure does not open a modal and invalid links preserve data", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", { value: { writeText: async () => { throw new Error("denied"); } } });
+    Object.defineProperty(document, "execCommand", { configurable: true, value: () => false });
   });
   await page.goto("/");
   await page.getByRole("button", { name: "New song", exact: true }).first().click();
   const before = await page.evaluate(() => localStorage.getItem("mychords.library.v1"));
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  await expect(page.getByRole("dialog", { name: "Copy song link" })).toBeVisible();
-  await expect(page.getByLabel("Song share link")).toHaveValue(/\?song=/);
+  await expect(page.getByRole("status")).toContainText("Could not copy link");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.goto("/?song=invalid");
   await expect(page.getByRole("alert")).toContainText("shared song link is invalid");
   expect(await page.evaluate(() => localStorage.getItem("mychords.library.v1"))).toBe(before);
