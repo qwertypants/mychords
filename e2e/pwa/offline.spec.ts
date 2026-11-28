@@ -214,6 +214,9 @@ test("shared query link opens offline under the deployed subpath", async ({ page
   await context.setOffline(true);
   const encoded = btoa(JSON.stringify({ version: 1, name: "Offline shared song", sections: [] })).replace(/=+$/, "");
   await page.goto("/mychords/?song=" + encoded);
+  await expect(page.getByRole("heading", { name: "Open Offline shared song in MyChords" })).toBeVisible();
+  expect(page.url()).toContain("?song=");
+  await page.getByRole("button", { name: "Continue in browser" }).click();
   await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Offline shared song");
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs[0].name)).toBe("Offline shared song");
   await page.reload();

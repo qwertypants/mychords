@@ -33,6 +33,7 @@ export function SongLibrary({
   strumSpeedControl,
   onStop,
   onViewAll,
+  onOpenShared,
 }: {
   songs: Song[];
   onNew: () => void;
@@ -43,6 +44,7 @@ export function SongLibrary({
   strumSpeedControl?: React.ReactNode;
   onStop: () => void;
   onViewAll: () => void;
+  onOpenShared: () => void;
 }) {
   const main = useRef<HTMLElement>(null);
   useViewEntrance(main);
@@ -115,10 +117,12 @@ export function SongLibrary({
               Your songs <span>{songs.length.toString().padStart(2, "0")}</span>
             </h2>
           </div>
-          <button className="button secondary" onClick={onNew}>
-            <Plus size={16} />
-            New song
-          </button>
+          <div className="library-header-actions">
+            <button className="button secondary" onClick={onOpenShared}>Open shared link</button>
+            <button className="button secondary" onClick={onNew}>
+              <Plus size={16} /> New song
+            </button>
+          </div>
         </header>
         {songs.length ? (
           <>

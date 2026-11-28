@@ -16,6 +16,7 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
   const [dirty, setDirty] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [shareError, setShareError] = useState<string | null>(null);
+  const [sharedLink, setSharedLink] = useState<{ url: string; name: string } | null>(null);
   const handledShare = useRef(false);
   const saveDraft = useCallback((song = draft): boolean => {
     if (!song || initial.kind === "error") return false;
@@ -41,23 +42,40 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
     handledShare.current = true;
     const url = new URL(window.location.href);
     if (!url.searchParams.has("song")) return;
-    let imported: Song | null = null;
     try {
       const song = readSharedSong(url.href);
       if (song) {
-        // Consume the external URL once, after storage recovery permits opening it.
-        // eslint-disable-next-line react/set-state-in-effect
+        if (!window.matchMedia("(display-mode: standalone)").matches && !(navigator as Navigator & { standalone?: boolean }).standalone) {
+          // The URL is an external input that is resolved after storage recovery.
+          // eslint-disable-next-line react/set-state-in-effect
+          setSharedLink({ url: url.href, name: song.name });
+          return;
+        }
         setDraft(song);
         saveDraft(song);
-        imported = song;
+        url.searchParams.delete("song");
+        window.history.replaceState(window.history.state, "", url);
+        onImport(song);
       }
     } catch (error) {
       setShareError((error as Error).message);
     }
-    url.searchParams.delete("song");
-    window.history.replaceState(window.history.state, "", url);
-    if (imported) onImport(imported);
   }, [initial.kind, saveDraft, onImport]);
+  function importSharedLink(link: string): string | null {
+    let song: Song | null;
+    try {
+      song = readSharedSong(link.trim());
+      if (!song) throw new Error();
+    } catch {
+      return "This shared song link is invalid, unsupported, or too large. Your saved songs have not changed.";
+    }
+    setSharedLink(null);
+    setShareError(null);
+    setDraft(song);
+    saveDraft(song);
+    onImport(song);
+    return null;
+  }
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (dirty) {
@@ -103,6 +121,8 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
   return {
     library,
     shareError,
+    sharedLink,
+    importSharedLink,
     draft,
     dirty,
     storageError,

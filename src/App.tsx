@@ -21,13 +21,16 @@ import { PlaybackControls } from "./audio/PlaybackControls";
 import { StrumSpeedSelect } from "./audio/StrumSpeedSelect";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { PwaControls } from "./pwa/PwaControls";
+import { ShareHandoff } from "./songs/ShareHandoff";
 import { appRoot, readSongRoute, songPath, songsPath } from "./songs/routes";
 import type { SongRoute } from "./songs/routes";
 import "./styles.css";
 export default function App() {
   const [route, setRoute] = useState<SongRoute>(readSongRoute);
   const importSong = useCallback((song: Song) => {
-    window.history.replaceState(window.history.state, "", `${songPath(song.id)}${window.location.search}`);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("song");
+    window.history.replaceState(window.history.state, "", `${songPath(song.id)}${url.search}`);
     setRoute({ kind: "song", id: song.id });
   }, []);
   const store = useSongLibrary(route.kind === "song" ? route.id : null, importSong);
@@ -40,6 +43,9 @@ export default function App() {
   const [removeId, setRemoveId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Song | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
+  const [openLink, setOpenLink] = useState(false);
+  const [pastedLink, setPastedLink] = useState("");
+  const [pasteError, setPasteError] = useState<string | null>(null);
   const transition = (action: () => void) => {
     audio.stop();
     if (store.dirty) setPending({ action });
@@ -114,7 +120,7 @@ export default function App() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const blocked = store.initial.kind === "error";
-  const screen = blocked ? "recovery" : route.kind === "song" ? route.id : route.kind === "songs" ? `songs-${route.page}` : route.kind;
+  const screen = blocked ? "recovery" : store.sharedLink ? "share-handoff" : route.kind === "song" ? route.id : route.kind === "songs" ? `songs-${route.page}` : route.kind;
   const previousScreen = useRef(screen);
   useEffect(() => {
     if (previousScreen.current !== screen) {
@@ -204,6 +210,8 @@ export default function App() {
             </button>
           </div>
         </main>
+      ) : store.sharedLink ? (
+        <ShareHandoff link={store.sharedLink.url} name={store.sharedLink.name} onContinue={() => store.importSharedLink(store.sharedLink!.url)} />
       ) : route.kind === "song" && store.draft?.id === route.id ? (
         <SongEditor
           key={store.draft.id}
@@ -234,6 +242,7 @@ export default function App() {
           strumSpeedControl={strumSpeedControl}
           onStop={audio.stop}
           onViewAll={goSongs}
+          onOpenShared={() => setOpenLink(true)}
         />
       ) : route.kind === "songs" ? (
         <SongsPage
@@ -286,6 +295,19 @@ export default function App() {
             <PlaybackControls state={audio.state} onStop={audio.stop} />
           )}
         />
+      )}
+      {openLink && (
+        <ConfirmDialog title="Open shared link" onCancel={() => { setOpenLink(false); setPasteError(null); }} actions={
+          <button className="button primary" onClick={() => {
+            const error = store.importSharedLink(pastedLink);
+            if (error) setPasteError(error);
+            else { setOpenLink(false); setPastedLink(""); setPasteError(null); }
+          }}>Open song</button>
+        }>
+          <label htmlFor="shared-song-link">Paste a MyChords song link</label>
+          <input id="shared-song-link" className="shared-link-input" type="url" value={pastedLink} onChange={(event) => { setPastedLink(event.target.value); setPasteError(null); }} autoFocus />
+          {pasteError && <p role="alert">{pasteError}</p>}
+        </ConfirmDialog>
       )}
       {pending && (
         <ConfirmDialog

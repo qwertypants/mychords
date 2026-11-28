@@ -39,3 +39,10 @@
   .editor-heading { flex-wrap: nowrap; gap: 12px; }
   .editor-heading .song-title { font-size: clamp(28px, 7vw, 42px); }
 }
+
+.share-handoff { max-width: 680px; min-height: 55vh; margin: 0 auto; padding: clamp(36px, 8vw, 90px) 24px; }
+.share-handoff h1 { font-size: clamp(30px, 7vw, 48px); line-height: 1.1; }
+.share-handoff p { line-height: 1.6; }
+.share-handoff-actions, .library-header-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.share-handoff-actions { margin-top: 28px; }
+.shared-link-input { display: block; width: 100%; min-width: 0; margin-top: 10px; padding: 12px; border: 1px solid var(--ink); border-radius: 4px; color: var(--ink); background: var(--paper); font: inherit; }
