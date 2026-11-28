@@ -11,6 +11,7 @@ export function ConfirmDialog({
   actions: React.ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const cancelButton = useRef<HTMLButtonElement>(null);
   const opener = useRef(
     document.activeElement instanceof HTMLElement
       ? document.activeElement
@@ -20,6 +21,7 @@ export function ConfirmDialog({
     const el = ref.current,
       returnTo = opener.current;
     el?.showModal();
+    if (!el?.querySelector("input, textarea, select")) cancelButton.current?.focus();
     return () => {
       el?.close();
       queueMicrotask(() => {
@@ -46,7 +48,7 @@ export function ConfirmDialog({
       <div className="confirm-copy">{children}</div>
       <div className="confirm-actions">
         {actions}
-        <button className="button secondary" onClick={onCancel} autoFocus>
+        <button ref={cancelButton} className="button secondary" onClick={onCancel} autoFocus>
           Cancel
         </button>
       </div>

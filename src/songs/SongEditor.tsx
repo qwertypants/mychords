@@ -10,7 +10,6 @@ import {
   addSection,
   moveChord,
   replaceChordVoicing,
-  removeChord,
   renameSong,
   renameSection,
 } from "./commands";
@@ -45,6 +44,7 @@ export function SongEditor({
   onPlay,
   onStop,
   onRemoveSection,
+  onRemoveChord,
   playback,
   strumSpeedControl,
   onOpenShared,
@@ -58,6 +58,7 @@ export function SongEditor({
   onPlay: (items: PreviewItem[]) => void;
   onStop: () => void;
   onRemoveSection: (id: string) => void;
+  onRemoveChord: (sectionId: string, entryId: string) => void;
   playback: PlaybackState;
   strumSpeedControl?: React.ReactNode;
   onOpenShared?: (link: string) => string | null;
@@ -207,7 +208,7 @@ export function SongEditor({
             onChangeVoicing={(id, voicingId) =>
               onChange(replaceChordVoicing(song, section.id, id, voicingId))
             }
-            onRemoveChord={(id) => onChange(removeChord(song, section.id, id))}
+            onRemoveChord={(id) => onRemoveChord(section.id, id)}
           />
         ))}
       </div>

@@ -10,7 +10,8 @@ import { useSongLibrary } from "./songs/useSongLibrary";
 import { SongLibrary } from "./songs/SongLibrary";
 import { SongsPage } from "./songs/SongsPage";
 import { SongEditor } from "./songs/SongEditor";
-import { addChord, addSection, newSong, removeSection } from "./songs/commands";
+import { addChord, addSection, newSong, removeChord, removeSection } from "./songs/commands";
+import { getVoicing } from "./chords/catalog";
 import { ChordToneLegend } from "./chords/ChordToneLegend";
 import { ChordPicker } from "./chords/ChordPicker";
 import type { Voicing } from "./chords/types";
@@ -43,6 +44,11 @@ export default function App() {
   const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [pending, setPending] = useState<{ action: () => void; cancel?: () => void } | null>(null);
   const [removeId, setRemoveId] = useState<string | null>(null);
+  const [removeChordTarget, setRemoveChordTarget] = useState<{
+    songId: string;
+    sectionId: string;
+    entryId: string;
+  } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Song | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
   const [openLink, setOpenLink] = useState(false);
@@ -128,6 +134,12 @@ export default function App() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const blocked = store.initial.kind === "error";
+  const chordSection = store.draft?.id === removeChordTarget?.songId
+    ? store.draft?.sections.find((section) => section.id === removeChordTarget?.sectionId)
+    : undefined;
+  const chordIndex = chordSection?.chords.findIndex((entry) => entry.id === removeChordTarget?.entryId) ?? -1;
+  const chordToRemove = chordSection?.chords[chordIndex];
+  const sectionToRemove = store.draft?.sections.find((section) => section.id === removeId);
   const screen = blocked ? "recovery" : store.sharedLink ? "share-handoff" : route.kind === "song" ? route.id : route.kind === "songs" ? `songs-${route.page}` : route.kind;
   const previousScreen = useRef(screen);
   useEffect(() => {
@@ -233,10 +245,9 @@ export default function App() {
           onStop={audio.stop}
           playback={audio.state}
           strumSpeedControl={strumSpeedControl}
-          onRemoveSection={(id) => {
-            const section = store.draft?.sections.find((s) => s.id === id);
-            if (section?.chords.length) setRemoveId(id);
-            else if (store.draft) change(removeSection(store.draft, id));
+          onRemoveSection={setRemoveId}
+          onRemoveChord={(sectionId, entryId) => {
+            if (store.draft) setRemoveChordTarget({ songId: store.draft.id, sectionId, entryId });
           }}
           onOpenShared={newSongStart && newSongStart.id === store.draft.id ? (link) => {
             const current = store.draft!;
@@ -355,6 +366,26 @@ export default function App() {
           <p>This song has changes that haven’t been saved.</p>
         </ConfirmDialog>
       )}
+      {removeChordTarget && chordSection && chordToRemove && (
+        <ConfirmDialog
+          title="Remove this chord?"
+          onCancel={() => setRemoveChordTarget(null)}
+          actions={
+            <button className="button danger" onClick={() => {
+              if (store.draft?.id === removeChordTarget.songId) {
+                change(removeChord(store.draft, removeChordTarget.sectionId, removeChordTarget.entryId));
+              }
+              setRemoveChordTarget(null);
+            }}>
+              Remove chord
+            </button>
+          }
+        >
+          <p>
+            {getVoicing(chordToRemove.voicingId)?.label ?? "This chord"} at position {chordIndex + 1} in {chordSection.name || "Untitled section"} will be removed from this song.
+          </p>
+        </ConfirmDialog>
+      )}
       {removeId && (
         <ConfirmDialog
           title="Remove this section?"
@@ -372,7 +403,9 @@ export default function App() {
           }
         >
           <p>
-            Its chords will be removed from this song.
+            {sectionToRemove?.chords.length
+              ? "This section and its chords will be removed from this song."
+              : "This empty section will be removed from this song."}
           </p>
         </ConfirmDialog>
       )}

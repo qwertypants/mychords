@@ -134,7 +134,7 @@ function ChordCard({
         </button>
         <button
           className="icon-button remove-chord"
-          onClick={onRemove}
+          onClick={(event) => { event.currentTarget.focus(); onRemove(); }}
           aria-label={`Remove ${voicing.label}, position ${index + 1}`}
         >
           <X size={15} />
@@ -208,7 +208,7 @@ export function SectionEditor({
           </button>
           <button
             className="icon-button muted"
-            onClick={onRemove}
+            onClick={(event) => { event.currentTarget.focus(); onRemove(); }}
             aria-label={`Remove section ${section.name}`}
           >
             <Trash2 size={16} />
