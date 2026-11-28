@@ -1,4 +1,31 @@
 /* Song notebook */
+.strum-speed-sentinel {
+  height: 1px;
+  margin-bottom: -1px;
+}
+.song-speed-sticky {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  z-index: 5;
+  pointer-events: none;
+}
+.song-speed-control { pointer-events: auto; }
+.song-speed-sticky.is-stuck .song-speed-control {
+  width: max-content;
+  padding: 4px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.song-speed-sticky.is-stuck .strum-speed legend {
+  display: none;
+}
+.song-speed-sticky.is-stuck .icon-options-row {
+  grid-auto-columns: 44px;
+  gap: 4px;
+}
+.song-speed-sticky.is-stuck .strum-speed-label { display: none; }
+.song-speed-sticky.is-stuck .strum-speed-icon { display: block; }
 .editor-breadcrumb {
   display: flex;
   align-items: center;

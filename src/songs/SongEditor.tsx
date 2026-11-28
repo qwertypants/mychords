@@ -5,6 +5,7 @@ import type { Voicing } from "../chords/types";
 import type { PlaybackState, PreviewItem } from "../audio/guitar";
 import { songPreview } from "./preview";
 import { SectionEditor } from "./SectionEditor";
+import { StickyStrumSpeed } from "./StickyStrumSpeed";
 import {
   addSection,
   moveChord,
@@ -159,7 +160,7 @@ export function SongEditor({
       </div>
       <p className="share-status" role="status">{shareMessage}</p>
       {playback.status === "error" && <p role="alert">{playback.message}</p>}
-      {strumSpeedControl}
+      {strumSpeedControl && <StickyStrumSpeed>{strumSpeedControl}</StickyStrumSpeed>}
       <div className="sections">
         {song.sections.map((section, i) => (
           <SectionEditor
