@@ -291,43 +291,25 @@
   margin-left: auto;
   color: var(--remove-ink);
 }
-.add-chord-tile {
+.add-chord-button {
+  grid-column: 1 / -1;
+  justify-self: start;
   border: 1px dashed var(--add-border);
-  border-radius: 8px;
-  padding: 24px 10px;
-  min-height: 260px;
-  display: flex;
-  flex-direction: column;
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-height: 44px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 7px;
   background: transparent;
-  min-width: 0;
-}
-.add-chord-tile:hover {
-  background: var(--play-surface);
-  border-color: var(--add-hover);
-}
-.add-chord-tile.empty {
-  grid-column: 1/-1;
-  min-height: 170px;
-}
-.add-circle {
-  border: 1px solid var(--add-circle-border);
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
   color: var(--add-ink);
-}
-.add-chord-tile strong {
   font-size: 13px;
   font-weight: 500;
 }
-.add-chord-tile > span:last-child {
-  font-size: 13px;
-  color: var(--muted);
+.add-chord-button:hover {
+  background: var(--play-surface);
+  border-color: var(--add-hover);
 }
 .add-section-button {
   display: flex;

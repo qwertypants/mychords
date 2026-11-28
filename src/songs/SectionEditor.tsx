@@ -244,22 +244,15 @@ export function SectionEditor({
               />
             ))}
             <button
-              className={`add-chord-tile ${section.chords.length ? "" : "empty"}`}
+              className="add-chord-button"
               onClick={(e) => {
                 e.currentTarget.focus();
                 onAdd();
               }}
               aria-label="Add chord"
             >
-              <span className="add-circle">
-                <Plus size={22} />
-              </span>
-              <strong>Add chord</strong>
-              <span>
-                {section.chords.length
-                  ? "Find the next sound"
-                  : "Find a shape you love"}
-              </span>
+              <Plus size={17} aria-hidden="true" />
+              Add chord
             </button>
           </div>
         </SortableContext>

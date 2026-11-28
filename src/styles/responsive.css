@@ -315,12 +315,6 @@
   .song-chord-name h3 {
     font-size: 26px;
   }
-  .add-chord-tile {
-    min-height: 270px;
-  }
-  .add-chord-tile.empty {
-    min-height: 160px;
-  }
   .add-section-button {
     font-size: 13px;
     min-height: 48px;
