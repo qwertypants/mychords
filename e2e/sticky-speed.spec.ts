@@ -77,3 +77,63 @@ for (const colorScheme of ["light", "dark"] as const) {
     });
   });
 }
+
+test("play all sequences repeated chords across sections and supports stop and replay", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.strumStarts = [];
+    const start = AudioBufferSourceNode.prototype.start;
+    AudioBufferSourceNode.prototype.start = function (...args) {
+      start.apply(this, args);
+      window.strumStarts.push(args[0] ?? 0);
+    };
+    const chord = (id: string) => ({ id, voicingId: "C:major:-1,3,2,0,1,0" });
+    localStorage.setItem("mychords.library.v1", JSON.stringify({
+      version: 1,
+      songs: [{ id: "sequence", name: "Sequence", updatedAt: "2026-11-27T12:00:00.000Z",
+        sections: [
+          { id: "verse", name: "Verse", chords: [chord("first")] },
+          ...Array.from({ length: 8 }, (_, i) => ({ id: `empty-${i}`, name: `Empty ${i}`, chords: [] })),
+          { id: "chorus", name: "Chorus", chords: [chord("second"), chord("third")] },
+        ],
+      }],
+    }));
+  });
+  await page.goto("/songs/sequence");
+  const toolbar = page.locator(".song-speed-sticky");
+  const play = toolbar.getByRole("button", { name: "Play all chords", exact: true });
+  await expect(play).toBeEnabled();
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await expect(toolbar).toHaveClass(/is-stuck/);
+  await expect(play).toBeInViewport();
+  await expect(play.locator("span")).toBeHidden();
+  await toolbar.getByRole("radio", { name: "Together", exact: true }).check();
+  await play.click();
+  const stop = toolbar.getByRole("button", { name: "Stop song", exact: true });
+  await expect(stop).toBeVisible();
+  await expect(page.locator('[data-entry-id="first"]')).toHaveClass(/is-playing/);
+  await expect.poll(() => page.evaluate(() => {
+    const first = window.strumStarts[0];
+    return window.strumStarts.map(at => Math.round((at - first) * 1000));
+  })).toEqual([0, 0, 0, 0, 0, 1800, 1800, 1800, 1800, 1800, 3600, 3600, 3600, 3600, 3600]);
+  await stop.click();
+  await expect(play).toBeVisible();
+  await expect(page.locator(".song-chord.is-playing")).toHaveCount(0);
+  await play.click();
+  for (const id of ["first", "second", "third"]) {
+    await expect(page.locator(`[data-entry-id="${id}"]`)).toHaveClass(/is-playing/);
+  }
+  await expect(play).toBeVisible({ timeout: 5000 });
+  await expect(page.locator(".song-chord.is-playing")).toHaveCount(0);
+
+  await play.click();
+  await page.getByRole("button", { name: "Play section Chorus", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Stop section Chorus", exact: true })).toBeVisible();
+  await expect(play).toBeVisible();
+  await page.getByRole("button", { name: "Stop section Chorus", exact: true }).click();
+});
+
+test("play all is disabled for a song without chords", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "New song", exact: true }).first().click();
+  await expect(page.getByRole("button", { name: "Play all chords", exact: true })).toBeDisabled();
+});

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Plus, ArrowLeft, Check, Share2, Trash2 } from "lucide-react";
+import { Plus, ArrowLeft, Check, Share2, Trash2, ListMusic, Square } from "lucide-react";
 import type { Song } from "./types";
 import type { Voicing } from "../chords/types";
 import type { PlaybackState, PreviewItem } from "../audio/guitar";
@@ -60,7 +60,16 @@ export function SongEditor({
   playback: PlaybackState;
   strumSpeedControl?: React.ReactNode;
 }) {
-  const [playingSectionId, setPlayingSectionId] = useState<string | null>(null);
+  const [playbackTarget, setPlaybackTarget] = useState<
+    { kind: "song" } | { kind: "section"; id: string } | null
+  >(null);
+  const songItems = songPreview(song);
+  const playing = playback.status === "loading" || playback.status === "playing";
+  const playingSong = playbackTarget?.kind === "song" && playing;
+  function stop() {
+    setPlaybackTarget(null);
+    onStop();
+  }
   const [shareMessage, setShareMessage] = useState("");
   const [shareCopied, setShareCopied] = useState(false);
   const shareFeedbackTimer = useRef<number | null>(null);
@@ -160,7 +169,19 @@ export function SongEditor({
       </div>
       <p className="share-status" role="status">{shareMessage}</p>
       {playback.status === "error" && <p role="alert">{playback.message}</p>}
-      {strumSpeedControl && <StickyStrumSpeed>{strumSpeedControl}</StickyStrumSpeed>}
+      {strumSpeedControl && <StickyStrumSpeed>
+        {strumSpeedControl}
+        <button className="song-play-all" disabled={!playingSong && !songItems.length}
+          aria-label={playingSong ? "Stop song" : "Play all chords"}
+          title={playingSong ? "Stop song" : "Play all chords"}
+          onClick={playingSong ? stop : () => {
+            setPlaybackTarget({ kind: "song" });
+            onPlay(songItems);
+          }}>
+          {playingSong ? <Square size={20} aria-hidden="true" /> : <ListMusic size={20} aria-hidden="true" />}
+          <span>{playingSong ? "Stop" : "Play all"}</span>
+        </button>
+      </StickyStrumSpeed>}
       <div className="sections">
         {song.sections.map((section, i) => (
           <SectionEditor
@@ -171,11 +192,11 @@ export function SongEditor({
             strumInterval={playback.strumInterval}
             onRename={(name) => onChange(renameSection(song, section.id, name))}
             onRemove={() => onRemoveSection(section.id)}
-            onAdd={() => { setPlayingSectionId(null); onAdd(section.id); }}
-            onHear={(...args) => { setPlayingSectionId(null); onHear(...args); }}
-            playing={playingSectionId === section.id && (playback.status === "loading" || playback.status === "playing")}
-            onStop={() => { setPlayingSectionId(null); onStop(); }}
-            onPlay={() => { setPlayingSectionId(section.id); onPlay(songPreview(song, section.id)); }}
+            onAdd={() => { setPlaybackTarget(null); onAdd(section.id); }}
+            onHear={(...args) => { setPlaybackTarget(null); onHear(...args); }}
+            playing={playbackTarget?.kind === "section" && playbackTarget.id === section.id && playing}
+            onStop={stop}
+            onPlay={() => { setPlaybackTarget({ kind: "section", id: section.id }); onPlay(songPreview(song, section.id)); }}
             onMove={(id, index) =>
               onChange(moveChord(song, section.id, id, index))
             }

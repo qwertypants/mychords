@@ -9,7 +9,28 @@
   z-index: 5;
   pointer-events: none;
 }
-.song-speed-control { pointer-events: auto; }
+.song-speed-control {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.song-speed-control .strum-speed { flex: 1; }
+.song-play-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 13px var(--display);
+}
+.song-play-all:hover { background: var(--tab-hover); }
 .song-speed-sticky.is-stuck .song-speed-control {
   width: max-content;
   padding: 4px;
@@ -26,6 +47,8 @@
 }
 .song-speed-sticky.is-stuck .strum-speed-label { display: none; }
 .song-speed-sticky.is-stuck .strum-speed-icon { display: block; }
+.song-speed-sticky.is-stuck .song-play-all { width: 44px; padding: 6px; }
+.song-speed-sticky.is-stuck .song-play-all span { display: none; }
 .editor-breadcrumb {
   display: flex;
   align-items: center;
