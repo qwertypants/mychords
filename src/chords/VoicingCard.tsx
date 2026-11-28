@@ -39,6 +39,7 @@ export function VoicingCard({ voicing, playing, strumInterval, added, onHear, on
         <h3>{label}</h3>
       </div>
       <ChordDiagram voicing={voicing} playing={playing} strumInterval={strumInterval} onNote={onNote} />
+      {voicing.omissions && voicing.omissions.length > 0 && <p className="voicing-omissions">Omits {voicing.omissions.join(", ")}</p>}
       <div className="voicing-actions">
         <button onClick={onHear} aria-label={`Hear ${label}, ${frets.join(" ")}`}>
           <Play size={18} fill="currentColor" aria-hidden="true" />

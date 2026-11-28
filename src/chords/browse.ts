@@ -1,3 +1,4 @@
+import { extendedDefinition } from "./extended";
 import type { Voicing } from "./types";
 import { positionOf } from "./pitch";
 
@@ -25,7 +26,7 @@ export function inCategory(suffix: string, category: Category): boolean {
   if (category === "All") return true;
   if (category === "Slash chords") return suffix.includes("/");
   const base = suffix.split("/")[0] || "major";
-  return members[category].includes(base === "m" ? "minor" : base);
+  return (extendedDefinition(base)?.categories.includes(category) ?? false) || members[category].includes(base === "m" ? "minor" : base);
 }
 
 export type ChordGroup = { id: string; root: string; label: string; voicings: Voicing[] };

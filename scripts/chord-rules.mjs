@@ -1,3 +1,15 @@
+import { readFileSync } from "node:fs";
+import { semitones } from "@tonaljs/interval";
+export const EXTENDED = JSON.parse(readFileSync(new URL("../src/chords/extended-definitions.json", import.meta.url)));
+export function extendedPitches(definition) {
+  return definition.intervals.map(interval => semitones(interval) % 12);
+}
+const TONE_NAMES = { 0: "root", 2: "ninth", 3: "minor third", 4: "major third", 5: "eleventh", 7: "fifth", 9: "thirteenth", 10: "minor seventh", 11: "major seventh" };
+export function omissionsFor(v) {
+  const definition = EXTENDED.find(d => d.suffix === v.suffix);
+  const pcs = new Set(v.frets.flatMap((f, i) => f < 0 ? [] : [([40, 45, 50, 55, 59, 64][i] + f - ROOTS[v.root] + 120) % 12]));
+  return extendedPitches(definition).filter(n => !pcs.has(n)).map(n => TONE_NAMES[n]);
+}
 export const ROOTS = {
   C: 0,
   "C#": 1,
@@ -66,7 +78,8 @@ export const FORMULAS = {
 };
 export function pitchIssue(v) {
   const [quality, bass] = v.suffix.split("/");
-  const formula = FORMULAS[quality === "m" ? "minor" : quality || "major"];
+  const extended = EXTENDED.find(d => d.suffix === quality);
+  const formula = extended ? extendedPitches(extended) : FORMULAS[quality === "m" ? "minor" : quality || "major"];
   if (!formula) throw new Error(`Unknown quality ${quality}`);
   const midi = v.frets.flatMap((f, i) =>
     f < 0 ? [] : [[40, 45, 50, 55, 59, 64][i] + f],
@@ -80,7 +93,7 @@ export function pitchIssue(v) {
     return "Lowest note disagrees with slash bass";
   // Extended guitar grips can omit roots and fifths, but must keep their defining colors.
   const required = formula.filter((n) => ![0, 7].includes(n));
-  const essentials =
+  const essentials = extended ? extended.required :
     formula.length <= 3
       ? formula
       : required.filter(

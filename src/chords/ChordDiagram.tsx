@@ -68,7 +68,7 @@ export function ChordDiagram({
       }
     },
   } : {};
-  const description = `${voicing.label}. Low E to high E: ${voicing.frets.map((f, i) => (f < 0 ? "muted" : `${f === 0 ? "open" : `fret ${f}`} ${noteNames[i]}${tones[i] ? `, ${tones[i].description}` : ""}`)).join("; ")}. Faint labeled circles show other positions of the root, third and fifth; they are visual guides, not played notes.`;
+  const description = `${voicing.label}.${voicing.omissions?.length ? ` Omits ${voicing.omissions.join(", ")}.` : ""} Low E to high E: ${voicing.frets.map((f, i) => (f < 0 ? "muted" : `${f === 0 ? "open" : `fret ${f}`} ${noteNames[i]}${tones[i] ? `, ${tones[i].description}` : ""}`)).join("; ")}. Faint labeled circles show other positions of the root, third and fifth; they are visual guides, not played notes.`;
   return (
     <div className="chord-chart">
       <svg

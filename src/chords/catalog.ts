@@ -1,3 +1,4 @@
+import { extendedDefinition, normalizeChordSymbol } from "./extended";
 import { z } from "zod";
 import data from "./voicings.json";
 import { voicingSchema } from "./types";
@@ -5,6 +6,11 @@ import type { Voicing } from "./types";
 import { positionOf } from "./pitch";
 export const catalog: readonly Voicing[] = z.array(voicingSchema).parse(data);
 const byId = new Map(catalog.map((v) => [v.id, v]));
+const symbols = new Map<string, string>();
+for (const v of catalog) {
+  const names = [v.label, v.root + v.suffix, ...(extendedDefinition(v.suffix)?.aliases ?? []).map(alias => v.root + alias)];
+  for (const name of names) symbols.set(normalizeChordSymbol(name), v.root + ":" + v.suffix);
+}
 export const roots = [
   "C",
   "C#",
@@ -47,6 +53,8 @@ export function qualityLabel(suffix: string): string {
 
   };
   const [base, bass] = suffix.split("/");
+  const extended = extendedDefinition(base);
+  if (extended) return bass ? `${extended.name} over ${bass} slash` : extended.name;
   const name = names[base === "m" ? "minor" : base || "major"] ?? base;
   return bass ? `${name} over ${bass} slash` : name;
 }
@@ -58,19 +66,27 @@ export function findVoicings(query: {
   maxFret?: number;
 }): Voicing[] {
   let text = (query.text ?? "").trim().replace(/♯/g, "#").replace(/♭/g, "b");
-  for (const [alias, root] of Object.entries(aliases))
-    if (text.startsWith(alias)) text = root + text.slice(alias.length);
+  const rootMatch = /^([a-g])([#b]?)(.*)$/i.exec(text);
+  if (rootMatch) {
+    const inputRoot = rootMatch[1].toUpperCase() + rootMatch[2];
+    text = (aliases[inputRoot] ?? inputRoot) + rootMatch[3];
+  }
+  const normalized = normalizeChordSymbol(text);
+  const rootOnly = /^[a-g][#b]?$/.test(normalized);
+  const exactGroup = symbols.get(normalized);
   text = text.toLowerCase();
+  const matchesText = (v: Voicing): boolean => {
+    if (!text) return true;
+    if (rootOnly) return v.root.toLowerCase() === normalized;
+    if (exactGroup) return `${v.root}:${v.suffix}` === exactGroup;
+    return `${v.label} ${v.root} ${qualityLabel(v.suffix)}`.toLowerCase().includes(text)
+      || normalizeChordSymbol(v.label).includes(normalized);
+  };
   return catalog.filter(
     (v) =>
       (!query.root || v.root === query.root) &&
       (!query.suffix || v.suffix === query.suffix) &&
-      (!text ||
-        (/^[a-g][#b]?$/.test(text)
-          ? v.root.toLowerCase() === text
-          : `${v.label} ${v.root} ${qualityLabel(v.suffix)}`
-              .toLowerCase()
-              .includes(text))) &&
+      matchesText(v) &&
       positionOf(v.frets) >= (query.minFret ?? 0) &&
       positionOf(v.frets) <= (query.maxFret ?? 22),
   );

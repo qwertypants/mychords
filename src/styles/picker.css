@@ -361,3 +361,11 @@
   box-shadow: 0 4px 12px var(--dialog-shadow);
 }
 .empty-results .button { display: block; margin-top: 12px; }
+
+.voicing-omissions {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}

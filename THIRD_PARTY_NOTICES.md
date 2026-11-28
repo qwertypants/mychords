@@ -12,3 +12,7 @@ Source: https://github.com/nbrosowsky/tonejs-instruments
 Pinned commit: 622c2f1c32c8cfce4158ddc3eb26e518ddef37e5.
 Samples are licensed under Creative Commons Attribution 3.0 Unported:
 https://creativecommons.org/licenses/by/3.0/ . Samples are redistributed unchanged, with playback pitch/rate and gain adjusted at runtime. File hashes are recorded in public/audio/manifest.json.
+
+Supplemental extended-chord grips are original MyChords arrangements, licensed under MIT in vendor/chords/SUPPLEMENTAL-LICENSE. Provenance and fingering review are documented in docs/extended-chords.md and vendor/chords/supplemental.json; they are not derived from chords-db.
+
+Tonal chord-type and interval packages are MIT-licensed development tools used to check formulas during catalog generation/audit. Source and license: https://github.com/tonaljs/tonal and https://github.com/tonaljs/tonal/blob/main/docs/LICENSE . Versions are pinned in package-lock.json. No Tonal code is bundled into the application. Open Music Theory is consulted as a notation/voicing reference; its prose and diagrams are not redistributed.

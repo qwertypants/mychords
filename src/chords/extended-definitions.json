@@ -1,0 +1,209 @@
+[
+  {
+    "suffix": "m13",
+    "display": "m13",
+    "name": "Minor thirteenth",
+    "aliases": [
+      "m13"
+    ],
+    "intervals": [
+      "1P",
+      "3m",
+      "5P",
+      "7m",
+      "9M",
+      "11P",
+      "13M"
+    ],
+    "required": [
+      3,
+      10,
+      9
+    ],
+    "categories": [
+      "Minor",
+      "Thirteenths"
+    ]
+  },
+  {
+    "suffix": "m11add13",
+    "display": "m11 add13",
+    "name": "Minor eleventh added thirteenth",
+    "aliases": [
+      "m11add13"
+    ],
+    "intervals": [
+      "1P",
+      "3m",
+      "5P",
+      "7m",
+      "9M",
+      "11P",
+      "13M"
+    ],
+    "required": [
+      3,
+      10,
+      5,
+      9
+    ],
+    "categories": [
+      "Minor",
+      "Elevenths",
+      "Thirteenths",
+      "Added notes"
+    ]
+  },
+  {
+    "suffix": "7add13",
+    "display": "7 add13",
+    "name": "Dominant seventh added thirteenth",
+    "aliases": [
+      "7add13"
+    ],
+    "intervals": [
+      "1P",
+      "3M",
+      "5P",
+      "7m",
+      "13M"
+    ],
+    "required": [
+      4,
+      10,
+      9
+    ],
+    "categories": [
+      "Sevenths",
+      "Thirteenths",
+      "Added notes"
+    ]
+  },
+  {
+    "suffix": "maj7add13",
+    "display": "maj7 add13",
+    "name": "Major seventh added thirteenth",
+    "aliases": [
+      "maj7add13"
+    ],
+    "intervals": [
+      "1P",
+      "3M",
+      "5P",
+      "7M",
+      "13M"
+    ],
+    "required": [
+      4,
+      11,
+      9
+    ],
+    "categories": [
+      "Major",
+      "Sevenths",
+      "Thirteenths",
+      "Added notes"
+    ]
+  },
+  {
+    "suffix": "m7add13",
+    "display": "m7 add13",
+    "name": "Minor seventh added thirteenth",
+    "aliases": [
+      "m7add13"
+    ],
+    "intervals": [
+      "1P",
+      "3m",
+      "5P",
+      "7m",
+      "13M"
+    ],
+    "required": [
+      3,
+      10,
+      9
+    ],
+    "categories": [
+      "Minor",
+      "Sevenths",
+      "Thirteenths",
+      "Added notes"
+    ]
+  },
+  {
+    "suffix": "add13",
+    "display": "add13",
+    "name": "Added thirteenth",
+    "aliases": [
+      "add13"
+    ],
+    "intervals": [
+      "1P",
+      "3M",
+      "5P",
+      "13M"
+    ],
+    "required": [
+      0,
+      4,
+      7,
+      9
+    ],
+    "categories": [
+      "Major",
+      "Thirteenths",
+      "Added notes"
+    ]
+  },
+  {
+    "suffix": "madd11",
+    "display": "madd11",
+    "name": "Minor added eleventh",
+    "aliases": [
+      "madd11"
+    ],
+    "intervals": [
+      "1P",
+      "3m",
+      "5P",
+      "11P"
+    ],
+    "required": [
+      0,
+      3,
+      7,
+      5
+    ],
+    "categories": [
+      "Minor",
+      "Elevenths",
+      "Added notes"
+    ]
+  },
+  {
+    "suffix": "madd13",
+    "display": "madd13",
+    "name": "Minor added thirteenth",
+    "aliases": [
+      "madd13"
+    ],
+    "intervals": [
+      "1P",
+      "3m",
+      "5P",
+      "13M"
+    ],
+    "required": [
+      0,
+      3,
+      7,
+      9
+    ],
+    "categories": [
+      "Minor",
+      "Thirteenths",
+      "Added notes"
+    ]
+  }
+]

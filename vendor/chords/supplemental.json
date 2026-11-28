@@ -1,0 +1,401 @@
+[
+  {
+    "root": "C",
+    "suffix": "m13",
+    "frets": [
+      3,
+      1,
+      1,
+      2,
+      -1,
+      -1
+    ],
+    "fingers": [
+      3,
+      1,
+      1,
+      2,
+      0,
+      0
+    ],
+    "barres": [
+      1
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "m13",
+    "frets": [
+      -1,
+      -1,
+      5,
+      3,
+      4,
+      5
+    ],
+    "fingers": [
+      0,
+      0,
+      3,
+      1,
+      2,
+      4
+    ],
+    "barres": [],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "m11add13",
+    "frets": [
+      1,
+      1,
+      1,
+      2,
+      -1,
+      -1
+    ],
+    "fingers": [
+      1,
+      1,
+      1,
+      2,
+      0,
+      0
+    ],
+    "barres": [
+      1
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "m11add13",
+    "frets": [
+      -1,
+      -1,
+      3,
+      3,
+      4,
+      5
+    ],
+    "fingers": [
+      0,
+      0,
+      1,
+      1,
+      2,
+      3
+    ],
+    "barres": [
+      3
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "7add13",
+    "frets": [
+      -1,
+      1,
+      2,
+      2,
+      1,
+      -1
+    ],
+    "fingers": [
+      0,
+      1,
+      2,
+      3,
+      1,
+      0
+    ],
+    "barres": [
+      1
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "7add13",
+    "frets": [
+      -1,
+      -1,
+      7,
+      5,
+      5,
+      6
+    ],
+    "fingers": [
+      0,
+      0,
+      3,
+      1,
+      1,
+      2
+    ],
+    "barres": [
+      5
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "maj7add13",
+    "frets": [
+      -1,
+      2,
+      2,
+      2,
+      1,
+      -1
+    ],
+    "fingers": [
+      0,
+      2,
+      2,
+      2,
+      1,
+      0
+    ],
+    "barres": [
+      2
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "maj7add13",
+    "frets": [
+      -1,
+      -1,
+      7,
+      5,
+      5,
+      7
+    ],
+    "fingers": [
+      0,
+      0,
+      3,
+      1,
+      1,
+      4
+    ],
+    "barres": [
+      5
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "m7add13",
+    "frets": [
+      -1,
+      1,
+      1,
+      2,
+      1,
+      -1
+    ],
+    "fingers": [
+      0,
+      1,
+      1,
+      2,
+      1,
+      0
+    ],
+    "barres": [
+      1
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "m7add13",
+    "frets": [
+      -1,
+      -1,
+      8,
+      8,
+      10,
+      8
+    ],
+    "fingers": [
+      0,
+      0,
+      1,
+      1,
+      3,
+      1
+    ],
+    "barres": [
+      8
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "add13",
+    "frets": [
+      -1,
+      -1,
+      5,
+      5,
+      5,
+      5
+    ],
+    "fingers": [
+      0,
+      0,
+      1,
+      1,
+      1,
+      1
+    ],
+    "barres": [
+      5
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "add13",
+    "frets": [
+      3,
+      3,
+      2,
+      2,
+      -1,
+      -1
+    ],
+    "fingers": [
+      2,
+      2,
+      1,
+      1,
+      0,
+      0
+    ],
+    "barres": [
+      2,
+      3
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "madd11",
+    "frets": [
+      -1,
+      6,
+      5,
+      5,
+      6,
+      -1
+    ],
+    "fingers": [
+      0,
+      2,
+      1,
+      1,
+      3,
+      0
+    ],
+    "barres": [
+      5
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "madd11",
+    "frets": [
+      -1,
+      -1,
+      3,
+      5,
+      4,
+      3
+    ],
+    "fingers": [
+      0,
+      0,
+      1,
+      3,
+      2,
+      1
+    ],
+    "barres": [
+      3
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "madd13",
+    "frets": [
+      5,
+      6,
+      5,
+      5,
+      -1,
+      -1
+    ],
+    "fingers": [
+      1,
+      2,
+      1,
+      1,
+      0,
+      0
+    ],
+    "barres": [
+      5
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  },
+  {
+    "root": "C",
+    "suffix": "madd13",
+    "frets": [
+      -1,
+      -1,
+      7,
+      8,
+      8,
+      8
+    ],
+    "fingers": [
+      0,
+      0,
+      1,
+      2,
+      2,
+      2
+    ],
+    "barres": [
+      8
+    ],
+    "provenance": "Original MyChords closed grip; see docs/extended-chords.md",
+    "review": "Four adjacent sounding strings; span at most two frets; finger order and barre clearance checked against fret coordinates."
+  }
+]

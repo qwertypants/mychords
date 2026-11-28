@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { ROOTS, pitchIssue } from "./chord-rules.mjs";
+import { ROOTS, pitchIssue, EXTENDED, omissionsFor } from "./chord-rules.mjs";
 const input = readFileSync("vendor/chords/guitar.json");
 const source = JSON.parse(input);
 const canonical = [
@@ -132,6 +132,36 @@ for (const root of canonical)
           });
         add(v);
       }
+const supplementalInput = readFileSync("vendor/chords/supplemental.json");
+const supplemental = JSON.parse(supplementalInput);
+const supplementalRecords = [];
+for (const seed of supplemental) {
+  const definition = EXTENDED.find(d => d.suffix === seed.suffix);
+  if (!definition || ROOTS[seed.root] === undefined || !seed.provenance || !seed.review
+      || seed.frets.length !== 6 || seed.fingers.length !== 6
+      || seed.frets.some((f, i) => !Number.isInteger(f) || (f !== -1 && (f < 1 || f > 22))
+        || !Number.isInteger(seed.fingers[i]) || (f < 0 ? seed.fingers[i] !== 0 : seed.fingers[i] < 1 || seed.fingers[i] > 4))
+      || seed.barres.some(f => !Number.isInteger(f) || !seed.frets.includes(f)))
+    throw new Error(`Invalid supplemental seed ${seed.suffix}`);
+  for (const root of canonical) {
+    const min = Math.min(...seed.frets.filter(f => f > 0));
+    const pitchDelta = (ROOTS[root] - ROOTS[seed.root] + 12) % 12;
+    const delta = pitchDelta - (min + pitchDelta > 12 ? 12 : 0);
+    for (const shift of [delta, delta + 12]) {
+      const frets = seed.frets.map(f => f < 0 ? -1 : f + shift);
+      if (frets.some(f => f !== -1 && (f < 1 || f > 22))) continue;
+      const v = {
+        id: `${root}:${seed.suffix}:${frets.join(",")}`, root,
+        suffix: seed.suffix, label: root + definition.display,
+        frets, fingers: seed.fingers, barres: seed.barres.map(f => f + shift),
+      };
+      if (pitchIssue(v)) throw new Error(`Bad supplemental shape ${v.id}: ${pitchIssue(v)}`);
+      v.omissions = omissionsFor(v);
+      supplementalRecords.push({ id: v.id, seed: supplemental.indexOf(seed) });
+      add(v);
+    }
+  }
+}
 const catalog = [...records.values()].sort(
   (a, b) =>
     ROOTS[a.root] - ROOTS[b.root] ||
@@ -142,6 +172,8 @@ const catalog = [...records.values()].sort(
 const report = {
   sourceCommit: "df06fa7b425cf5fd29485ff6591236b3557e3fac",
   sha256: createHash("sha256").update(input).digest("hex"),
+  supplementalSha256: createHash("sha256").update(supplementalInput).digest("hex"),
+  supplementalRecords,
   count: catalog.length,
   rootCounts: {},
   suffixCounts: {},

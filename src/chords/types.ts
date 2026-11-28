@@ -16,5 +16,6 @@ export const voicingSchema = z.object({
   frets: sixNumbers,
   fingers: sixNumbers,
   barres: z.array(z.number()),
+  omissions: z.array(z.string()).optional(),
 });
 export type Voicing = z.infer<typeof voicingSchema>;
