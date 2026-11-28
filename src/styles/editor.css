@@ -342,7 +342,6 @@
   color: var(--remove-ink);
 }
 .add-chord-button {
-  grid-column: 1 / -1;
   justify-self: start;
   border: 1px dashed var(--add-border);
   border-radius: 6px;
