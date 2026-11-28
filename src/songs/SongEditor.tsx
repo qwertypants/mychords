@@ -47,6 +47,7 @@ export function SongEditor({
   onRemoveSection,
   playback,
   strumSpeedControl,
+  onOpenShared,
 }: {
   song: Song;
   onChange: (s: Song) => void;
@@ -59,7 +60,10 @@ export function SongEditor({
   onRemoveSection: (id: string) => void;
   playback: PlaybackState;
   strumSpeedControl?: React.ReactNode;
+  onOpenShared?: (link: string) => string | null;
 }) {
+  const [sharedLink, setSharedLink] = useState("");
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [playbackTarget, setPlaybackTarget] = useState<
     { kind: "song" } | { kind: "section"; id: string } | null
   >(null);
@@ -216,6 +220,19 @@ export function SongEditor({
         <Plus size={18} />
         Add section
       </button>
+      {onOpenShared && (
+        <form className="editor-shared-link" onSubmit={(event) => {
+          event.preventDefault();
+          setLinkError(onOpenShared(sharedLink));
+        }}>
+          <label htmlFor="editor-shared-link">Open a shared song link</label>
+          <div className="editor-shared-link-row">
+            <input id="editor-shared-link" type="text" inputMode="url" autoCapitalize="off" autoCorrect="off" spellCheck={false} value={sharedLink} onChange={(event) => { setSharedLink(event.target.value); setLinkError(null); }} placeholder="Paste song link" />
+            <button className="button secondary" type="submit">Open song</button>
+          </div>
+          {linkError && <p role="alert">{linkError}</p>}
+        </form>
+      )}
       <p className="editor-note">
         A place for your chord ideas. Drag the handles to rearrange chords; use
         the arrows to try other shapes.

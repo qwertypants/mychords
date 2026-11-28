@@ -36,10 +36,11 @@ export function createShareUrl(song: Song, location: string): string {
 }
 
 export function readSharedSong(location: string): Song | null {
-  const url = new URL(location);
-  const values = url.searchParams.getAll("song");
-  if (!values.length) return null;
   try {
+    if (location.length > MAX_SHARE_URL) throw new Error();
+    const url = new URL(location);
+    const values = url.searchParams.getAll("song");
+    if (!values.length) return null;
     const encoded = values[0];
     if (values.length !== 1 || url.href.length > MAX_SHARE_URL || !/^[A-Za-z0-9_-]+$/.test(encoded)) throw new Error();
     const bytes = Uint8Array.from(atob(encoded.replaceAll("-", "+").replaceAll("_", "/")), (c) => c.charCodeAt(0));

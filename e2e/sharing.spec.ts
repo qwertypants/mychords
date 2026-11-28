@@ -110,3 +110,58 @@ test("handoff shows a selectable link when copying fails", async ({ page }) => {
   await page.getByRole("button", { name: "Copy song link" }).click();
   await expect(page.getByRole("textbox", { name: "Shared song link" })).toHaveValue(page.url());
 });
+
+test("new song editor imports a shared link and removes its untouched starter", async ({ page }) => {
+  const encoded = btoa(JSON.stringify({ version: 1, name: "From a link", sections: [] })).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+  await page.goto("/");
+  await page.getByRole("button", { name: "New song", exact: true }).first().click();
+  const input = page.getByRole("textbox", { name: "Open a shared song link" });
+  await expect(input).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add section" })).toBeVisible();
+  await input.fill("https://example.test/?song=" + encoded);
+  await page.getByRole("button", { name: "Open song", exact: true }).click();
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("From a link");
+  const songs = await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs);
+  expect(songs.map((song: { name: string }) => song.name)).toEqual(["From a link"]);
+  await expect(input).toHaveCount(0);
+});
+
+test("invalid editor link preserves the starter and edited starters remain saved", async ({ page }) => {
+  const encoded = btoa(JSON.stringify({ version: 1, name: "Imported", sections: [] })).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+  await page.goto("/");
+  await page.getByRole("button", { name: "New song", exact: true }).first().click();
+  const input = page.getByRole("textbox", { name: "Open a shared song link" });
+  const before = await page.evaluate(() => localStorage.getItem("mychords.library.v1"));
+  await input.fill("https://example.test/?song=invalid");
+  await page.getByRole("button", { name: "Open song", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("invalid");
+  expect(await page.evaluate(() => localStorage.getItem("mychords.library.v1"))).toBe(before);
+  await page.getByLabel("Song name", { exact: true }).fill("My own idea");
+  await input.fill("https://example.test/?song=" + encoded);
+  await page.getByRole("button", { name: "Open song", exact: true }).click();
+  const songs = await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs);
+  expect(songs.map((song: { name: string }) => song.name)).toEqual(["Imported", "My own idea"]);
+});
+
+test("failed editor import keeps the new draft and retries the atomic replacement", async ({ page }) => {
+  const encoded = btoa(JSON.stringify({ version: 1, name: "Retry import", sections: [] })).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+  await page.goto("/");
+  await page.getByRole("button", { name: "New song", exact: true }).first().click();
+  const starterId = new URL(page.url()).pathname.split("/").pop();
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    let fail = true;
+    Storage.prototype.setItem = function(key, value) {
+      if (key === "mychords.library.v1" && fail) { fail = false; throw new Error("full"); }
+      return original.call(this, key, value);
+    };
+  });
+  await page.getByRole("textbox", { name: "Open a shared song link" }).fill("https://example.test/?song=" + encoded);
+  await page.getByRole("button", { name: "Open song", exact: true }).click();
+  await expect(page.getByLabel("Song name", { exact: true })).toHaveValue("Retry import");
+  await expect(page.getByRole("button", { name: "Retry saving" })).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs[0].id)).toBe(starterId);
+  await page.getByRole("button", { name: "Retry saving" }).click();
+  const songs = await page.evaluate(() => JSON.parse(localStorage.getItem("mychords.library.v1")!).songs);
+  expect(songs.map((song: { name: string }) => song.name)).toEqual(["Retry import"]);
+});

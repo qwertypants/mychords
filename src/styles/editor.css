@@ -377,6 +377,14 @@
 .add-section-button:hover {
   background: var(--section-hover);
 }
+.editor-shared-link { margin-top: 24px; }
+.editor-shared-link label { display: block; margin-bottom: 9px; font-size: 13px; font-weight: 600; color: var(--section-ink); }
+.editor-shared-link-row { display: flex; gap: 10px; }
+.editor-shared-link-row input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid var(--divider); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+.editor-shared-link-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.editor-shared-link-row .button { flex: 0 0 auto; }
+.editor-shared-link [role="alert"] { margin: 9px 0 0; font-size: 13px; }
+@media (max-width: 480px) { .editor-shared-link-row { flex-direction: column; } }
 .editor-note {
   font-size: 13px;
   color: var(--muted);

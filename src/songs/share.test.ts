@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { catalog } from "../chords/catalog";
 import { addChord, addSection, newSong } from "./commands";
-import { createShareUrl, readSharedSong } from "./share";
+import { createShareUrl, MAX_SHARE_URL, readSharedSong } from "./share";
 
 const origin = "https://example.com/mychords/";
 function song() {
@@ -38,6 +38,9 @@ describe("song links", () => {
   });
   it("rejects duplicate song parameters", () => {
     expect(() => readSharedSong(createShareUrl(song(), origin) + "&song=a")).toThrow();
+  });
+  it("rejects oversized pasted text before parsing a URL", () => {
+    expect(() => readSharedSong("x".repeat(MAX_SHARE_URL + 1))).toThrow(/invalid/);
   });
   it("rejects songs too large without truncation", () => {
     const large = song();

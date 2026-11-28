@@ -18,13 +18,15 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
   const [shareError, setShareError] = useState<string | null>(null);
   const [sharedLink, setSharedLink] = useState<{ url: string; name: string } | null>(null);
   const handledShare = useRef(false);
+  const pendingReplacement = useRef<string | null>(null);
   const saveDraft = useCallback((song = draft): boolean => {
     if (!song || initial.kind === "error") return false;
+    const kept = library.songs.filter((s) => s.id !== pendingReplacement.current);
     const next: Library = {
       version: 1,
-      songs: library.songs.some((s) => s.id === song.id)
-        ? library.songs.map((s) => (s.id === song.id ? song : s))
-        : [song, ...library.songs],
+      songs: kept.some((s) => s.id === song.id)
+        ? kept.map((s) => (s.id === song.id ? song : s))
+        : [song, ...kept],
     };
     const saved = writeLibrary(browserStorage, next);
     if (!saved.ok) {
@@ -33,6 +35,7 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
       return false;
     }
     setLibrary(next);
+    pendingReplacement.current = null;
     setDirty(false);
     setStorageError(null);
     return true;
@@ -61,7 +64,7 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
       setShareError((error as Error).message);
     }
   }, [initial.kind, saveDraft, onImport]);
-  function importSharedLink(link: string): string | null {
+  function importSharedLink(link: string, replaceId: string | null = null): string | null {
     let song: Song | null;
     try {
       song = readSharedSong(link.trim());
@@ -71,6 +74,7 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
     }
     setSharedLink(null);
     setShareError(null);
+    pendingReplacement.current = replaceId;
     setDraft(song);
     saveDraft(song);
     onImport(song);
@@ -132,17 +136,20 @@ export function useSongLibrary(routeId: string | null, onImport: (song: Song) =>
     reset,
     deleteSong,
     openSong: (song: Song) => {
+      pendingReplacement.current = null;
       setDraft(structuredClone(song));
       setDirty(false);
       setStorageError(null);
     },
     newDraft: () => {
+      pendingReplacement.current = null;
       const song = addSection(newSong(), "Verse");
       setDraft(song);
       saveDraft(song);
       return song;
     },
     closeDraft: () => {
+      pendingReplacement.current = null;
       setDraft(null);
       setDirty(false);
       setStorageError(null);

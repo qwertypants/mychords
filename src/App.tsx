@@ -27,7 +27,9 @@ import type { SongRoute } from "./songs/routes";
 import "./styles.css";
 export default function App() {
   const [route, setRoute] = useState<SongRoute>(readSongRoute);
+  const [newSongStart, setNewSongStart] = useState<Song | null>(null);
   const importSong = useCallback((song: Song) => {
+    setNewSongStart(null);
     const url = new URL(window.location.href);
     url.searchParams.delete("song");
     window.history.replaceState(window.history.state, "", `${songPath(song.id)}${url.search}`);
@@ -52,6 +54,7 @@ export default function App() {
     else action();
   };
   const navigate = (next: SongRoute) => {
+    if (next.kind !== "song" || next.id !== newSongStart?.id) setNewSongStart(null);
     const path = next.kind === "song" ? songPath(next.id) : next.kind === "songs" ? songsPath(next.page) : appRoot();
     if (`${window.location.pathname}${window.location.search}` !== path)
       window.history.pushState(window.history.state, "", path);
@@ -62,22 +65,27 @@ export default function App() {
   const createSong = () => transition(() => {
     const song = store.newDraft();
     navigate({ kind: "song", id: song.id });
+    setNewSongStart(structuredClone(song));
   });
   useEffect(() => {
     const onPopState = () => {
       const target = readSongRoute();
+      const openTarget = () => {
+        if (target.kind !== "song" || target.id !== newSongStart?.id) setNewSongStart(null);
+        setRoute(target);
+      };
       audio.stop();
       if (store.dirty) {
         const currentPath = route.kind === "song" ? songPath(route.id) : route.kind === "songs" ? songsPath(route.page) : appRoot();
         setPending({
-          action: () => setRoute(target),
+          action: openTarget,
           cancel: () => window.history.pushState(window.history.state, "", currentPath),
         });
-      } else setRoute(target);
+      } else openTarget();
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [audio, route, store.dirty]);
+  }, [audio, route, store.dirty, newSongStart]);
   useEffect(() => {
     if (store.initial.kind === "error") return;
     if (route.kind === "song") {
@@ -230,6 +238,12 @@ export default function App() {
             if (section?.chords.length) setRemoveId(id);
             else if (store.draft) change(removeSection(store.draft, id));
           }}
+          onOpenShared={newSongStart && newSongStart.id === store.draft.id ? (link) => {
+            const current = store.draft!;
+            const untouched = current.name === newSongStart.name &&
+              JSON.stringify(current.sections) === JSON.stringify(newSongStart.sections);
+            return store.importSharedLink(link, untouched ? current.id : null);
+          } : undefined}
         />
       ) : route.kind === "library" ? (
         <SongLibrary
